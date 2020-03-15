@@ -49,7 +49,11 @@ class BaseRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
 
     def _before_train(self):
         self.start_epoch(-1)
-        self._sample(self.min_num_steps_before_training)
+        if hasattr(self, 'init_expl_policy'):
+            with self.expl_collector.with_policy(self.init_expl_policy):
+                self._sample(self.min_num_steps_before_training)
+        else:
+            self._sample(self.min_num_steps_before_training)
         self.end_epoch(-1)
 
     def _train_epoch(self, epoch):

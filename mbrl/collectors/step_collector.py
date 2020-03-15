@@ -41,7 +41,7 @@ class SimpleStepCollector(StepCollector):
     
     def set_policy(self, policy, epoch=None):
         self.end_epoch(epoch)
-        self._policy = self.policy
+        self._policy = policy
 
     @contextmanager
     def with_policy(self, policy):
@@ -131,8 +131,7 @@ class SimpleStepCollector(StepCollector):
         self.has_done = False
 
     def _handle_rollout_ending(self):
-        self.has_done = True
-        if self._pb is None:
+        if self.has_done:
             return
         temp_paths, temp_path_lens = self._pb.finalize(self._obs, aggregate=False, return_length=True)
         for i in range(len(temp_path_lens)):
@@ -151,6 +150,7 @@ class SimpleStepCollector(StepCollector):
             self._num_paths_total += 1
             self._epoch_paths.append(path)
             self._epoch_path_lens.append(path_len)
+        self.has_done = True
     
     def get_epoch_paths(self):
         return self._epoch_paths

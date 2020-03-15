@@ -38,7 +38,7 @@ class SimplePathCollector(PathCollector):
     
     def set_policy(self, policy, epoch=None):
         self.end_epoch(epoch)
-        self._policy = self.policy
+        self._policy = policy
     
     @contextmanager
     def with_policy(self, policy):

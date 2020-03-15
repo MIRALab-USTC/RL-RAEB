@@ -34,6 +34,8 @@ def get_batch(dataset, batch_index, keys=None):
     return batch
 
 def _random_batch_independently(dataset, batch_size, valid_size, replace=False, keys=None):
+    if replace is False and batch_size>valid_size:
+        batch_size=valid_size
     batch_index = np.random.choice(np.arange(valid_size), batch_size, replace)
     return get_batch(dataset, batch_index, keys=keys)
 

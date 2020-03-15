@@ -8,11 +8,11 @@
             "num_epochs": 2000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
-            "num_train_loops_per_epoch": 10,
-            "num_expl_steps_per_train_loop": 100,
-            "num_trains_per_train_loop": 100,
+            "num_train_loops_per_epoch": 1000,
+            "num_expl_steps_per_train_loop": 1,
+            "num_trains_per_train_loop": 1,
             "max_path_length": 1000,
-            "min_num_steps_before_training": 0,
+            "min_num_steps_before_training": 5000,
             "silent": false
         }
     },
@@ -66,7 +66,7 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [256,256]
+            "hidden_layers": [128,128]
         } 
     },
     "trainer":{
@@ -76,8 +76,8 @@
             "policy": "$policy",
             "qf": "$qf",
             "reward_scale":1,
-            "policy_lr": 5e-4,
-            "qf_lr": 5e-4,
+            "policy_lr": 3e-4,
+            "qf_lr": 3e-4,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
             "alpha_if_not_automatic": 0
