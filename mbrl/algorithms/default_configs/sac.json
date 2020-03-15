@@ -5,14 +5,14 @@
     "algorithm": {
         "class": "batch_algorithm",
         "kwargs": {
-            "num_epochs": 200,
+            "num_epochs": 2000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 10,
             "num_expl_steps_per_train_loop": 100,
             "num_trains_per_train_loop": 100,
             "max_path_length": 1000,
-            "min_num_steps_before_training": 3000,
+            "min_num_steps_before_training": 0,
             "silent": false
         }
     },

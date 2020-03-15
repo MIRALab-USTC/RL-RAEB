@@ -39,12 +39,13 @@ class BaseRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
         self.collected_samples = 0
     
     def _sample(self, num_steps):
-        if hasattr(self.expl_collector, 'collect_new_paths'):
-            paths = self.expl_collector.collect_new_paths(num_steps, self.max_path_length, False)
-            self.pool.add_paths(paths)
-        elif hasattr(self.expl_collector, 'collect_new_steps'):
-            samples = self.expl_collector.collect_new_steps(num_steps, self.max_path_length, False)
-            self.pool.add_samples(samples)
+        if num_steps > 0:
+            if hasattr(self.expl_collector, 'collect_new_paths'):
+                paths = self.expl_collector.collect_new_paths(num_steps, self.max_path_length, False)
+                self.pool.add_paths(paths)
+            elif hasattr(self.expl_collector, 'collect_new_steps'):
+                samples = self.expl_collector.collect_new_steps(num_steps, self.max_path_length, False)
+                self.pool.add_samples(samples)
 
     def _before_train(self):
         self.start_epoch(-1)
