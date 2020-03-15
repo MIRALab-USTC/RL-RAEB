@@ -66,7 +66,7 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [64,64]
+            "hidden_layers": [256,256]
         } 
     },
     "trainer":{
@@ -76,8 +76,8 @@
             "policy": "$policy",
             "qf": "$qf",
             "reward_scale":1,
-            "policy_lr": 1e-3,
-            "qf_lr": 1e-3,
+            "policy_lr": 5e-4,
+            "qf_lr": 5e-4,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
             "alpha_if_not_automatic": 0

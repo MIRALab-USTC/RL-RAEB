@@ -6,7 +6,7 @@ import collections
 from collections import OrderedDict
 from numbers import Number
 import numpy as np
-def get_generic_path_information(paths, stat_prefix=''):
+def get_generic_path_information(paths, stat_prefix='', report_final_initial=False):
     """
     Get an OrderedDict with a bunch of statistic names and values.
     """
@@ -26,19 +26,21 @@ def get_generic_path_information(paths, stat_prefix=''):
         if info_name in paths[0]:
             keys = paths[0][info_name].keys()
             for k in keys:
-                final_ks = paths[0][info_name][k]
-                first_ks = paths[-1][info_name][k]
+                if report_final_initial:
+                    final_ks = paths[0][info_name][k]
+                    first_ks = paths[-1][info_name][k]
+                    statistics.update(create_stats_ordered_dict(
+                        stat_prefix + k,
+                        final_ks,
+                        stat_prefix='{}/final/'.format(info_name),
+                    ))
+                    statistics.update(create_stats_ordered_dict(
+                        stat_prefix + k,
+                        first_ks,
+                        stat_prefix='{}/initial/'.format(info_name),
+                    ))
+
                 all_ks = np.concatenate([path[info_name][k] for path in paths])
-                statistics.update(create_stats_ordered_dict(
-                    stat_prefix + k,
-                    final_ks,
-                    stat_prefix='{}/final/'.format(info_name),
-                ))
-                statistics.update(create_stats_ordered_dict(
-                    stat_prefix + k,
-                    first_ks,
-                    stat_prefix='{}/initial/'.format(info_name),
-                ))
                 statistics.update(create_stats_ordered_dict(
                     stat_prefix + k,
                     all_ks,
