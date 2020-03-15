@@ -1,0 +1,111 @@
+{
+    "launch_kwargs":{
+        "seed": null
+    },
+    "algorithm": {
+        "class": "batch_algorithm",
+        "kwargs": {
+            "num_epochs": 200,
+            "batch_size": 256,
+            "num_eval_steps_per_epoch":8000,
+            "num_train_loops_per_epoch": 10,
+            "num_expl_steps_per_train_loop": 100,
+            "num_trains_per_train_loop": 100,
+            "max_path_length": 1000,
+            "min_num_steps_before_training": 3000,
+            "silent": false
+        }
+    },
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "half_cheetah",
+                "reward_scale": 1,
+                "max_length": 1000
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "half_cheetah",
+                "n_env":8,
+                "reward_scale": 1,
+                "max_length": 1000
+            }
+        }
+    ],
+    "policy": [
+        {
+            "name": "init_expl_policy",
+            "class": "uniformly_random_policy",
+            "kwargs":{
+                "env": "$expl_env"
+            }
+        },
+        {
+            "class": "tanh_gaussian_policy",
+            "kwargs": {
+                "env": "$expl_env",
+                "hidden_layers": [256,256],
+                "activation": "relu"
+            }
+        },
+        {
+            "name": "eval_policy",
+            "class": "MakeDeterministic",
+            "kwargs":{
+                "random_policy": "$policy"
+            }
+        }
+    ],
+    "value": {
+        "name": "qf",
+        "class": "ensemble_q_value",
+        "kwargs": {
+            "env": "$expl_env",
+            "hidden_layers": [64,64]
+        } 
+    },
+    "trainer":{
+        "class": "SAC_trainer",
+        "kwargs": {
+            "env": "$expl_env",
+            "policy": "$policy",
+            "qf": "$qf",
+            "reward_scale":1,
+            "policy_lr": 1e-3,
+            "qf_lr": 1e-3,
+            "soft_target_tau": 5e-3,
+            "use_automatic_entropy_tuning": true,
+            "alpha_if_not_automatic": 0
+        }
+    },
+    "pool": {
+        "class": "simple_pool",
+        "kwargs": {
+            "env": "$expl_env",
+            "max_size": 1e6
+        }
+    },
+    "collector": [
+        {
+            "name": "expl_collector",
+            "class": "simple_step_collector",
+            "kwargs": {
+                "env": "$expl_env",
+                "policy": "$policy"
+            }
+        },
+        {
+            "name": "eval_collector",
+            "class": "simple_path_collector",
+            "kwargs": {
+                "env": "$eval_env",
+                "policy": "$eval_policy"
+            }
+        }
+    ]
+}

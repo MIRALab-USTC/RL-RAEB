@@ -1,0 +1,106 @@
+import copy
+def get_subclass(base_class, class_name):
+    for c in base_class.__subclasses__():
+        if c.__name__ == class_name:
+            return c
+    for c in base_class.__subclasses__():
+        temp_c = get_subclass(c, class_name)
+        if temp_c is not None:
+            return temp_c
+    return None
+
+def _plural(word):
+    if word.endswith('y'):
+        return word[:-1] + 'ies'
+    elif word[-1] in 'sx' or word[-2:] in ['sh', 'ch']:
+        return word + 'es'
+    elif word.endswith('an'):
+        return word[:-2] + 'en'
+    else:
+        return word + 's'
+
+def _under_score_to_camel(word):
+    parts = word.split('_')
+    parts = [p[0].upper() + p[1:] for p in parts]
+    return ''.join(parts)
+
+def get_item_class(item_type, item_class_name):
+    path = 'mbrl.'+_plural(item_type)
+    base_class_name = _under_score_to_camel(item_type)
+    item_class_name = _under_score_to_camel(item_class_name)
+    import importlib
+    module = importlib.import_module(path)
+    base_class = getattr(module, base_class_name)
+    item_class = get_subclass(base_class, item_class_name)
+    if item_class is None:
+        raise RuntimeError("There is no class corresponding to %s"%item_class_name)
+    return item_class
+
+def get_item(item_type, item_class_name, kwargs):
+    item_class = get_item_class(item_type, item_class_name)
+    return item_class(**kwargs)
+
+def _visit_all_items(config):
+    for item_type, param in config.items():
+        if isinstance(param, list):
+            for p in param:
+                yield item_type, p
+        else:
+            yield item_type, param
+            
+def get_dict_of_items_from_config(config):
+    item_dict = {}
+    for item_type, param in _visit_all_items(config):
+        name = param.get('name', item_type)
+        item_dict[name] = None
+    total_instance = 0
+
+    def replace_kwargs(kwargs):
+        ready = True
+        for k, v in kwargs.items():
+            if isinstance(v, str) and v[0] == '$':
+                assert v[1:] in item_dict, "Please check your config file. There is no item corresponding to %s"%v
+                item = item_dict[v[1:]]
+                if item is not None:
+                    kwargs[k] = item
+                else:
+                    ready = False
+        return ready
+
+    while total_instance < len(item_dict):
+        for item_type, param in _visit_all_items(config):
+            kwargs = param.get('kwargs', {})
+            if replace_kwargs(kwargs):
+                item_class_name = param['class']
+                item = get_item(item_type, item_class_name, kwargs)
+                name = param.get('name', item_type)
+                item_dict[name] = item
+                total_instance += 1
+    return item_dict
+
+if __name__ == "__main__":
+    import sys
+    import os
+    import json
+    from collections import OrderedDict
+    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.append(mbrl_dir)
+    get_item_class('value', 'ensemble_q_value')
+    get_item_class('value', 'ensemble_state_value')
+    get_item_class('environment', 'normalized_vector_env')
+    get_item_class('collector', 'path_collector')
+    get_item_class('collector', 'step_collector')
+    get_item_class('policy', 'TanhGaussianPolicy')
+    get_item_class('pool', 'simple_pool')
+    get_item_class('pool', 'extra_field_pool')
+    get_item_class('processor', 'Normalizer')
+    get_item_class('processor', 'identity')
+    get_item_class('trainer', 'SAC_trainer')
+    config_path = os.path.join(mbrl_dir, 'mbrl', 'algorithms', 'default_configs', 'sac.json')
+    config = json.load(open(config_path, 'r'), object_pairs_hook=OrderedDict)
+    config.pop('launch_kwargs')
+    config.pop('algorithm')
+    print(config)
+    get_dict_of_items_from_config(config)
+    
+    
