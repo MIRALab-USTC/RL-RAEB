@@ -59,9 +59,9 @@ class SimplePool(Pool):
         if self.compute_mean_std:
             self.dataset_mean_std[field_name] = RunningMeanStd(field_info['shape'])
 
-    def random_batch(self, batch_size, replace=False, keys=None):
+    def random_batch(self, batch_size, keys=None):
         keys = self._check_keys(keys)
-        return _random_batch_independently(self.dataset, batch_size, self._size, replace, keys)
+        return _random_batch_independently(self.dataset, batch_size, self._size, keys)
 
     def shuffer_and_random_batch(self, batch_size, keys=None):
         keys = self._check_keys(keys)

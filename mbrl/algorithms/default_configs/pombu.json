@@ -56,7 +56,7 @@
         "need_to_train": true,
         "kwargs": {
             "hidden_layers": [64,64],
-            "activation": "tanh",
+            "activation": "relu",
             "learning_rate_start": 2e-4,
             "learning_rate_end": 2e-5,
             "clip_ratio_start": 0.2,
@@ -73,7 +73,7 @@
         "need_to_train": true,
         "kwargs": {
             "hidden_layers": [64,64],
-            "activation": "tanh",
+            "activation": "relu",
             "learning_rate_start": 2e-4,
             "learning_rate_end": 2e-5,
             "schedule_start": 20,

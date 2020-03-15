@@ -8,10 +8,10 @@
             "num_epochs": 2000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
-            "num_train_loops_per_epoch": 1000,
-            "num_expl_steps_per_train_loop": 1,
+            "num_train_loops_per_epoch": 1,
+            "num_expl_steps_per_train_loop": 1000,
             "num_trains_per_train_loop": 1,
-            "max_path_length": 1000,
+            "max_path_length": 1,
             "min_num_steps_before_training": 5000,
             "silent": false
         }
@@ -66,7 +66,7 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [128,128]
+            "hidden_layers": [256,256]
         } 
     },
     "trainer":{

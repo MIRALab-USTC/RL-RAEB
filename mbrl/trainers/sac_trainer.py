@@ -29,7 +29,7 @@ class SACTrainer(BatchTorchTrainer):
             plotter=None,
             render_eval_paths=False,
 
-            alpha_if_not_automatic=1e-3,
+            alpha_if_not_automatic=1e-2,
             use_automatic_entropy_tuning=True,
             target_entropy=None,
     ):

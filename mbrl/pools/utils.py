@@ -33,15 +33,13 @@ def get_batch(dataset, batch_index, keys=None):
         batch[key] = value[batch_index]
     return batch
 
-def _random_batch_independently(dataset, batch_size, valid_size, replace=False, keys=None):
-    if replace is False and batch_size>valid_size:
-        batch_size=valid_size
-    batch_index = np.random.choice(np.arange(valid_size), batch_size, replace)
+def _random_batch_independently(dataset, batch_size, valid_size, keys=None):
+    batch_index = np.random.randint(0, valid_size, batch_size)
     return get_batch(dataset, batch_index, keys=keys)
 
-def random_batch_independently(dataset, batch_size, replace=False, keys=None):
+def random_batch_independently(dataset, batch_size, keys=None):
     valid_size = get_valid_dataset_size(dataset, keys=keys)
-    return _random_batch_independently(dataset, batch_size, valid_size, replace, keys)
+    return _random_batch_independently(dataset, batch_size, valid_size, keys)
 
 def _shuffer_and_random_batch(dataset, batch_size, valid_size, keys=None):
     _batch_index = np.random.permutation(np.arange(valid_size))

@@ -105,8 +105,9 @@ def get_activation(act_name='relu'):
     return activation_dict[act_name]
 
 def get_affine_params(input_size, output_size):
-    scale = 1.0 / (2.0 * np.sqrt(input_size))
-    w_data = truncnorm.rvs(-2, 2, scale=scale, size=(input_size, output_size))
+    scale = np.sqrt(2/input_size)
+    #w_data = truncnorm.rvs(-2*scale, 2*scale, scale=scale, size=(input_size, output_size))
+    w_data = np.random.randn(input_size, output_size) * scale
     w = nn.Parameter(torch.FloatTensor(w_data))
     b = nn.Parameter(torch.zeros(1, output_size))
     return w, b
