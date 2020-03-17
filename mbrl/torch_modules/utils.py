@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
+from torch.nn import init
 import torch.nn.functional as F
-from scipy.stats import truncnorm
 import numpy as np
+import math
+
 
 """
 GPU wrappers
 """
-
 _use_gpu = False
 device = None
 _gpu_id = 0
@@ -93,57 +94,132 @@ class Swish(nn.Module):
     def forward(self, x):        
         x = x * F.sigmoid(x)        
         return x
- 
-swish = Swish()
 
-def get_activation(act_name='relu'):
-    activation_dict = {
+class Identity(nn.Module):
+    def __init__(self):        
+        super(Identity, self).__init__()     
+    def forward(self, x):            
+        return x
+
+swish = Swish()
+identity = Identity()
+
+def get_nonlinearity(act_name='relu'):
+    nonlinearity_dict = {
         'relu': F.relu,
         'swish': swish,
         'tanh': torch.tanh,
+        'identity': identity,
     }
-    return activation_dict[act_name]
+    return nonlinearity_dict[act_name]
 
-def get_affine_params(input_size, output_size):
-    scale = np.sqrt(2/input_size)
-    #w_data = truncnorm.rvs(-2*scale, 2*scale, scale=scale, size=(input_size, output_size))
-    w_data = np.random.randn(input_size, output_size) * scale
-    w = nn.Parameter(torch.FloatTensor(w_data))
-    b = nn.Parameter(torch.zeros(1, output_size))
-    return w, b
-
-class FC(nn.Module):
-    def __init__(self, input_size, output_size, ensemble_size=None):
-        super(FC, self).__init__()
+class EnsembleLinear(nn.Module):
+    def __init__(self, 
+                 in_features, 
+                 out_features, 
+                 ensemble_size=None,
+                 which_nonlinearity='relu',
+                 with_bias=True,
+                 init_weight_mode='uniform',
+                 init_bias_constant=None,
+                 ):
+        super(EnsembleLinear, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
         self.ensemble_size = ensemble_size
-        self.input_size = input_size
-        self.output_size = output_size
-        if ensemble_size is None:
-            self.w, self.b = get_affine_params(input_size, output_size)
+        self.with_bias = with_bias
+        self.init_weight_mode = init_weight_mode
+        self.init_bias_constant = init_bias_constant
+        if which_nonlinearity == 'identity':
+            self.which_nonlinearity = 'linear'
         else:
-            self.ws, self.bs = [], []
+            self.which_nonlinearity = which_nonlinearity
+        
+        if ensemble_size is None:
+            self.weight, self.bias = self._creat_weight_and_bias()
+        else:
+            self.weights, self.biases = [], []
             for i in range(ensemble_size):
-                w_name, b_name = 'w_net%d'%i, 'b_net%d'%i
-                w, b = get_affine_params(input_size, output_size)
-                setattr(self, w_name, w)
-                setattr(self, b_name, b)
-                self.ws.append(w)
-                self.bs.append(b)
+                weight, bias = self._creat_weight_and_bias()
+                weight_name, bias_name = 'weight_net%d'%i, 'bias_net%d'%i
+                self.weights.append(weight)
+                self.biases.append(bias)
+                setattr(self, weight_name, weight)
+                setattr(self, bias_name, bias)
+        self.reset_parameters()
+    
+    def _creat_weight_and_bias(self):
+        weight = nn.Parameter(torch.Tensor(self.in_features, self.out_features))
+        if self.with_bias:
+            bias = nn.Parameter(torch.Tensor(1, self.out_features))
+        else:
+            bias = None
+        return weight, bias
+
+    def _reset_weight_and_bias(self, weight, bias):
+        fanin_init(weight, nonlinearity=self.which_nonlinearity, mode=self.init_weight_mode)
+        if bias is not None:
+            if self.init_bias_constant is None:
+                fan_in = self.in_features
+                bound = 1 / math.sqrt(fan_in)
+                init.uniform_(bias, -bound, bound)
+            else:
+                init.constant_(bias, self.init_bias_constant)
+
+    def reset_parameters(self):
+        if self.ensemble_size is None:
+            self._reset_weight_and_bias(self.weight, self.bias)
+        else:
+            for w,s in zip(self.weights, self.biases):
+                self._reset_weight_and_bias(w, s)
+
+    def extra_repr(self):
+        return 'in_features={}, out_features={}, ensemble_size={}, bias={}'.format(
+            self.in_features, self.out_features, self.ensemble_size, self.with_bias)
 
     def forward(self, x):
         if self.ensemble_size is None:
-            w,b = self.w,self.b
+            w,b = self.weight, self.bias
         else:
-            w = torch.stack(self.ws, 0)
-            b = torch.stack(self.bs, 0)
-        return x.matmul(w) + b
-
-    def __repr__(self):
-        ensemble_size = '[ensemble size: '+str(self.ensemble_size)+']' if self.ensemble_size else ''
-        return "FC(%d, %d)%s"%(self.input_size, self.output_size, ensemble_size)
+            w = torch.stack(self.weights, 0)
+            if self.biases[0] is None:
+                b = None
+            else:
+                b = torch.stack(self.biases, 0)
+        if self.with_bias:
+            return x.matmul(w) + b
+        else:
+            return x.matmul(w)
 
     def get_weight_decay(self, weight_decay=5e-5):
-        return (self.w ** 2).sum() * weight_decay * 0.5
+        if self.ensemble_size is not None:
+            return (self.weight ** 2).sum() * weight_decay * 0.5
+        else:
+            decays = []
+            for w in self.weights:
+                decays.append((w ** 2).sum() * weight_decay * 0.5)
+            return sum(decays)
+
+def fanin_init(tensor, nonlinearity='relu', mode='uniform'):
+    size = tensor.size()
+    if len(size) == 2:
+        fan_in = size[0]
+    elif len(size) > 2:
+        fan_in = np.prod(size[1:])
+    else:
+        raise Exception("Shape must be have dimension at least 2.")
+    gain = init.calculate_gain(nonlinearity)
+    if mode == 'uniform':
+        bound = gain * math.sqrt(3.0) / np.sqrt(fan_in)
+        return tensor.data.uniform_(-bound, bound)
+    elif mode == 'normal':
+        std = gain / np.sqrt(fan_in)
+        return tensor.data.normal_(-std, std)
+
+def fanin_init_weights_like(tensor):
+    new_tensor = FloatTensor(tensor.size())
+    fanin_init(new_tensor)
+    return new_tensor
 
 def soft_update_from_to(source, target, tau):
     for target_param, param in zip(target.parameters(), source.parameters()):
@@ -154,30 +230,6 @@ def soft_update_from_to(source, target, tau):
 def copy_model_params_from_to(source, target):
     for target_param, param in zip(target.parameters(), source.parameters()):
         target_param.data.copy_(param.data)
-
-def fanin_init(tensor):
-    size = tensor.size()
-    if len(size) == 2:
-        fan_in = size[0]
-    elif len(size) > 2:
-        fan_in = np.prod(size[1:])
-    else:
-        raise Exception("Shape must be have dimension at least 2.")
-    bound = 1. / np.sqrt(fan_in)
-    return tensor.data.uniform_(-bound, bound)
-
-def fanin_init_weights_like(tensor):
-    size = tensor.size()
-    if len(size) == 2:
-        fan_in = size[0]
-    elif len(size) > 2:
-        fan_in = np.prod(size[1:])
-    else:
-        raise Exception("Shape must be have dimension at least 2.")
-    bound = 1. / np.sqrt(fan_in)
-    new_tensor = FloatTensor(tensor.size())
-    new_tensor.uniform_(-bound, bound)
-    return new_tensor
 
 
 def _elem_or_tuple_to_variable(elem_or_tuple):

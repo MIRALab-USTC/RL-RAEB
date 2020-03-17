@@ -98,16 +98,6 @@ class SACTrainer(BatchTorchTrainer):
             alpha = self.alpha_if_not_automatic
 
         """
-        policy
-        """
-        q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=True)
-        policy_loss = (alpha*log_prob_new_action - q_new_action).mean()
-
-        self.policy_optimizer.zero_grad()
-        policy_loss.backward()
-        self.policy_optimizer.step()
-
-        """
         QF 
         """
         # Make sure policy accounts for squashing functions like tanh correctly!
@@ -134,6 +124,16 @@ class SACTrainer(BatchTorchTrainer):
         """
         if self._n_train_steps_total % self.target_update_period == 0:
             self.qf.update_target(self.soft_target_tau)
+            
+        """
+        policy
+        """
+        q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=True)
+        policy_loss = (alpha*log_prob_new_action - q_new_action).mean()
+
+        self.policy_optimizer.zero_grad()
+        policy_loss.backward()
+        self.policy_optimizer.step()
 
         """
         Compute some statistics for eval

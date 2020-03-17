@@ -13,7 +13,7 @@ from mbrl.pools.base_pool import Pool
 from mbrl.pools.utils import get_batch, _random_batch_independently, _shuffer_and_random_batch
 from mbrl.collectors.utils import path_to_samples
 class SimplePool(Pool):
-    def __init__(self, env, max_size=1e6, compute_mean_std=True):
+    def __init__(self, env, max_size=1e6, compute_mean_std=False):
         self._env = env
         self.compute_mean_std = compute_mean_std
         self.max_size = int(max_size)

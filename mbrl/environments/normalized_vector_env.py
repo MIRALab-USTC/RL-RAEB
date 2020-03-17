@@ -12,8 +12,8 @@ class NormalizedVectorEnv(ProxyEnv):
                  env_name,
                  n_env=1, 
                  reward_scale=1.0,
-                 normalize=False,
-                 max_length=1000, 
+                 normalize_obs=False,
+                 max_length=np.inf, 
                  must_provide=None):
         self.n_env = n_env
         super(NormalizedVectorEnv, self).__init__(env_name)
@@ -22,12 +22,12 @@ class NormalizedVectorEnv(ProxyEnv):
         self.low = np.maximum(self._wrapped_envs[0].action_space.low, -10)
         self.high = np.minimum(self._wrapped_envs[0].action_space.high, 10)
         self.reward_f, self.done_f = get_reward_done_function(env_name, must_provide)
-        self.normalize = normalize
-        if normalize:
+        self.normalize_obs = normalize_obs
+        if normalize_obs:
             self.obs_mean_std = RunningMeanStd(self.observation_shape)
         self.reset()
     
-    def _normalize_obs(self, obs):
+    def _normalize_observation(self, obs):
         return (obs - self.obs_mean_std.mean) / np.sqrt(self.obs_mean_std.var + 1e-12)
     
     def _build_wrapped_envs(self, seed=None):
@@ -57,9 +57,9 @@ class NormalizedVectorEnv(ProxyEnv):
         for wrapped_env in self._wrapped_envs:
             obs.append(wrapped_env.reset())
         obs = np.array(obs, dtype=np.float)
-        if self.normalize:
+        if self.normalize_obs:
             self.obs_mean_std.update(obs)
-            obs = self._normalize_obs(obs)
+            obs = self._normalize_observation(obs)
         return obs
 
     def step(self, action):
@@ -71,14 +71,11 @@ class NormalizedVectorEnv(ProxyEnv):
         info = {}
         action = np.clip(action, -1.0, 1.0)
         action = self.low + (action + 1.0) * (self.high - self.low) * 0.5
-        if len(action.shape) == len(self.action_shape):
-            action = np.array([action] * self.n_env)
-
         for i in range(self.n_env):
             wrapped_env = self._wrapped_envs[i]
             a = action[i]
-            s, r, d, _info = wrapped_env.step(a)
-            obs.append(s)
+            o, r, d, _info = wrapped_env.step(a)
+            obs.append(o)
             reward.append([r*self.reward_scale])
             done.append([d])
             for key in _info:
@@ -88,9 +85,9 @@ class NormalizedVectorEnv(ProxyEnv):
                     info[key]=[[_info[key]]]
 
         obs = np.array(obs, dtype=np.float)
-        if self.normalize:
+        if self.normalize_obs:
             self.obs_mean_std.update(obs)
-            obs = self._normalize_obs(obs)
+            obs = self._normalize_observation(obs)
         reward = np.array(reward, dtype=np.float)
         done = np.array(done, dtype=np.float)
         if self.cur_step_id >= self.max_length:

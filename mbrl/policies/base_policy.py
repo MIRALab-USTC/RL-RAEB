@@ -71,9 +71,8 @@ class RandomPolicy(Policy, metaclass=abc.ABCMeta):
         yield
         self._deterministic = was_deterministic
 
-    @abc.abstractmethod
     def _log_prob(self, obs, action):
-        pass
+        raise NotImplementedError
 
     def log_prob(self, obs, action, **kwargs):
         if self._obs_processor is not None:

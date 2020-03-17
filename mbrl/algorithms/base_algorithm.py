@@ -24,11 +24,11 @@ class RLAlgorithm(object, metaclass=abc.ABCMeta):
     def __init__(
             self,
             num_epochs,
-            variant={},
+            item_dict_config={},
     ):
         self.num_epochs = num_epochs
-        self.variant = variant
-        self.item_dict = get_dict_of_items_from_config(variant)
+        self.item_dict_config = item_dict_config
+        self.item_dict = get_dict_of_items_from_config(item_dict_config)
         self.__dict__.update(self.item_dict)
         self._need_snapshot = []
 
@@ -173,5 +173,4 @@ class RLAlgorithm(object, metaclass=abc.ABCMeta):
     def to(self, device):
         for item_name, item in self.item_dict.items():
             if hasattr(item, 'to'):
-                logger.log('move [%s] to device: [%s]'%(item,device))
                 item.to(device)

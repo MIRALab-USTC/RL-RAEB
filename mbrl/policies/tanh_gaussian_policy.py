@@ -13,19 +13,17 @@ from torch import nn
 class TanhGaussianPolicy(nn.Module, RandomPolicy):
     def __init__( self, 
                   env, 
-                  hidden_layers=[300,300], 
-                  activation='relu', 
                   obs_processor=None,
                   deterministic=False,
-                  policy_name='tanh_gaussian_policy',):
+                  policy_name='tanh_gaussian_policy',
+                  **mlp_kwargs):
         nn.Module.__init__(self)
         RandomPolicy.__init__(self, env, obs_processor, deterministic)
         assert len(self.processed_obs_shape) == 1 and len(self.action_shape) == 1
         gaussian = MeanLogstdGaussianPolicyModule( self.processed_obs_shape[0], 
-                                                        self.action_shape[0],
-                                                        hidden_layers, 
-                                                        activation, 
-                                                        policy_name)
+                                                   self.action_shape[0],
+                                                   policy_name,
+                                                   **mlp_kwargs)
         self.module = TanhPolicyModule(gaussian)
         
     def _action( self, 
@@ -66,45 +64,3 @@ class TanhGaussianPolicy(nn.Module, RandomPolicy):
         return self.module.get_snapshot()
 
 
-if __name__ == '__main__':
-    import gym
-    import torch
-    from torch import optim
-    from mbrl.environments.utils import make_vector_env
-    from mbrl.collectors.path_collector import SimplePathCollector
-    from mbrl.pools.simple_pool import SimplePool
-    from mbrl.processors.normalizer import Normalizer
-    import mbrl.torch_modules.utils as ptu
-    env = make_vector_env('MountainCarContinuous-v0', n_env=2, max_length=20)
-    normalizer = Normalizer(env.observation_shape)
-    pi = TanhGaussianPolicy(env, obs_processor=normalizer, hidden_layers=[32,32])
-    collector = SimplePathCollector(env, pi)
-    pool = SimplePool(env)
-    mean_std = pool.dataset_mean_std['observations'] 
-    pi_optimizer = optim.Adam(
-        pi.parameters(),
-        lr=1e-1,
-    )
-    for i in range(300):
-        print("iteration", i)
-        for j in range(2):
-            paths = collector.collect_new_paths(128, discard_incomplete_paths=False)
-            pool.add_paths(paths)
-            normalizer.set_mean_std_np(mean_std.mean, mean_std.std)
-            print(normalizer.mean_std_np()[1])
-            print("pool size:", pool._size, end='\t')
-            batch = pool.random_batch(32)
-            x = batch["observations"]
-            print("x shape:", x.shape, end='\t')
-            x = ptu.FloatTensor(x)
-            actions, info = pi.action(x,reparameterize=True)
-            if i % 10 == 0 and j == 0:
-                print(actions)
-                print(info)
-            loss = torch.mean(actions**2)
-            print(ptu.get_numpy(loss))
-            pi_optimizer.zero_grad()
-            loss.backward()
-            pi_optimizer.step()
-
-    

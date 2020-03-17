@@ -25,9 +25,9 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
     def forward(
             self,
             obs,
+            return_info=True,
             deterministic=False,
             reparameterize=True,
-            return_info=True,
             return_log_prob=False,
             return_mean_std=False,
             return_entropy=False,
@@ -53,7 +53,7 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
                         ptu.ones_like(mean)
                     ).sample()
                 )
-                action.requires_grad_()
+                action.requires_grad_(True)
             else:
                 action = normal.sample()
 
@@ -87,28 +87,28 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
 
 
 class SimpleGaussianPolicyModule(GaussianPolicyModule):
-    def __init__(self, obs_size, action_size, hidden_layers=[300,300], activation='tanh', policy_name='gaussian_policy'):
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 policy_name='gaussian_policy',
+                 **mlp_kwargs
+                 ):
         super(SimpleGaussianPolicyModule, self).__init__(
             obs_size,
             action_size,
-            hidden_layers,
-            activation,
             module_name=policy_name,
+            **mlp_kwargs
         )
         self.log_std = nn.Parameter(ptu.zeros(1,self.layers[-1]))
 
     def get_mean_std(self, obs, return_log_std=False):
-        x=obs
-        for i, fc in enumerate(self.fcs):
-            x = fc(x)
-            if i != len(self.fcs) - 1:
-                x = self.act_f(x)
+        mean=MLP.forward(self, obs)
         log_std = torch.clamp(self.log_std, LOG_STD_MIN, LOG_STD_MAX)
         log_std = log_std.expand(x.shape)
         if return_log_std:
-            return x, log_std
+            return mean, log_std
         else:
-            return x, torch.exp(log_std)
+            return mean, torch.exp(log_std)
 
     def get_entroy_scalar(self):
         log_std = torch.clamp(self.log_std, LOG_STD_MIN, LOG_STD_MAX)
@@ -118,22 +118,21 @@ class SimpleGaussianPolicyModule(GaussianPolicyModule):
 
 # the following is much faster than the "simple" one......
 class MeanLogstdGaussianPolicyModule(GaussianPolicyModule):
-    def __init__(self, obs_size, action_size, hidden_layers=[300,300], activation='relu', policy_name='gaussian_policy'):
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 policy_name='gaussian_policy',
+                 **mlp_kwargs):
         super(MeanLogstdGaussianPolicyModule, self).__init__(
             obs_size,
             action_size*2,
-            hidden_layers,
-            activation,
             module_name=policy_name,
+            **mlp_kwargs
         )
 
     def get_mean_std(self, obs, return_log_std=False):
-        x=obs
-        for i, fc in enumerate(self.fcs):
-            x = fc(x)
-            if i != len(self.fcs) - 1:
-                x = self.act_f(x)
-        mean, log_std = torch.chunk(x,2,-1)
+        output=MLP.forward(self, obs)
+        mean, log_std = torch.chunk(output,2,-1)
         log_std = torch.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
         if return_log_std:
             return mean, log_std
@@ -161,7 +160,7 @@ class TanhPolicyModule(nn.Module):
                 v = info.pop(k)
                 info['pretanh_'+k] = v
                 if k == 'log_prob':
-                    log_prob = v - torch.log(1 - action ** 2 + 1e-6)
+                    log_prob = v - torch.log(1 - action * action + 1e-6)
                     info['log_prob'] = log_prob
             if return_pretanh_action:
                 info['pretanh_action'] = pre_action
@@ -174,7 +173,7 @@ class TanhPolicyModule(nn.Module):
     def log_prob(self, obs, action, **kwargs):
         pre_action = torch.log((1+action) / (1-action)) / 2
         pre_log_prob = self._inner_policy.log_prob(obs, pre_action, **kwargs)
-        log_prob = pre_log_prob - torch.log(1 - action ** 2 + 1e-6)
+        log_prob = pre_log_prob - torch.log(1 - action * action + 1e-6)
         return log_prob
 
     def save(self, save_dir, **kwargs):
@@ -188,35 +187,3 @@ class TanhPolicyModule(nn.Module):
 
     def load_snapshot(self, **kwargs):
         self._inner_policy.load_snapshot(**kwargs)
-
-if __name__ == '__main__':
-    import gym
-    from torch import optim
-    #pi = SimpleGaussianPolicyModule(env,[10,10])
-    pi = MeanLogstdGaussianPolicyModule(2,1,[10,10])
-    pi = TanhPolicyModule(pi)
-    pi_optimizer = optim.Adam(
-        pi.parameters(),
-        lr=1e-1,
-    )
-    for i in range(1000):
-        x = np.random.uniform(-1,1,size=(100,2))
-        x = ptu.FloatTensor(x)
-        actions, info = pi( x,
-                            reparameterize=True,
-                            return_info=True,
-                            return_log_prob=True,
-                            return_mean_std=True,
-                            return_entropy=True
-                            )
-        if i%500 == 0:
-            print(info['log_prob'] - info['pretanh_log_prob'])
-        loss = torch.mean(actions**2)
-        print(ptu.get_numpy(loss))
-        pi_optimizer.zero_grad()
-        loss.backward()
-        pi_optimizer.step()
-    
-
-
-

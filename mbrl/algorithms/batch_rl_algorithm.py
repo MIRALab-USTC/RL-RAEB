@@ -12,7 +12,7 @@ from mbrl.utils.eval_util import get_generic_path_information
 from mbrl.utils.process import Progress, Silent
 from mbrl.utils.misc_untils import format_for_process
 
-class BaseRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
+class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
     def __init__(
             self,
             num_epochs,
@@ -24,9 +24,9 @@ class BaseRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
             max_path_length=1000,
             min_num_steps_before_training=0,
             silent = False,
-            variant={},
+            item_dict_config={},
     ):
-        super().__init__(num_epochs, variant)
+        super().__init__(num_epochs, item_dict_config)
         self.batch_size = batch_size
         self.num_eval_steps_per_epoch = num_eval_steps_per_epoch
         self.num_expl_steps_per_train_loop = num_expl_steps_per_train_loop
@@ -89,9 +89,9 @@ if __name__ == "__main__":
     setup_logger('test_data', base_log_dir='/home/qizhou/', variant=config)
     config.pop('launch_kwargs')
     kwargs = config.pop('algorithm')['kwargs']
-    kwargs['variant'] = config
+    kwargs['item_dict_config'] = config
     set_gpu_mode(True)  # optionally set the GPU (default=False)
-    algo = BaseRLAlgorithm(**kwargs)
+    algo = BatchRLAlgorithm(**kwargs)
     algo.to(ptu.device)
     algo.train()
 

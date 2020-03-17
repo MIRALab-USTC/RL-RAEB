@@ -1,12 +1,13 @@
 from collections import OrderedDict
 import numpy as np
 
-def to_list(x, length=None):
+def to_list(x, length=None, pad_item=None):
     x = x if x is not None else []
     x = x if type(x) is list else [x]
     if length is not None:
+        pad_item = x[-1] if pad_item is None else pad_item
         while len(x) < length:
-            x.append(x[-1])
+            x.append(pad_item)
         x = x[:length]
     return x
 

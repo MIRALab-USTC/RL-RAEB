@@ -12,18 +12,35 @@ import mbrl.torch_modules.utils as ptu
 from mbrl.utils.misc_untils import to_list
 
 class MLP(nn.Module):
-    def __init__(self, input_size, output_size, hidden_layers=[128,128], activation='relu', ensemble_size=None, module_name='MLP'):
+    def __init__(self, 
+                 input_size, 
+                 output_size, 
+                 hidden_layers=[128,128], 
+                 ensemble_size=None, 
+                 nonlinearity='relu', 
+                 output_nonlinearity='identity',
+                 module_name='MLP',
+                 **fc_kwargs
+                 ):
         super(MLP, self).__init__()
         self.input_size = input_size
         self.output_size = output_size
-        self.activation = activation
-        self.act_f = ptu.get_activation(activation)
         self.ensemble_size = ensemble_size
-        layers = [input_size] + hidden_layers + [output_size]
-        self.layers = layers
+        self.num_layers = len(hidden_layers)
+
+        self.output_nonlinearity = output_nonlinearity
+        self.nonlinearities = to_list(nonlinearity, length=self.num_layers)
+        self.nonlinearities.append(output_nonlinearity)
+        self.activation_functions = [ptu.get_nonlinearity(nl) for nl in self.nonlinearities]
+
+        self.layers = layers = [input_size] + hidden_layers + [output_size]
         self.fcs = []
         for i in range(len(layers)-1):
-            fc = ptu.FC(layers[i], layers[i+1], ensemble_size)
+            fc = ptu.EnsembleLinear(layers[i], 
+                                    layers[i+1], 
+                                    ensemble_size, 
+                                    which_nonlinearity=self.nonlinearities[i],
+                                    **fc_kwargs)
             setattr(self, 'layer%d'%i, fc)
             self.fcs.append(fc)
         self.module_name = module_name
@@ -72,10 +89,9 @@ class MLP(nn.Module):
         self.load_snapshot(loaded_state_dict, net_name)
 
     def forward(self, x):
-        for i, fc in enumerate(self.fcs):
+        for fc,act_f in zip(self.fcs, self.activation_functions):
             x = fc(x)
-            if i != len(self.fcs) - 1:
-                x = self.act_f(x)
+            x = act_f(x)
         return x
 
     def get_weight_decay(self, weight_decays):
@@ -91,7 +107,7 @@ if __name__ == "__main__":
     
     class TestMLP(MLP):
         def __init__(self, N):
-            super(TestMLP, self).__init__(1,3,[2],'tanh',ensemble_size=2)
+            super(TestMLP, self).__init__(1,3,[3,3],2,'tanh')
             self.N = N
         def forward(self,x):
             return super(TestMLP, self).forward(self.N(x))

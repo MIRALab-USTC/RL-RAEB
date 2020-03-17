@@ -51,7 +51,7 @@ class SimplePathCollector(PathCollector):
     def collect_new_paths(
             self,
             num_steps,
-            max_path_length=np.inf,
+            max_path_length=1000,
             discard_incomplete_paths=True,
             cut=True,
             stop_if_terminal=True,

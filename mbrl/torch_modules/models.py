@@ -13,7 +13,7 @@ class EnsembleModelModule(MLP):
             hidden_layers, 
             predict_reward=False,
             deterministic=True, 
-            activation='swish', 
+            nonlinearity='swish', 
             ensemble_size=5, 
             model_name='probabilistic_ensemble_model'
             ):
@@ -31,7 +31,7 @@ class EnsembleModelModule(MLP):
                 env.observation_space.shape,
                 self.prediction_size,
                 hidden_layers,
-                activation,
+                nonlinearity,
                 ensemble_size,
                 model_name,
             )
@@ -40,7 +40,7 @@ class EnsembleModelModule(MLP):
                 env.observation_space.shape,
                 self.prediction_size * 2,
                 hidden_layers,
-                activation,
+                nonlinearity,
                 ensemble_size,
                 model_name,
             )

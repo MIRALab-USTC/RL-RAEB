@@ -1,7 +1,7 @@
 import datetime
+import argparse
 import dateutil.tz
 import pickle
-import mbrl
 import json
 import os
 import os.path as osp
@@ -9,17 +9,20 @@ from os.path import join
 import random
 import numpy as np
 import torch
+from collections import OrderedDict
 
+if __name__ == "__main__":
+    import sys
+    mbrl_dir = osp.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.append(mbrl_dir)
+
+import mbrl
 from mbrl.utils.logger import logger
-from mbrl.torch_modules.utils import set_gpu_mode
+import mbrl.torch_modules.utils as ptu
 
 
 _mbrl_project_dir = join(os.path.dirname(mbrl.__file__), os.pardir)
 _LOCAL_LOG_DIR = join(_mbrl_project_dir, 'data')
-
-def save_experiment_data(dictionary, log_dir):
-    with open(log_dir + '/experiment.pkl', 'wb') as handle:
-        pickle.dump(dictionary, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def safe_json(data):
     if data is None:
@@ -168,77 +171,86 @@ def set_global_seed(seed=None):
     torch.backends.cudnn.benchmark = True 
     return seed
 
-def run_experiment(
-        experiment,
-        variant=None,
-        exp_id=0,
-        seed=None,
-        use_gpu=True,
-        # Logger params:
-        exp_prefix="default",
-        snapshot_mode='last',
-        snapshot_gap=1,
-        script_name=None,
-        base_log_dir=None,
-        log_dir=None,
-        **setup_logger_kwargs
-):
-    """
-    Run an experiment locally without any serialization.
+def parse_cmd():
+    p = argparse.ArgumentParser()
+    p.add_argument('config_file', type=str)
+    args, extras = p.parse_known_args()
 
-    :param experiment_function: Function. `variant` will be passed in as its
-    only argument.
-    :param exp_prefix: Experiment prefix for the save file.
-    :param variant: Dictionary passed in to `experiment_function`.
-    :param exp_id: Experiment ID. Should be unique across all
-    experiments. Note that one experiment may correspond to multiple seeds,.
-    :param seed: Seed used for this experiment.
-    :param use_gpu: Run with GPU. By default False.
-    :param script_name: Name of the running script
-    :param log_dir: If set, set the log directory to this. Otherwise,
-    the directory will be auto-generated based on the exp_prefix.
-    :return:
-    """
-    if variant is None:
-        variant = {}
-    variant['exp_id'] = str(exp_id)
+    def foo(astr):
+        if astr.startswith('--'):
+            astr = astr[2:]
+        elif astr.startswith('-'):
+            astr = astr[1:]
+        else:
+            raise RuntimeError('Keys must start with \"--\" or \"-\".')
 
+        astr = astr.replace('-','_')
+        return astr
+
+    cmd_config = {foo(k):v for k,v in zip(extras[::2],extras[1::2])}
+    return args.config_file, cmd_config
+
+def try_eval(v):
+    try:
+        v = eval(v)
+    except:
+        pass
+    return v
+
+def _set_config_by_k_v(config, k, v):
+    from mbrl.algorithms.utils import _visit_all_items
+    v = try_eval(v)
+    keys = k.split('.')
+    if len(keys) == 2:
+        for name,_,_,kwargs in _visit_all_items(config):
+            if name == keys[0]:
+                kwargs[keys[1]] = v
+    elif len(keys) == 1:
+        config['experiment'][keys[0]] = v
+    else:
+        raise NotImplementedError
+    return config
+
+
+def update_config_by_cmd(config, cmd_config):
+    for k,v in cmd_config.items():
+        _set_config_by_k_v(config, k, v)
+
+def run_experiment(config_path, cmd_config):
+    import copy
+    from mbrl.algorithms.utils import get_item
+
+    config = json.load(open(config_path, 'r'))
+    update_config_by_cmd(config, cmd_config)
+
+    experiment_kwargs = config['experiment']
+    seed = experiment_kwargs.get('seed', None)
     seed = set_global_seed(seed)
-    variant['seed'] = str(seed)
-    set_gpu_mode(use_gpu)
+    experiment_kwargs['seed'] = seed
+    use_gpu = experiment_kwargs.get('use_gpu', False)
+    ptu.set_gpu_mode(use_gpu)
+    print(ptu.device)
+
     logger.reset()
-
+    variant = copy.deepcopy(config)
+    experiment_kwargs.pop('use_gpu', None)
+    experiment_kwargs.pop('tag', None)
     actual_log_dir = setup_logger(
-        exp_prefix=exp_prefix,
         variant=variant,
-        exp_id=exp_id,
-        seed=seed,
-        snapshot_mode=snapshot_mode,
-        snapshot_gap=snapshot_gap,
-        base_log_dir=base_log_dir,
-        log_dir=log_dir,
-        script_name=script_name,
-        **setup_logger_kwargs
+        **experiment_kwargs
     )
 
-    run_experiment_here_kwargs = dict(
-        exp_prefix=exp_prefix,
-        variant=variant,
-        exp_id=exp_id,
-        seed=seed,
-        use_gpu=use_gpu,
-        snapshot_mode=snapshot_mode,
-        snapshot_gap=snapshot_gap,
-        base_log_dir=base_log_dir,
-        script_name=script_name,
-        **setup_logger_kwargs
-    )
-    save_experiment_data(
-        dict(
-            run_experiment_here_kwargs=run_experiment_here_kwargs
-        ),
-        actual_log_dir
-    )
-    return experiment.run(variant)
+    config.pop('experiment')
+    algo = config.pop('algorithm')
+    algo_class = algo['class']
+    algo_kwargs = algo['kwargs']
+    algo_kwargs['item_dict_config'] = config
 
+    algo = get_item('algorithm', algo_class, algo_kwargs)
+    algo.to(ptu.device)
+    algo.train()
+
+if __name__ == '__main__':
+    run_experiment(*parse_cmd())
+    
 

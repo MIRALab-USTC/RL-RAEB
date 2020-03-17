@@ -12,13 +12,11 @@ class Value(object, metaclass=abc.ABCMeta):
             self.processed_obs_shape = obs_processor.output_shape
         self._obs_processor = obs_processor
 
-    @abc.abstractmethod
     def save(self, save_dir=None):
-        pass
+        raise NotImplementedError
      
-    @abc.abstractmethod
     def load(self, load_dir=None):
-        pass
+        raise NotImplementedError
 
     def get_diagnostics(self):
         return {}

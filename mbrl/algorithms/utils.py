@@ -40,19 +40,24 @@ def get_item(item_type, item_class_name, kwargs):
     item_class = get_item_class(item_type, item_class_name)
     return item_class(**kwargs)
 
-def _visit_all_items(config):
+def _visit_all_items(config): 
     for item_type, param in config.items():
+        if item_type == 'experiment':
+            continue
         if isinstance(param, list):
             for p in param:
-                yield item_type, p
+                item_name = p['name']
+                item_kwargs = p.get('kwargs', {})
+                yield item_name, item_type, p['class'], item_kwargs
         else:
-            yield item_type, param
+            item_name = param.get('name', item_type)
+            item_kwargs = param.get('kwargs', {})
+            yield item_name, item_type, param['class'], item_kwargs
             
 def get_dict_of_items_from_config(config):
     item_dict = {}
-    for item_type, param in _visit_all_items(config):
-        name = param.get('name', item_type)
-        item_dict[name] = None
+    for item_name, item_type, _, _ in _visit_all_items(config):
+        item_dict[item_name] = None
     total_instance = 0
 
     def replace_kwargs(kwargs):
@@ -65,17 +70,17 @@ def get_dict_of_items_from_config(config):
                     kwargs[k] = item
                 else:
                     ready = False
-        return ready
+        return ready 
 
     while total_instance < len(item_dict):
-        for item_type, param in _visit_all_items(config):
-            kwargs = param.get('kwargs', {})
-            if replace_kwargs(kwargs):
-                item_class_name = param['class']
-                item = get_item(item_type, item_class_name, kwargs)
-                name = param.get('name', item_type)
-                item_dict[name] = item
+        for item_name, item_type, item_class_name, item_kwargs in _visit_all_items(config):
+            if item_dict[item_name] is not None:
+                continue
+            if replace_kwargs(item_kwargs):
+                item = get_item(item_type, item_class_name, item_kwargs)
+                item_dict[item_name] = item
                 total_instance += 1
+    print(item_dict)
     return item_dict
 
 if __name__ == "__main__":

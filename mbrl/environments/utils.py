@@ -25,7 +25,7 @@ def env_name_to_gym_registry(env_name):
     return env_name
 
 def make_gym_env(env_name):
-    return gym.make(env_name_to_gym_registry(env_name))
+    return gym.make(env_name_to_gym_registry(env_name)).env
 
 def make_vector_env(env_name, **kwargs):
     from mbrl.environments.normalized_vector_env import NormalizedVectorEnv
