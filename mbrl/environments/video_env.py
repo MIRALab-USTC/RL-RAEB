@@ -103,6 +103,7 @@ class VideoEnv(MbrlEnv):
         # Start recording the next video.
         if self.cur_video_name is not None:
             video_name = self.cur_video_name 
+            self.cur_video_name = None
         else:
             video_name = 'episode{}'.format(self.episode_id) 
             
@@ -116,7 +117,6 @@ class VideoEnv(MbrlEnv):
 
     def _close_video_recorder(self):
         self.video_recorder.close()
-        self.cur_video_name = None
         if self.video_recorder.functional:
             self.videos.append((self.video_recorder.path, self.video_recorder.metadata_path))
 
