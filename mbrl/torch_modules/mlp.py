@@ -2,12 +2,6 @@ import torch
 import os.path as osp
 import torch.nn as nn
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 import mbrl.torch_modules.utils as ptu
 from mbrl.utils.misc_untils import to_list
 
@@ -100,52 +94,4 @@ class MLP(nn.Module):
         for weight_decay, fc in zip(weight_decays, self.fcs):
             weight_decay_tensors.append(fc.get_weight_decay(weight_decay))
         return sum(weight_decay_tensors)
-
-if __name__ == "__main__":
-    from mbrl.torch_modules.torch_normalizer import TorchNormalizer
-    import numpy as np
-    
-    class TestMLP(MLP):
-        def __init__(self, N):
-            super(TestMLP, self).__init__(1,3,[3,3],2,'tanh')
-            self.N = N
-        def forward(self,x):
-            return super(TestMLP, self).forward(self.N(x))
-
-    normalizer=TorchNormalizer((1,))
-    x=ptu.FloatTensor([[3]])
-    mlp=TestMLP(normalizer)
-    print(mlp.state_dict())
-    print(mlp(x))
-    print('\n\n')
-    mlp.save('/home/qizhou',1)
-    mlp.save('/home/qizhou')
-
-    mlp2=TestMLP(normalizer)
-    print(mlp2.state_dict())
-    print(mlp2(x))
-    print('\n\n')
-    mlp2.load('/home/qizhou',1)
-    print(mlp2.state_dict())
-    print(mlp2(x))
-    print('\n\n')
-    mlp2.load('/home/qizhou')
-    print(mlp2.state_dict())
-    print(mlp2(x))
-    print('\n\n')
-
-    normalizer.set_mean_std_np(np.array([2]), np.array([1.5]))
-    print(mlp.state_dict())
-    print(mlp(x))
-    print('\n\n')
-    print(mlp2.state_dict())
-    print(mlp2(x))
-    print('\n\n')
-    mlp2.load('/home/qizhou')
-    print(mlp2.state_dict())
-    print(mlp(x))
-    x=ptu.FloatTensor([[[3]],[[6]]])
-    print(mlp(x))
-    x=ptu.FloatTensor([[6]])
-    print(mlp(x))
 

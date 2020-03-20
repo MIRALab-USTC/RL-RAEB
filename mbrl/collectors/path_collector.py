@@ -1,12 +1,6 @@
 from collections import deque, OrderedDict
 import numpy as np
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.collectors.utils import rollout, cut_path
 from mbrl.collectors.base_collector import PathCollector
@@ -120,26 +114,3 @@ class SimplePathCollector(PathCollector):
             always_show_all_stats=True,
         ))
         return stats
-
-if __name__ == "__main__":
-    from mbrl.environments.utils import make_vector_env
-    from mbrl.policies.base_policy import UniformlyRandomPolicy
-    env = make_vector_env('HalfCheetah-v2', n_env=2, max_length=2)
-    policy = UniformlyRandomPolicy(env)
-    collector = SimplePathCollector(env, policy)
-    print(collector.collect_new_paths(4,4,False,True))
-    print('\n\n')
-    print(collector.collect_new_paths(3,4,False,True))
-    print('\n\n')
-    print(collector.collect_new_paths(3,4,True,False))
-    print('\n\n')
-    print(collector.collect_new_paths(3,1,False,False))
-    print('\n\n')
-    print(collector.get_diagnostics())
-    from mbrl.collectors.utils import path_to_samples
-    paths = collector.collect_new_paths(5,4,False)
-    print(paths)
-    print('\n\n\n')
-    print(path_to_samples(paths))
-    
-

@@ -38,7 +38,8 @@ def get_item_class(item_type, item_class_name):
 
 def get_item(item_type, item_class_name, kwargs):
     item_class = get_item_class(item_type, item_class_name)
-    return item_class(**kwargs)
+    item = item_class(**kwargs)
+    return item
 
 def _visit_all_items(config): 
     for item_type, param in config.items():
@@ -82,30 +83,3 @@ def get_dict_of_items_from_config(config):
                 total_instance += 1
     print(item_dict)
     return item_dict
-
-if __name__ == "__main__":
-    import sys
-    import os
-    import json
-    from collections import OrderedDict
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-    get_item_class('value', 'ensemble_q_value')
-    get_item_class('value', 'ensemble_state_value')
-    get_item_class('environment', 'normalized_vector_env')
-    get_item_class('collector', 'path_collector')
-    get_item_class('collector', 'step_collector')
-    get_item_class('policy', 'TanhGaussianPolicy')
-    get_item_class('pool', 'simple_pool')
-    get_item_class('pool', 'extra_field_pool')
-    get_item_class('processor', 'Normalizer')
-    get_item_class('processor', 'identity')
-    get_item_class('trainer', 'SAC_trainer')
-    config_path = os.path.join(mbrl_dir, 'mbrl', 'algorithms', 'default_configs', 'sac.json')
-    config = json.load(open(config_path, 'r'), object_pairs_hook=OrderedDict)
-    config.pop('launch_kwargs')
-    config.pop('algorithm')
-    print(config)
-    get_dict_of_items_from_config(config)
-    
-    

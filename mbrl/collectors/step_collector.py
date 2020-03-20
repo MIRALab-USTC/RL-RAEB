@@ -1,12 +1,6 @@
 from collections import deque, OrderedDict
 import numpy as np
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.utils.misc_untils import combine_items, get_valid_part, split_items
 from mbrl.collectors.base_collector import StepCollector
@@ -178,60 +172,3 @@ class SimpleStepCollector(StepCollector):
         ))
         return stats
 
-
-if __name__ == "__main__":
-    from mbrl.environments.utils import make_vector_env
-    from mbrl.policies.base_policy import UniformlyRandomPolicy
-    from mbrl.utils.eval_util import get_generic_path_information
-    env = make_vector_env('HalfCheetah-v2', n_env=3, max_length=5)
-    policy = UniformlyRandomPolicy(env)
-    collector = SimpleStepCollector(env, policy)
-    print(collector.collect_new_steps(6,6,True))
-    print('\n\n')
-    print(collector.collect_new_steps(6,5,True))
-    print('\n\n')
-    print(collector.collect_new_steps(3,5,True))
-    print('\n\n')
-    print(collector.collect_new_steps(3,5,True))
-    print('\n\n')
-    print(collector._epoch_paths)
-    print(collector.get_diagnostics())
-    collector.end_epoch()
-    print(collector.collect_new_steps(18,6,True))
-    print('\n\n')
-    print(collector.get_diagnostics())
-    collector.end_epoch()
-    print(collector.collect_new_steps(7,6,True))
-    print('\n\n')
-    print(collector.collect_new_steps(11,6,True))
-    print('\n\n')
-    print(collector.get_diagnostics())
-    collector.end_epoch()
-    print('\n\n')
-    print('\n\n')
-    env = make_vector_env('Ant-v2', n_env=3, max_length=1000)
-    policy = UniformlyRandomPolicy(env)
-    collector = SimpleStepCollector(env, policy)
-    collector.collect_new_steps(1000,200,True)
-    print(collector.get_diagnostics())
-    collector.collect_new_steps(1000,200)
-    collector.end_epoch(start_new_epoch=False)
-    print(collector.get_diagnostics())
-    print(collector._epoch_path_lens)
-
-    collector.start_epoch()
-    collector.collect_new_steps(2000,1000,True)
-    collector.end_epoch(start_new_epoch=False)
-    print(collector.get_diagnostics())
-    print(collector._epoch_path_lens)
-
-    collector.start_epoch()
-    collector.collect_new_steps(2000,1000,False)
-    collector.end_epoch(start_new_epoch=False)
-    print(collector.get_diagnostics())
-    print(collector._epoch_path_lens)
-    for i, length in enumerate(collector._epoch_path_lens):
-        print(len(collector._epoch_paths[i]['rewards']))
-        print(collector._epoch_paths[i]['terminals'][-10:])
-    print(get_generic_path_information(collector._epoch_paths))
-    

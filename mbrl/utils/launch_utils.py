@@ -11,11 +11,6 @@ import numpy as np
 import torch
 from collections import OrderedDict
 
-if __name__ == "__main__":
-    import sys
-    mbrl_dir = osp.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 import mbrl
 from mbrl.utils.logger import logger
 import mbrl.torch_modules.utils as ptu
@@ -162,7 +157,7 @@ def setup_logger(
 
 def set_global_seed(seed=None):
     if seed is None:
-        seed = random.randint(0,65535)
+        seed = random.randint(0,4096)
     np.random.seed(seed)    
     random.seed(seed)    
     torch.manual_seed(seed) #cpu    
@@ -174,6 +169,7 @@ def set_global_seed(seed=None):
 def parse_cmd():
     p = argparse.ArgumentParser()
     p.add_argument('config_file', type=str)
+    p.add_argument('--env_name', type=str)
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -184,10 +180,14 @@ def parse_cmd():
         else:
             raise RuntimeError('Keys must start with \"--\" or \"-\".')
 
-        astr = astr.replace('-','_')
         return astr
 
-    cmd_config = {foo(k):v for k,v in zip(extras[::2],extras[1::2])}
+    cmd_config = [[foo(k),v] for k,v in zip(extras[::2],extras[1::2])]
+
+    if args.env_name is not None:
+        cmd_config.insert(0, ['type-environment.env_name', args.env_name])
+        
+    cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config
 
 def try_eval(v):
@@ -202,9 +202,18 @@ def _set_config_by_k_v(config, k, v):
     v = try_eval(v)
     keys = k.split('.')
     if len(keys) == 2:
-        for name,_,_,kwargs in _visit_all_items(config):
-            if name == keys[0]:
-                kwargs[keys[1]] = v
+        if keys[0][:5] == "type-":
+            for _,item_type,_,kwargs in _visit_all_items(config):
+                if item_type == keys[0][5:]:
+                    kwargs[keys[1]] = v
+        elif keys[0][:6] == "class-":
+            for _,_,class_name,kwargs in _visit_all_items(config):
+                if class_name == keys[0][6:]:
+                    kwargs[keys[1]] = v
+        else:
+            for name,_,_,kwargs in _visit_all_items(config):
+                if name == keys[0]:
+                    kwargs[keys[1]] = v
     elif len(keys) == 1:
         config['experiment'][keys[0]] = v
     else:
@@ -249,8 +258,3 @@ def run_experiment(config_path, cmd_config):
     algo = get_item('algorithm', algo_class, algo_kwargs)
     algo.to(ptu.device)
     algo.train()
-
-if __name__ == '__main__':
-    run_experiment(*parse_cmd())
-    
-

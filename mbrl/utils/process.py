@@ -154,26 +154,3 @@ class Silent:
 	def __getattr__(self, attr):
 		return lambda *args: None
 
-
-if __name__ == '__main__':
-	silent = Silent()
-	silent.update()
-	silent.stamp()
-
-	num_steps = 1000
-	progress = Progress(num_steps)
-	for i in range(num_steps):
-		progress.update()
-		params = [
-			['A', '{:06d}'.format(i)],
-			['B', '{:06d}'.format(i)],
-			['C', '{:06d}'.format(i)],
-			['D', '{:06d}'.format(i)],
-			['E', '{:06d}'.format(i)],
-			['F', '{:06d}'.format(i)],
-			['G', '{:06d}'.format(i)],
-			['H', '{:06d}'.format(i)],
-        ]
-		progress.set_description(params)
-		time.sleep(0.01)
-	progress.close()

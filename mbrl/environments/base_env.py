@@ -1,46 +1,56 @@
-
+import random
+import abc
 import numpy as np
-import itertools
-from gym import Env
+from gym import Wrapper
 from gym.spaces import Box
-from gym.spaces import Discrete
+from mbrl.environments.utils import make_gym_env
 
-from collections import deque
-from mbrl.environments.utils import make_gym_env, set_env_seed
-
-class ProxyEnv(Env):
+class MbrlEnv(Wrapper, metaclass=abc.ABCMeta):
+    @abc.abstractmethod
     def __init__(self, env_name):
-        self.env_name = env_name
-        self._build_wrapped_envs() 
-        self.observation_shape = self.observation_space.shape
-        self.action_shape = self.action_space.shape
+        pass
     
-    def _build_wrapped_envs(self, seed=None):
-        self._wrapped_env = make_gym_env(self.env_name)
-        set_env_seed(self._wrapped_env, seed)
-        self.observation_space = self._wrapped_env.observation_space
-        self.action_space = self._wrapped_env.action_space
+    @abc.abstractproperty
+    def horizon(self):
+        pass
 
-    @property
-    def wrapped_env(self):
-        return self._wrapped_env
 
-    def reset(self, **kwargs):
-        return self._wrapped_env.reset(**kwargs)
-
-    def step(self, action):
-        return self._wrapped_env.step(action)
-
-    def render(self, *args, **kwargs):
-        return self._wrapped_env.render(*args, **kwargs)
-
+class SimpleEnv(MbrlEnv):
+    def __init__(self, 
+                 env_name,
+                 reward_scale=1.0,
+                 max_length=np.inf):
+        self.env_name = env_name
+        self.cur_seed = random.randint(0,65535)
+        inner_env = make_gym_env(env_name, self.cur_seed)
+        Wrapper.__init__(self, inner_env)
+        self.reward_scale = reward_scale
+        self.max_length = max_length
+        self.low = np.maximum(self.env.action_space.low, -10)
+        self.high = np.minimum(self.env.action_space.high, 10)
+        ub = np.ones(self.env.action_space.shape)
+        self.action_space = Box(-1 * ub, ub)
+    
     @property
     def horizon(self):
-        return self._wrapped_env.horizon
+        return self.max_length
+    
+    def reset(self):
+        self.cur_step_id = 0
+        return np.array([self.env.reset()])
 
-    def terminate(self):
-        if hasattr(self.wrapped_env, "terminate"):
-            self.wrapped_env.terminate()
+    def step(self, action):
+        self.cur_step_id = self.cur_step_id + 1
+        action = action[0]
+        action = np.clip(action, -1.0, 1.0)
+        action = self.low + (action + 1.0) * (self.high - self.low) * 0.5
+        if len(action.shape) == len(self.action_space.shape):
+            action = np.array([action])
+        o, r, d, info = self.env.step(action)
+        if self.cur_step_id >= self.max_length:
+            done = 1.0
+        o, r, d = np.array([o]), np.array([[r]]), np.array([[d]])
+        for k in info:
+            info[k] = np.array([[info[k]]])
+        return o, r, d, info
 
-    def __str__(self):
-        return '{}({})'.format(type(self).__name__, self.wrapped_env)

@@ -1,6 +1,7 @@
 import numpy as np
 from mbrl.utils.misc_untils import combine_item
 from collections import OrderedDict
+from tqdm import tqdm
 
 def rollout(
         env,
@@ -11,7 +12,8 @@ def rollout(
         stop_if_terminal=False,
         render=False,
         render_kwargs=None,
-):
+        use_tqdm=False,
+    ):
     """
     modified from rlkit
     The following value for the following keys will be a 2D array, with the
@@ -34,7 +36,11 @@ def rollout(
     pb = PathBuilder(len(o))
     if render: 
         env.render(**render_kwargs)
-    for _ in range(max_path_length):
+    if use_tqdm:
+        iterator = tqdm(range(max_path_length))
+    else:
+        iterator = range(max_path_length)
+    for _ in iterator:
         a, agent_info = agent.action_np(o)
         next_o, r, d, env_info = env.step(a)
         t = pb.update(o,a,r,d,agent_info,env_info)
@@ -100,11 +106,11 @@ class PathBuilder():
         )
         self.path_lens = np.reshape(self.path_lens, (-1))
         if not aggregate:
-            self.path = split_paths(self.paths)
+            self.paths = split_paths(self.paths)
         if return_length:
-            return self.path, self.path_lens
+            return self.paths, self.path_lens
         else:
-            return self.path
+            return self.paths
 
 def get_single_path_info(info, index):
     single_path_info = {}

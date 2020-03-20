@@ -55,24 +55,3 @@ def shuffer_and_random_batch(dataset, batch_size, keys=None):
     valid_size = get_valid_dataset_size(dataset, keys=keys)
     for batch in _shuffer_and_random_batch(dataset, batch_size, valid_size, keys):
         yield batch
-
-if __name__ == '__main__':
-    test_data = {
-        'a': np.arange(1,10),
-        'b': np.arange(11,15),
-        'c': np.arange(21,40),
-        'd':{
-            'e': np.arange(1,10),
-            'f': np.arange(1,20),
-        }
-    }
-    test_data = get_unnested_data(test_data)
-    print(test_data)
-    print(get_valid_dataset_size(test_data))
-    print(get_valid_dataset_size(test_data, keys=['a','c','d.e']))
-    print(random_batch_independently(test_data, 3))
-    print(random_batch_independently(test_data, 3, keys=['a','c','d.e']))
-    for batch in shuffer_and_random_batch(test_data, 3):
-        print(batch)
-    for batch in shuffer_and_random_batch(test_data, 3, keys=['a','c','d.e']):
-        print(batch)

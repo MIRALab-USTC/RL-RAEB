@@ -1,16 +1,12 @@
 import abc
 import gtimer as gt
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.algorithms.base_algorithm import RLAlgorithm
 from mbrl.utils.eval_util import get_generic_path_information
 from mbrl.utils.process import Progress, Silent
 from mbrl.utils.misc_untils import format_for_process
+
+from mbrl.utils.logger import logger
 
 class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
     def __init__(
@@ -24,6 +20,7 @@ class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
             max_path_length=1000,
             min_num_steps_before_training=0,
             silent = False,
+            record_video_freq=50,
             item_dict_config={},
     ):
         super().__init__(num_epochs, item_dict_config)
@@ -34,6 +31,7 @@ class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
         self.num_trains_per_train_loop = num_trains_per_train_loop
         self.min_num_steps_before_training = min_num_steps_before_training
         self.max_path_length = max_path_length
+        self.record_video_freq = record_video_freq
 
         self.process_class = Silent if silent else Progress
         self.collected_samples = 0
@@ -55,6 +53,14 @@ class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
         else:
             self._sample(self.min_num_steps_before_training)
         self.end_epoch(-1)
+    
+    def _end_epoch(self, epoch):
+        from mbrl.collectors.utils import rollout
+        if epoch % self.record_video_freq == 0 and hasattr(self, 'video_env'):
+            self.video_env.set_video_name("epoch{}".format(epoch))
+            logger.log("rollout to save video...")
+            rollout(self.video_env, self.eval_policy, max_path_length=self.max_path_length, use_tqdm=True)
+        gt.stamp('save video', unique=False)
 
     def _train_epoch(self, epoch):
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)
@@ -78,20 +84,3 @@ class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
         )
         gt.stamp('evaluation sampling')
         progress.close()
-
-if __name__ == "__main__":
-    import json
-    from collections import OrderedDict
-    from mbrl.utils.launch_utils import setup_logger, set_gpu_mode
-    import mbrl.torch_modules.utils as ptu
-    config_path = os.path.join(mbrl_dir, 'mbrl', 'algorithms', 'default_configs', 'sac.json')
-    config = json.load(open(config_path, 'r'), object_pairs_hook=OrderedDict)
-    setup_logger('test_data', base_log_dir='/home/qizhou/', variant=config)
-    config.pop('launch_kwargs')
-    kwargs = config.pop('algorithm')['kwargs']
-    kwargs['item_dict_config'] = config
-    set_gpu_mode(True)  # optionally set the GPU (default=False)
-    algo = BatchRLAlgorithm(**kwargs)
-    algo.to(ptu.device)
-    algo.train()
-

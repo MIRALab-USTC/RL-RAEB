@@ -2,12 +2,6 @@ import numpy as np
 import warnings
 from collections import OrderedDict
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.utils.mean_std import RunningMeanStd
 from mbrl.pools.base_pool import Pool
 from mbrl.pools.utils import get_batch, _random_batch_independently, _shuffer_and_random_batch
@@ -149,53 +143,3 @@ class SimplePool(Pool):
         ])
 
         
-if __name__ == "__main__":
-    from mbrl.environments.utils import make_vector_env
-    from mbrl.policies.base_policy import UniformlyRandomPolicy
-    from mbrl.collectors.step_collector import SimpleStepCollector
-    from mbrl.collectors.path_collector import SimplePathCollector
-    env = make_vector_env('HalfCheetah-v2', n_env=3, max_length=5)
-    policy = UniformlyRandomPolicy(env)
-    # collector = SimpleStepCollector(env, policy)
-    # replay_pool = SimplePool(env,10)
-    # collector.start_epoch()
-    # samples = collector.collect_new_steps(6,6,True)
-    # replay_pool.add_samples(samples)
-    # #print(replay_pool.get_data())
-    # print(replay_pool.get_unprocessed_data('test',keys=['rewards']))
-    # print(replay_pool.get_unprocessed_data('test2'))
-    # replay_pool.update_process_flag('test',6)
-    # replay_pool.update_process_flag('test2',3)
-    # print('\n\n')
-    # print(replay_pool.get_unprocessed_data('test',keys=['rewards']))
-    # print(replay_pool.get_unprocessed_data('test2'))
-    # samples=collector.collect_new_steps(6,5,True)
-    # replay_pool.add_samples(samples)
-    # print('\n\n')
-    # print(replay_pool.get_unprocessed_data('test',keys=['rewards']))
-    # print(replay_pool.get_unprocessed_data('test2'))
-    # print(replay_pool.random_batch(3, keys=['rewards', 'actions']))
-    # for batch in replay_pool.shuffer_and_random_batch(3, keys=['rewards']):
-    #     print(batch)
-    env = make_vector_env('HalfCheetah-v2', n_env=2, max_length=3)
-    policy = UniformlyRandomPolicy(env)
-    collector = SimplePathCollector(env, policy)
-    replay_pool = SimplePool(env,12)
-    paths = collector.collect_new_paths(6,6,True)
-    replay_pool.add_paths(paths)
-    print(replay_pool.get_data(keys=['terminals', 'rewards']))
-    paths = collector.collect_new_paths(6,6,True)
-    replay_pool.add_paths(paths)
-    print(replay_pool.get_data(keys=['terminals', 'rewards']))
-    paths = collector.collect_new_paths(6,6,True)
-    replay_pool.add_paths(paths)
-    print(replay_pool.get_data(keys=['terminals', 'rewards']))
-    #print(replay_pool.get_data())
-    # print('\n\n')
-    # print(collector.collect_new_steps(3,5,True))
-    # print('\n\n')
-    # print(collector.collect_new_steps(3,5,True))
-    # print('\n\n')
-    # print(collector._epoch_paths)
-    # print(collector.get_diagnostics())
-    collector.end_epoch()

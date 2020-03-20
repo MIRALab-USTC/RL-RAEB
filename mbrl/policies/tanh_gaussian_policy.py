@@ -1,10 +1,3 @@
-
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.policies.base_policy import RandomPolicy
 from mbrl.torch_modules.policies import MeanLogstdGaussianPolicyModule, TanhPolicyModule
 from mbrl.utils.logger import logger

@@ -1,12 +1,5 @@
 import numpy as np
 import warnings
-
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.pools.simple_pool import SimplePool
 class ExtraFieldPool(SimplePool):
     def __init__(self, env, max_size=1e6, extra_fields={}, compute_mean_std=True):
@@ -68,48 +61,3 @@ class ExtraFieldPool(SimplePool):
             self._update_single_extra_field(k, v)
 
             
-if __name__ == "__main__":
-    from mbrl.environments.utils import make_vector_env
-    from mbrl.policies.base_policy import UniformlyRandomPolicy
-    from mbrl.collectors.step_collector import SimpleStepCollector
-    from mbrl.collectors.path_collector import SimplePathCollector
-    env = make_vector_env('HalfCheetah-v2', n_env=2, max_length=3)
-    policy = UniformlyRandomPolicy(env)
-    collector = SimpleStepCollector(env, policy)
-    extra_filed = {'rewards_copy': {'shape':(1,), 'type':np.float}}
-    replay_pool = ExtraFieldPool(env,12,extra_filed)
-    collector.start_epoch()
-    samples = collector.collect_new_steps(6,6,True)
-    replay_pool.add_samples(samples)
-    data = replay_pool.get_unprocessed_data('copy',keys=['rewards'])
-    data['rewards_copy'] = data.pop('rewards')
-    replay_pool.update_extra_fields(data)
-    replay_pool.update_process_flag('copy',len(data['rewards_copy']))
-    print(replay_pool.get_data(keys=['rewards','rewards_copy']))
-    print(replay_pool.dataset['rewards_copy'])
-    print('\n\n')
-    samples = collector.collect_new_steps(6,6,True)
-    replay_pool.add_samples(samples)
-    data = replay_pool.get_unprocessed_data('copy',keys=['rewards'])
-    data['rewards_copy'] = data.pop('rewards')
-    replay_pool.update_extra_fields(data)
-    replay_pool.update_process_flag('copy',len(data['rewards_copy']))
-    print(replay_pool.get_data(keys=['rewards','rewards_copy']))
-    print(replay_pool.dataset['rewards_copy'])
-    print('\n\n')
-    samples = collector.collect_new_steps(6,6,True)
-    replay_pool.add_samples(samples)
-    data = replay_pool.get_unprocessed_data('copy',keys=['rewards'])
-    data['rewards_copy'] = data.pop('rewards')
-    replay_pool.update_extra_fields(data)
-    replay_pool.update_process_flag('copy',len(data['rewards_copy']))
-    print(replay_pool.get_data(keys=['rewards','rewards_copy']))
-    print(replay_pool.dataset['rewards_copy'])
-    print('\n\n')
-    print(replay_pool.random_batch(2))
-    samples = collector.collect_new_steps(6,6,True)
-    replay_pool.add_samples(samples)
-    print(replay_pool.get_data(keys=['rewards','rewards_copy']))
-    print(replay_pool.dataset['rewards_copy'])
-    print('\n\n')
-    collector.end_epoch()

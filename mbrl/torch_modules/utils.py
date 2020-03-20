@@ -204,10 +204,8 @@ def fanin_init(tensor, nonlinearity='relu', mode='uniform'):
     size = tensor.size()
     if len(size) == 2:
         fan_in = size[0]
-    elif len(size) > 2:
-        fan_in = np.prod(size[1:])
     else:
-        raise Exception("Shape must be have dimension at least 2.")
+        raise Exception("Shape must be have dimension 2.")
     gain = init.calculate_gain(nonlinearity)
     if mode == 'uniform':
         bound = gain * math.sqrt(3.0) / np.sqrt(fan_in)

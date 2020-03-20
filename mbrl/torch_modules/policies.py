@@ -6,12 +6,6 @@ from torch import nn
 import torch.nn.functional as F
 from torch.distributions import Normal
 
-if __name__ == "__main__":
-    import sys
-    import os
-    mbrl_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(mbrl_dir)
-
 from mbrl.torch_modules.mlp import MLP
 import mbrl.torch_modules.utils as ptu
 LOG_STD_MAX = 2
