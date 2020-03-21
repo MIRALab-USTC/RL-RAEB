@@ -1,10 +1,13 @@
 import torch
 import torch.nn as nn
-from torch.nn import init
 import torch.nn.functional as F
+from torch.nn import init
+from torch.distributions import Uniform
 import numpy as np
 import math
 
+LOG_SIG_MAX = 2
+LOG_SIG_MIN = -20
 
 """
 GPU wrappers
@@ -199,6 +202,75 @@ class EnsembleLinear(nn.Module):
             for w in self.weights:
                 decays.append((w ** 2).sum() * weight_decay * 0.5)
             return sum(decays)
+
+class NoisyEnsembleLinear(EnsembleLinear):
+    def __init__(self, 
+                 in_features, 
+                 out_features, 
+                 noise_type='gaussian', #uniform 
+                 global_noise=True,
+                 **fc_kwargs
+                 ):
+        self.noise_type = noise_type
+        self.global_noise = global_noise
+        if global_noise:
+            super(NoisyEnsembleLinear, self).__init__(
+                                                      in_features,
+                                                      out_features,
+                                                      with_bias=True,
+                                                      **fc_kwargs
+                                                      )
+            initial_scale = -0.5 * math.log(in_features)
+            self.log_noise_scale = nn.Parameter(initial_scale * torch.ones(1, out_features))
+        else:
+            super(NoisyEnsembleLinear, self).__init__(
+                                                      in_features,
+                                                      out_features*2,
+                                                      **fc_kwargs
+                                                      )
+    
+    def forward(self, 
+                x, 
+                deterministic=False,
+                reparameterize=True,):
+        if self.global_noise:
+            mean = super(NoisyEnsembleLinear, self).forward(x)
+            log_scale = self.log_noise_scale
+        else:
+            mean_and_log_scale = super(NoisyEnsembleLinear, self).forward(x)
+            mean, log_scale = torch.chunk(mean_and_log_scale,2,-1)
+        if deterministic:
+            return mean
+        log_scale = torch.clamp(log_scale, LOG_SIG_MIN, LOG_SIG_MAX)
+        scale = torch.exp(log_scale)
+        if self.noise_type == 'uniform':
+            if reparameterize:
+                output = (
+                    mean +
+                    scale *
+                    Uniform(
+                        -ptu.ones_like(mean),
+                        ptu.ones_like(mean)
+                    ).sample()
+                )
+            else:
+                output = Uniform(mean-scale,mean+scale).sample()
+        elif self.noise_type == 'gaussian':
+            if reparameterize:
+                output = (
+                    mean +
+                    scale *
+                    Normal(
+                        ptu.zeros_like(mean),
+                        ptu.ones_like(mean)
+                    ).sample()
+                )
+            else:
+                output = Normal(mean,scale).sample()
+        else:
+            raise NotImplementedError
+        return output
+
 
 def fanin_init(tensor, nonlinearity='relu', mode='uniform'):
     size = tensor.size()

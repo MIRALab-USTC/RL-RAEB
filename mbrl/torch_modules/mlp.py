@@ -4,6 +4,7 @@ import torch.nn as nn
 
 import mbrl.torch_modules.utils as ptu
 from mbrl.utils.misc_untils import to_list
+import copy
 
 class MLP(nn.Module):
     def __init__(self, 
@@ -13,14 +14,14 @@ class MLP(nn.Module):
                  ensemble_size=None, 
                  nonlinearity='relu', 
                  output_nonlinearity='identity',
-                 module_name='MLP',
+                 module_name='mlp',
                  **fc_kwargs
                  ):
         super(MLP, self).__init__()
         self.input_size = input_size
         self.output_size = output_size
-        self.ensemble_size = ensemble_size
         self.num_layers = len(hidden_layers)
+        self.ensemble_size = ensemble_size
 
         self.output_nonlinearity = output_nonlinearity
         self.nonlinearities = to_list(nonlinearity, length=self.num_layers)
@@ -95,3 +96,66 @@ class MLP(nn.Module):
             weight_decay_tensors.append(fc.get_weight_decay(weight_decay))
         return sum(weight_decay_tensors)
 
+class NoisyMLP(MLP):
+    def __init__(self, 
+                 input_size, 
+                 output_size, 
+                 hidden_layers=[128,128], 
+                 ensemble_size=None, 
+                 nonlinearity='relu', 
+                 with_noise=True,
+                 output_nonlinearity='identity',
+                 output_with_noise=True,
+                 module_name='noisy_mlp',
+                 **noisy_fc_kwargs
+                 ):
+        nn.Module.__init__(self)
+        plain_fc_kwargs = copy.deepcopy(noisy_fc_kwargs)
+        plain_fc_kwargs.pop('noise_type',{})
+        plain_fc_kwargs.pop('global_noise',{})
+        self.input_size = input_size
+        self.output_size = output_size
+        self.num_layers = len(hidden_layers)
+        self.ensemble_size = ensemble_size
+
+        self.output_nonlinearity = output_nonlinearity
+        self.nonlinearities = to_list(nonlinearity, length=self.num_layers)
+        self.nonlinearities.append(output_nonlinearity)
+        self.activation_functions = [ptu.get_nonlinearity(nl) for nl in self.nonlinearities]
+
+        self.output_noise = output_with_noise
+        self.layer_noises = to_list(with_noise, length=self.num_layers)
+        self.layer_noises.append(output_with_noise)
+
+        self.layers = layers = [input_size] + hidden_layers + [output_size]
+        self.fcs = []
+        for i in range(len(layers)-1):
+            if self.layer_noises[i]:
+                fc = ptu.NoisyEnsembleLinear(layers[i], 
+                                             layers[i+1], 
+                                             ensemble_size, 
+                                             which_nonlinearity=self.nonlinearities[i],
+                                             **noisy_fc_kwargs)
+            else:
+                fc = ptu.EnsembleLinear(layers[i], 
+                                        layers[i+1], 
+                                        ensemble_size, 
+                                        which_nonlinearity=self.nonlinearities[i],
+                                        **plain_fc_kwargs)
+            setattr(self, 'layer%d'%i, fc)
+            self.fcs.append(fc)
+        self.module_name = module_name
+    
+    def forward(self, 
+                x, 
+                deterministic=False,
+                reparameterize=True):
+        for fc,act_f,noisy in zip(self.fcs, 
+                                  self.activation_functions,
+                                  self.layer_noises):
+            if noisy:
+                x = fc(x, deterministic, reparameterize)
+            else:
+                x = fc(x)
+            x = act_f(x)
+        return x
