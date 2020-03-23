@@ -25,20 +25,20 @@ class TanhGaussianPolicy(nn.Module, RandomPolicy):
                  return_log_prob=False,
                  **kwargs
                 ):
-            if return_info:
-                action, info = self.module(obs, 
-                                           deterministic=self._deterministic, 
-                                           return_info=True, 
-                                           return_log_prob=return_log_prob, 
-                                           **kwargs)
-                if return_log_prob:
-                    info['log_prob'] = info['log_prob'].sum(dim=-1, keepdim=True)
-                return action, info
-            else:
-                return self.module(obs, 
-                                   deterministic=self._deterministic, 
-                                   return_info=False, 
-                                   **kwargs)
+        if return_info:
+            action, info = self.module(obs, 
+                                        deterministic=self._deterministic, 
+                                        return_info=True, 
+                                        return_log_prob=return_log_prob, 
+                                        **kwargs)
+            if return_log_prob:
+                info['log_prob'] = info['log_prob'].sum(dim=-1, keepdim=True)
+            return action, info
+        else:
+            return self.module(obs, 
+                                deterministic=self._deterministic, 
+                                return_info=False, 
+                                **kwargs)
 
     def _log_prob(self, obs, action):
         return self.module.log_prob(obs, action).sum(dim=-1, keepdim=True)

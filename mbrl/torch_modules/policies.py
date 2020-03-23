@@ -6,7 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.distributions import Normal
 
-from mbrl.torch_modules.mlp import MLP
+from mbrl.torch_modules.mlp import MLP, NoisyMLP
 import mbrl.torch_modules.utils as ptu
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
@@ -84,7 +84,7 @@ class SimpleGaussianPolicyModule(GaussianPolicyModule):
     def __init__(self, 
                  obs_size, 
                  action_size, 
-                 policy_name='gaussian_policy',
+                 policy_name='simple_gaussian_policy',
                  **mlp_kwargs
                  ):
         super(SimpleGaussianPolicyModule, self).__init__(
@@ -115,7 +115,7 @@ class MeanLogstdGaussianPolicyModule(GaussianPolicyModule):
     def __init__(self, 
                  obs_size, 
                  action_size, 
-                 policy_name='gaussian_policy',
+                 policy_name='mean_logstd_gaussian_policy',
                  **mlp_kwargs):
         super(MeanLogstdGaussianPolicyModule, self).__init__(
             obs_size,
@@ -132,6 +132,28 @@ class MeanLogstdGaussianPolicyModule(GaussianPolicyModule):
             return mean, log_std
         else:
             return mean, torch.exp(log_std)
+
+class NoisyNetworkPolicyModule(NoisyMLP):
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 policy_name='noisy_network_policy',
+                 **noisy_mlp_kwargs):
+        super(NoisyNetworkPolicyModule, self).__init__(
+            obs_size,
+            action_size,
+            module_name=policy_name,
+            **noisy_mlp_kwargs
+        )
+    def forward(self, 
+                obs,
+                return_info=True,
+                **kwargs):
+        action = super(NoisyNetworkPolicyModule, self).forward(obs, **kwargs)
+        if return_info:
+            return action, {}
+        else:
+            return action
 
 # assert the PDF of the output distribution is continuous to ensure the correctness of log_prob
 class TanhPolicyModule(nn.Module):

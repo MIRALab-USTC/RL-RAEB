@@ -2,12 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
-from torch.distributions import Uniform
 import numpy as np
 import math
-
-LOG_SIG_MAX = 2
-LOG_SIG_MIN = -20
 
 """
 GPU wrappers
@@ -116,169 +112,15 @@ def get_nonlinearity(act_name='relu'):
     }
     return nonlinearity_dict[act_name]
 
-class EnsembleLinear(nn.Module):
-    def __init__(self, 
-                 in_features, 
-                 out_features, 
-                 ensemble_size=None,
-                 which_nonlinearity='relu',
-                 with_bias=True,
-                 init_weight_mode='uniform',
-                 init_bias_constant=None,
-                 ):
-        super(EnsembleLinear, self).__init__()
-        self.in_features = in_features
-        self.out_features = out_features
-        self.ensemble_size = ensemble_size
-        self.with_bias = with_bias
-        self.init_weight_mode = init_weight_mode
-        self.init_bias_constant = init_bias_constant
-        if which_nonlinearity == 'identity':
-            self.which_nonlinearity = 'linear'
-        else:
-            self.which_nonlinearity = which_nonlinearity
-        
-        if ensemble_size is None:
-            self.weight, self.bias = self._creat_weight_and_bias()
-        else:
-            self.weights, self.biases = [], []
-            for i in range(ensemble_size):
-                weight, bias = self._creat_weight_and_bias()
-                weight_name, bias_name = 'weight_net%d'%i, 'bias_net%d'%i
-                self.weights.append(weight)
-                self.biases.append(bias)
-                setattr(self, weight_name, weight)
-                setattr(self, bias_name, bias)
-        self.reset_parameters()
-    
-    def _creat_weight_and_bias(self):
-        weight = nn.Parameter(torch.Tensor(self.in_features, self.out_features))
-        if self.with_bias:
-            bias = nn.Parameter(torch.Tensor(1, self.out_features))
-        else:
-            bias = None
-        return weight, bias
-
-    def _reset_weight_and_bias(self, weight, bias):
-        fanin_init(weight, nonlinearity=self.which_nonlinearity, mode=self.init_weight_mode)
-        if bias is not None:
-            if self.init_bias_constant is None:
-                fan_in = self.in_features
-                bound = 1 / math.sqrt(fan_in)
-                init.uniform_(bias, -bound, bound)
-            else:
-                init.constant_(bias, self.init_bias_constant)
-
-    def reset_parameters(self):
-        if self.ensemble_size is None:
-            self._reset_weight_and_bias(self.weight, self.bias)
-        else:
-            for w,s in zip(self.weights, self.biases):
-                self._reset_weight_and_bias(w, s)
-
-    def extra_repr(self):
-        return 'in_features={}, out_features={}, ensemble_size={}, bias={}'.format(
-            self.in_features, self.out_features, self.ensemble_size, self.with_bias)
-
-    def forward(self, x):
-        if self.ensemble_size is None:
-            w,b = self.weight, self.bias
-        else:
-            w = torch.stack(self.weights, 0)
-            if self.biases[0] is None:
-                b = None
-            else:
-                b = torch.stack(self.biases, 0)
-        if self.with_bias:
-            return x.matmul(w) + b
-        else:
-            return x.matmul(w)
-
-    def get_weight_decay(self, weight_decay=5e-5):
-        if self.ensemble_size is not None:
-            return (self.weight ** 2).sum() * weight_decay * 0.5
-        else:
-            decays = []
-            for w in self.weights:
-                decays.append((w ** 2).sum() * weight_decay * 0.5)
-            return sum(decays)
-
-class NoisyEnsembleLinear(EnsembleLinear):
-    def __init__(self, 
-                 in_features, 
-                 out_features, 
-                 noise_type='gaussian', #uniform 
-                 global_noise=True,
-                 **fc_kwargs
-                 ):
-        self.noise_type = noise_type
-        self.global_noise = global_noise
-        if global_noise:
-            super(NoisyEnsembleLinear, self).__init__(
-                                                      in_features,
-                                                      out_features,
-                                                      with_bias=True,
-                                                      **fc_kwargs
-                                                      )
-            initial_scale = -0.5 * math.log(in_features)
-            self.log_noise_scale = nn.Parameter(initial_scale * torch.ones(1, out_features))
-        else:
-            super(NoisyEnsembleLinear, self).__init__(
-                                                      in_features,
-                                                      out_features*2,
-                                                      **fc_kwargs
-                                                      )
-    
-    def forward(self, 
-                x, 
-                deterministic=False,
-                reparameterize=True,):
-        if self.global_noise:
-            mean = super(NoisyEnsembleLinear, self).forward(x)
-            log_scale = self.log_noise_scale
-        else:
-            mean_and_log_scale = super(NoisyEnsembleLinear, self).forward(x)
-            mean, log_scale = torch.chunk(mean_and_log_scale,2,-1)
-        if deterministic:
-            return mean
-        log_scale = torch.clamp(log_scale, LOG_SIG_MIN, LOG_SIG_MAX)
-        scale = torch.exp(log_scale)
-        if self.noise_type == 'uniform':
-            if reparameterize:
-                output = (
-                    mean +
-                    scale *
-                    Uniform(
-                        -ptu.ones_like(mean),
-                        ptu.ones_like(mean)
-                    ).sample()
-                )
-            else:
-                output = Uniform(mean-scale,mean+scale).sample()
-        elif self.noise_type == 'gaussian':
-            if reparameterize:
-                output = (
-                    mean +
-                    scale *
-                    Normal(
-                        ptu.zeros_like(mean),
-                        ptu.ones_like(mean)
-                    ).sample()
-                )
-            else:
-                output = Normal(mean,scale).sample()
-        else:
-            raise NotImplementedError
-        return output
-
-
-def fanin_init(tensor, nonlinearity='relu', mode='uniform'):
+def fanin_init(tensor, nonlinearity='relu', mode='uniform', gain_coef=None):
     size = tensor.size()
     if len(size) == 2:
         fan_in = size[0]
     else:
         raise Exception("Shape must be have dimension 2.")
-    gain = init.calculate_gain(nonlinearity)
+    if gain_coef is None:
+        gain_coef = 1
+    gain = gain_coef * init.calculate_gain(nonlinearity)
     if mode == 'uniform':
         bound = gain * math.sqrt(3.0) / np.sqrt(fan_in)
         return tensor.data.uniform_(-bound, bound)

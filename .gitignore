@@ -3,6 +3,7 @@
 **/*.pyc
 **/*.swp
 data
+nips_plot
 MANIFEST
 .vscode
 .vs*
