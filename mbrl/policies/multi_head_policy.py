@@ -9,10 +9,11 @@ class MultiHeadPolicy(nn.Module, RandomPolicy):
                   obs_processor=None,
                   deterministic=False,
                   number_of_heads=16,
-                  learn_probability=True,
+                  learn_probability=False,
                   tanh_action=True,
+                  with_expectation=True,
                   policy_name='multi_head_policy',
-                  **noisy_mlp_kwargs):
+                  **mlp_kwargs):
 
         nn.Module.__init__(self)
         RandomPolicy.__init__(self, env, obs_processor, deterministic)
@@ -21,8 +22,9 @@ class MultiHeadPolicy(nn.Module, RandomPolicy):
                                            self.action_shape[0],
                                            number_of_heads,
                                            learn_probability,
+                                           with_expectation,
                                            policy_name,
-                                           **noisy_mlp_kwargs)
+                                           **mlp_kwargs)
         self.tanh_action = tanh_action
         
         if tanh_action:

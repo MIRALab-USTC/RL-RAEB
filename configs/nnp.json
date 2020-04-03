@@ -63,7 +63,8 @@
             "kwargs": {
                 "env": "$expl_env",
                 "hidden_layers": [256,256],
-                "nonlinearity": "relu"
+                "nonlinearity": "relu",
+                "with_expectation":false
             }
         },
         {
@@ -97,7 +98,8 @@
             "alpha_if_not_automatic": 0,
             "bonus_type": "phi_power",
             "sample_number": 16,
-            "exponent": 0.25
+            "exponent": 0.25,
+            "target_gaussian_std": 0.20
         }
     },
     "pool": {

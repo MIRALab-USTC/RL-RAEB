@@ -219,6 +219,7 @@ class MultiHeadPolicyModule(MLP):
             probability = ptu.ones(actions.shape[:2]) / self.number_of_heads
 
         if self.with_expectation:
+            #有问题，忘了考虑probability
             noises = actions - actions.mean(dim=1, keepdim=True)
             expectation = output[:,-self.action_size:]
             actions = actions + noises

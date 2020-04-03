@@ -34,6 +34,7 @@ class NNPTrainer(BatchTorchTrainer):
             target_bonus=None,
             bonus_type='phi_power',
             sample_number=2,
+            target_gaussian_std=0.15,
             **bonus_kwargs
     ):
         super().__init__()
@@ -57,7 +58,7 @@ class NNPTrainer(BatchTorchTrainer):
             if target_bonus:
                 self.target_bonus = target_bonus
             else:
-                self.target_bonus = self.get_recommended_target()  # heuristic value from Tuomas
+                self.target_bonus = self.get_recommended_target(target_gaussian_std)  # heuristic value from Tuomas
                 logger.log("target bonus: %f"%self.target_bonus)
             self.log_alpha = ptu.zeros(1, requires_grad=True)
             self.alpha_optimizer = optimizer_class(
@@ -95,17 +96,17 @@ class NNPTrainer(BatchTorchTrainer):
                 self.expectation_yy = ( 2**(2*e+2) / (4*e+2) / (2*e+2) ) * self.action_size
                 def phi_f(x):
                     a = 2*e+1
-                    y = ( (1+x)**a + (1-x)**a ) / (a*2)
+                    y = ( (1+x+1e-6)**a + (1-x+1e-6)**a ) / (a*2)
                     return y
                 self.phi_f = phi_f
     
-    def get_recommended_target(self):
+    def get_recommended_target(self, target_gaussian_std):
         action_size = self.action_size
         if self.bonus_type == 'entropy':
             return -1 * action_size
         elif 'phi' in self.bonus_type:
-            x1_samples = np.random.randn(2048, action_size) * 0.15
-            x2_samples = np.random.randn(2048, action_size) * 0.15
+            x1_samples = np.tanh(np.random.randn(2048, action_size) * target_gaussian_std) 
+            x2_samples = np.tanh(np.random.randn(2048, action_size) * target_gaussian_std) 
             #x1_samples = np.random.rand(2048, action_size) * 2 - 1
             #x2_samples = np.random.rand(2048, action_size) * 2 - 1
             distance_x1_x2 = (x1_samples - x2_samples)**2
