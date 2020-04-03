@@ -3,12 +3,13 @@ from mbrl.torch_modules.policies import MeanLogstdGaussianPolicyModule, TanhPoli
 from mbrl.utils.logger import logger
 from torch import nn
 
-class TanhGaussianPolicy(nn.Module, RandomPolicy):
+class GaussianPolicy(nn.Module, RandomPolicy):
     def __init__( self, 
                   env, 
                   obs_processor=None,
                   deterministic=False,
-                  policy_name='tanh_gaussian_policy',
+                  tanh_action=True,
+                  policy_name='gaussian_policy',
                   **mlp_kwargs):
         nn.Module.__init__(self)
         RandomPolicy.__init__(self, env, obs_processor, deterministic)
@@ -17,7 +18,12 @@ class TanhGaussianPolicy(nn.Module, RandomPolicy):
                                                    self.action_shape[0],
                                                    policy_name,
                                                    **mlp_kwargs)
-        self.module = TanhPolicyModule(gaussian)
+        self.tanh_action = tanh_action
+
+        if tanh_action:
+            self.module = TanhPolicyModule(gaussian)
+        else:
+            self.module = gaussian
         
     def _action( self, 
                  obs, 

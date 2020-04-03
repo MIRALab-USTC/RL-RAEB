@@ -8,10 +8,7 @@ from torch import nn
 import mbrl.torch_modules.utils as ptu
 from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.trainers.base_trainer import BatchTorchTrainer
-
-def get_recommended_target(input_size, bonus_type):
-    sda 
-
+from mbrl.utils.logger import logger
 
 class NNPTrainer(BatchTorchTrainer):
     def __init__(
@@ -32,10 +29,12 @@ class NNPTrainer(BatchTorchTrainer):
             plotter=None,
             render_eval_paths=False,
             
-            bonus_type='log_distance',
             alpha_if_not_automatic=1e-2,
             use_automatic_bonus_tuning=True,
             target_bonus=None,
+            bonus_type='phi_power',
+            sample_number=2,
+            **bonus_kwargs
     ):
         super().__init__()
         if isinstance(optimizer_class, str):
@@ -46,15 +45,20 @@ class NNPTrainer(BatchTorchTrainer):
         self.soft_target_tau = soft_target_tau
         self.target_update_period = target_update_period
 
+        self.action_size = np.prod(self.env.action_space.shape).item()
         self.bonus_type= bonus_type
+        self.bonus_kwargs = bonus_kwargs
+        self.sample_number = sample_number
+        self.init_bonus_functions()
+
         self.alpha_if_not_automatic = alpha_if_not_automatic
         self.use_automatic_bonus_tuning = use_automatic_bonus_tuning
-        if self.use_automatic_entropy_tuning:
-            if target_entropy:
+        if self.use_automatic_bonus_tuning:
+            if target_bonus:
                 self.target_bonus = target_bonus
             else:
-                input_size = np.prod(self.env.action_space.shape).item()
-                self.target_bonus = get_recommended_target(input_size, bonus_type)  # heuristic value from Tuomas
+                self.target_bonus = self.get_recommended_target()  # heuristic value from Tuomas
+                logger.log("target bonus: %f"%self.target_bonus)
             self.log_alpha = ptu.zeros(1, requires_grad=True)
             self.alpha_optimizer = optimizer_class(
                 [self.log_alpha],
@@ -72,12 +76,75 @@ class NNPTrainer(BatchTorchTrainer):
             self.qf.module.parameters(),
             lr=qf_lr,
         )
-
         self.discount = discount
         self.reward_scale = reward_scale
         self.eval_statistics = OrderedDict()
         self._n_train_steps_total = 0
         self._need_to_update_eval_statistics = True
+
+    def init_bonus_functions(self):
+        if self.bonus_type == 'entropy':
+            return
+        elif 'phi' in self.bonus_type:            
+            n = self.sample_number
+            weight_matrix = ptu.ones(n,n) - torch.diag(ptu.ones(n))
+            self.weight_matrix = ( weight_matrix / (n * (n-1)) ).reshape(n,n,1,1)
+
+            if self.bonus_type == 'phi_power':
+                self.exponent = e = self.bonus_kwargs['exponent']
+                self.expectation_yy = ( 2**(2*e+2) / (4*e+2) / (2*e+2) ) * self.action_size
+                def phi_f(x):
+                    a = 2*e+1
+                    y = ( (1+x)**a + (1-x)**a ) / (a*2)
+                    return y
+                self.phi_f = phi_f
+    
+    def get_recommended_target(self):
+        action_size = self.action_size
+        if self.bonus_type == 'entropy':
+            return -1 * action_size
+        elif 'phi' in self.bonus_type:
+            x1_samples = np.random.randn(2048, action_size) * 0.15
+            x2_samples = np.random.randn(2048, action_size) * 0.15
+            #x1_samples = np.random.rand(2048, action_size) * 2 - 1
+            #x2_samples = np.random.rand(2048, action_size) * 2 - 1
+            distance_x1_x2 = (x1_samples - x2_samples)**2
+
+            if self.bonus_type == 'phi_power':
+                part1 = np.sum((distance_x1_x2+1e-6) ** self.exponent, axis=-1)
+                part2 = self.phi_f(x1_samples).sum(axis=-1)\
+                        + self.phi_f(x2_samples).sum(axis=-1)
+                return part1.mean() + self.expectation_yy - part2.mean()
+
+    def compute_average_q_and_bonus(self, obs, use_target_value=False):
+        #batch_size = state.shape[0]
+        new_obs = obs.repeat(self.sample_number,1)
+        x, x_info = self.policy.action(
+            new_obs, reparameterize=True, return_log_prob=True,
+            )
+        q = self.qf.value(new_obs, x, return_info=False, use_target_value=use_target_value)
+        average_q = q.reshape(self.sample_number, -1, 1).mean(0)
+
+        if not self.use_automatic_bonus_tuning and self.alpha_if_not_automatic == 0:
+            return average_q, ptu.from_numpy(np.array(0))
+
+        if self.bonus_type == 'entropy':
+            log_prob = x_info['log_prob']
+            bonus = - log_prob.reshape(self.sample_number, -1, 1).mean(0)
+            return average_q, bonus
+
+        elif 'phi' in self.bonus_type:
+            x1 = x.reshape(1,self.sample_number,-1,self.action_size)
+            x2 = x.reshape(self.sample_number,1,-1,self.action_size)
+            distance_x1_x2 = (x1 - x2)**2
+            if self.bonus_type == 'phi_power':
+                part1 = ((distance_x1_x2+1e-6) ** self.exponent).sum(dim=-1, keepdim=True)
+                part1 = (part1 * self.weight_matrix).sum(dim=[0,1])
+                part2 = self.phi_f(x).sum(dim=-1, keepdim=True)
+                part2 = part2.reshape(self.sample_number, -1, 1).mean(0)
+                bonus = part1 + self.expectation_yy - 2*part2
+                return average_q, bonus
+
 
     def train_from_torch_batch(self, batch):
         rewards = batch['rewards']
@@ -89,12 +156,10 @@ class NNPTrainer(BatchTorchTrainer):
         """
         Alpha
         """
-        new_action, policy_info = self.policy.action(
-            obs, reparameterize=True, return_log_prob=True,
-        )
-        log_prob_new_action = policy_info['log_prob']
-        if self.use_automatic_entropy_tuning:
-            alpha_loss = -(self.log_alpha * (log_prob_new_action + self.target_entropy).detach()).mean()
+        average_q_new_actions, bonus = self.compute_average_q_and_bonus(obs)
+
+        if self.use_automatic_bonus_tuning:
+            alpha_loss = (self.log_alpha * (bonus - self.target_bonus).detach()).mean()
             self.alpha_optimizer.zero_grad()
             alpha_loss.backward()
             self.alpha_optimizer.step()
@@ -109,16 +174,11 @@ class NNPTrainer(BatchTorchTrainer):
         # Make sure policy accounts for squashing functions like tanh correctly!
         _, value_info = self.qf.value(obs, actions, return_ensemble=True)
         q_value_ensemble = value_info['ensemble_value']
-        next_action, next_policy_info = self.policy.action(
-            next_obs, reparameterize=False, return_log_prob=True,
-        )
-        log_prob_next_action = next_policy_info['log_prob']
-        target_q_next_action = self.qf.value(next_obs, 
-                                        next_action, 
-                                        use_target_value=True, 
-                                        return_info=False) - alpha * log_prob_next_action
 
-        q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_q_next_action
+        average_q_next_actions, next_bonus = self.compute_average_q_and_bonus(next_obs,True)
+        target_v_next_action = average_q_next_actions + alpha * next_bonus
+        #target_v_next_action = average_q_next_actions
+        q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_v_next_action
         qf_loss = ((q_value_ensemble - q_target.detach()) ** 2).mean()
 
         self.qf_optimizer.zero_grad()
@@ -134,8 +194,8 @@ class NNPTrainer(BatchTorchTrainer):
         """
         policy
         """
-        q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=True)
-        policy_loss = (alpha*log_prob_new_action - q_new_action).mean()
+
+        policy_loss = -(average_q_new_actions + alpha * bonus).mean()
 
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
@@ -145,17 +205,12 @@ class NNPTrainer(BatchTorchTrainer):
         Compute some statistics for eval
         """
 
-        average_entropy = -log_prob_new_action.mean()
-        policy_q_loss = 0 - q_new_action.mean()
-
         diagnostics = OrderedDict()
         diagnostics['Policy Loss'] = np.mean(ptu.get_numpy(policy_loss))
-        diagnostics['Policy Q Loss'] = np.mean(ptu.get_numpy(policy_q_loss))
-        diagnostics['Averaged Entropy'] = np.mean(ptu.get_numpy(average_entropy))
+        diagnostics['Policy Q Loss'] = 0-np.mean(ptu.get_numpy(average_q_new_actions))
         diagnostics['QF Loss'] = np.mean(ptu.get_numpy(qf_loss))
-        # diagnostics['Terminals'] = np.mean(ptu.get_numpy(terminals))
-        # diagnostics['Rewards'] = np.mean(ptu.get_numpy(rewards))
-        if self.use_automatic_entropy_tuning:
+        diagnostics['Averaged Bonus'] = np.mean(ptu.get_numpy(bonus))
+        if self.use_automatic_bonus_tuning:
             diagnostics['Alpha'] = alpha.item()
             diagnostics['Alpha Loss'] = alpha_loss.item()
 
@@ -176,10 +231,6 @@ class NNPTrainer(BatchTorchTrainer):
             self.eval_statistics.update(create_stats_ordered_dict(
                 'Q Targets',
                 ptu.get_numpy(q_target),
-            ))
-            self.eval_statistics.update(create_stats_ordered_dict(
-                'Log Pis',
-                ptu.get_numpy(log_prob_new_action),
             ))
             self.eval_statistics.update(diagnostics)
         self._n_train_steps_total += 1

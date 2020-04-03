@@ -54,7 +54,7 @@ class VideoEnv(MbrlEnv):
             force (bool): Clear out existing training data from this directory (by deleting every file prefixed with "openaigym.").
         """
         if not os.path.exists(directory):
-            logger.log('Creating monitor directory %s', directory)
+            logger.log('Creating monitor directory %s'%directory)
             if six.PY3:
                 os.makedirs(directory, exist_ok=True)
             else:

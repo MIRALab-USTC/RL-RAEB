@@ -128,7 +128,7 @@ class SACTrainer(BatchTorchTrainer):
         """
         policy
         """
-        q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=True)
+        q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=False)
         policy_loss = (alpha*log_prob_new_action - q_new_action).mean()
 
         self.policy_optimizer.zero_grad()

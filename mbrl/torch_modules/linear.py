@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Uniform
 import mbrl.torch_modules.utils as ptu
+import math
 
 class Linear(nn.Module):
     def __init__(self, 
@@ -50,9 +51,9 @@ class Linear(nn.Module):
             if self.init_bias_constant is None:
                 fan_in = self.in_features
                 bound = gain_coef / math.sqrt(fan_in)
-                init.uniform_(bias, -bound, bound)
+                nn.init.uniform_(bias, -bound, bound)
             else:
-                init.constant_(bias, self.init_bias_constant)
+                nn.init.constant_(bias, self.init_bias_constant)
 
     def extra_repr(self):
         return 'in_features={}, out_features={}, bias={}'.format(
@@ -72,7 +73,7 @@ class EnsembleLinear(Linear):
     def __init__(self, 
                  in_features, 
                  out_features, 
-                 ensemble_size=2,
+                 ensemble_size,
                  which_nonlinearity='relu',
                  with_bias=True,
                  init_weight_mode='uniform',
@@ -138,7 +139,6 @@ class NoisyLinear(Linear):
         self.factorised = factorised
         super(NoisyLinear, self).__init__(in_features,
                                           out_features,
-                                          ensemble_size,
                                           **linear_kwargs
                                           )
         self.reset_parameters(gain_coef=0.5)
@@ -152,34 +152,35 @@ class NoisyLinear(Linear):
                      bias_epsilon_size):
         if self.factorised:
             if self.noise_type == 'gaussian':
-                weight_epsilon_1 = randn(epsilon_1_size)
-                weight_epsilon_2 = randn(epsilon_2_size)
+                weight_epsilon_1 = ptu.randn(weight_epsilon_1_size)
+                weight_epsilon_2 = ptu.randn(weight_epsilon_2_size)
             elif self.noise_type == 'uniform':
-                weight_epsilon_1 = rand(epsilon_1_size)*2-1
-                weight_epsilon_2 = rand(epsilon_2_size)*2-1
+                weight_epsilon_1 = ptu.rand(weight_epsilon_1_size)*2-1
+                weight_epsilon_2 = ptu.rand(weight_epsilon_2_size)*2-1
 
             weight_epsilon = torch.matmul(weight_epsilon_1, weight_epsilon_2)
         else:
             if self.noise_type == 'gaussian':
-                weight_epsilon = randn(weight_epsilon_size)
+                weight_epsilon = ptu.randn(weight_epsilon_size)
             elif self.noise_type == 'uniform':
-                weight_epsilon = rand(weight_epsilon_size)*2-1
+                weight_epsilon = ptu.rand(weight_epsilon_size)*2-1
 
         if self.with_bias:
             if self.noise_type == 'gaussian':
-                bias_epsilon = randn(bias_epsilon_size)
+                bias_epsilon = ptu.randn(bias_epsilon_size)
             elif self.noise_type == 'uniform': 
-                bias_epsilon = rand(bias_epsilon_size)*2-1
+                bias_epsilon = ptu.rand(bias_epsilon_size)*2-1
         else:
             bias_epsilon = None
 
         return weight_epsilon, bias_epsilon
 
     def _get_noise(self, x):
-        weight_epsilon_1_size = (self.in_features, 1)
-        weight_epsilon_2_size = (1, self.out_features)
-        weight_epsilon_size = (self.in_features, self.out_features)
-        bias_epsilon_size = (1, self.out_features)
+        batch_size = x.shape[-3]
+        weight_epsilon_1_size = (batch_size, self.in_features, 1)
+        weight_epsilon_2_size = (batch_size, 1, self.out_features)
+        weight_epsilon_size = (batch_size, self.in_features, self.out_features)
+        bias_epsilon_size = (batch_size, 1, self.out_features)
         weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
                                                          weight_epsilon_2_size,
                                                          weight_epsilon_size,
@@ -202,11 +203,13 @@ class NoisyLinear(Linear):
     
     def _reset_sigma_weight_and_bias(self, sigma_weight, sigma_bias, scale):
         fan_in = self.in_features
-        init.constant_(sigma_weight, scale * math.sqrt(fan_in))
+        nn.init.constant_(sigma_weight, scale / math.sqrt(fan_in))
         if sigma_bias is not None:
-            init.constant_(sigma_bias, scale * math.sqrt(fan_in))
+            nn.init.constant_(sigma_bias, scale / math.sqrt(fan_in))
     
     def forward(self, x, deterministic=False):
+        if x.dim() < 3:
+            x = x.unsqueeze(-2)
         mean = super(NoisyLinear, self).forward(x)
         if deterministic:
             return mean
@@ -218,7 +221,7 @@ class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
     def __init__(self, 
                  in_features, 
                  out_features, 
-                 ensemble_size=None,
+                 ensemble_size,
                  noise_type='gaussian', #uniform 
                  factorised=False,
                  **ensemble_linear_kwargs
@@ -238,10 +241,11 @@ class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
 
 
     def _get_noise(self, x):
-        weight_epsilon_1_size = (self.ensemble_size, self.in_features, 1)
-        weight_epsilon_2_size = (self.ensemble_size, 1, self.out_features)
-        weight_epsilon_size = (self.ensemble_size, self.in_features, self.out_features)
-        bias_epsilon_size = (self.ensemble_size, 1, self.out_features)
+        batch_size = x.shape[-3]
+        weight_epsilon_1_size = (self.ensemble_size, batch_size, self.in_features, 1)
+        weight_epsilon_2_size = (self.ensemble_size, batch_size, 1, self.out_features)
+        weight_epsilon_size = (self.ensemble_size, batch_size, self.in_features, self.out_features)
+        bias_epsilon_size = (self.ensemble_size, batch_size, 1, self.out_features)
         weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
                                                          weight_epsilon_2_size,
                                                          weight_epsilon_size,
@@ -273,6 +277,8 @@ class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
             self._reset_sigma_weight_and_bias(w, s, scale)
     
     def forward(self, x, deterministic=False):
+        if x.dim() < 4:
+            x = x.unsqueeze(-2)
         mean = EnsembleLinear.forward(self, x)
         if deterministic:
             return mean

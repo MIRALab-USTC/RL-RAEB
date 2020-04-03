@@ -5,9 +5,11 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.distributions import Normal
+import warnings
 
 from mbrl.torch_modules.mlp import MLP, NoisyMLP
 import mbrl.torch_modules.utils as ptu
+from mbrl.torch_modules.linear import *
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
 
@@ -93,6 +95,8 @@ class SimpleGaussianPolicyModule(GaussianPolicyModule):
             module_name=policy_name,
             **mlp_kwargs
         )
+        self.obs_size = obs_size
+        self.action_size = action_size
         self.log_std = nn.Parameter(ptu.zeros(1,self.layers[-1]))
 
     def get_mean_std(self, obs, return_log_std=False):
@@ -123,6 +127,8 @@ class MeanLogstdGaussianPolicyModule(GaussianPolicyModule):
             module_name=policy_name,
             **mlp_kwargs
         )
+        self.obs_size = obs_size
+        self.action_size = action_size
 
     def get_mean_std(self, obs, return_log_std=False):
         output=MLP.forward(self, obs)
@@ -145,21 +151,118 @@ class NoisyNetworkPolicyModule(NoisyMLP):
             module_name=policy_name,
             **noisy_mlp_kwargs
         )
+        self.obs_size = obs_size
+        self.action_size = action_size
+
     def forward(self, 
                 obs,
                 return_info=True,
+                return_log_prob=False,
+                reparameterize=True,
                 **kwargs):
         action = super(NoisyNetworkPolicyModule, self).forward(obs, **kwargs)
+        if not reparameterize:
+            warnings.warn('set reparameterize False while using noisy network policy')
         if return_info:
-            return action, {}
+            if return_log_prob:
+                warnings.warn('require log_prob while using noisy network policy')
+            info = {}
+            return action, info
+        else:
+            return action
+
+class MultiHeadPolicyModule(MLP):
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 number_of_heads,
+                 learn_probability=False,
+                 with_expectation=True,
+                 policy_name='noisy_network_policy',
+                 **mlp_kwargs):
+        self.total_actions_size = output_size = action_size*number_of_heads
+        if learn_probability:
+            output_size += number_of_heads
+        if with_expectation:
+            output_size += action_size
+
+        super(MultiHeadPolicyModule, self).__init__(
+            obs_size,
+            output_size,
+            module_name=policy_name,
+            **mlp_kwargs
+        )
+        self.obs_size = obs_size
+        self.action_size = action_size
+        self.learn_probability = learn_probability
+        self.number_of_heads = number_of_heads
+        self.with_expectation = with_expectation
+
+    def forward(self, 
+                obs,
+                return_info=True,
+                deterministic=False,
+                return_log_prob=False,
+                return_distribution=False,
+                without_sampling=False,
+                reparameterize=True,
+                **kwargs):
+        output = super(MultiHeadPolicyModule, self).forward(obs, **kwargs)
+        
+        end = self.total_actions_size
+        actions = output[:,:end]
+        actions = actions.reshape(-1, self.number_of_heads, self.action_size)
+        
+        if self.learn_probability:
+            probability = torch.softmax(output[:,end:end+self.number_of_heads], dim=-1) 
+        else:
+            probability = ptu.ones(actions.shape[:2]) / self.number_of_heads
+
+        if self.with_expectation:
+            noises = actions - actions.mean(dim=1, keepdim=True)
+            expectation = output[:,-self.action_size:]
+            actions = actions + noises
+
+        if without_sampling:
+            action = actions[:,0]
+        else:
+            batch_size = actions.size(0)
+            if not deterministic:
+                choices = torch.multinomial(probability, 1).flatten()
+                action = actions[torch.arange(batch_size), choices]
+            else:
+                if self.with_expectation:
+                    action = expectation
+                else:
+                    action = actions.mean(dim=1)
+
+        if not reparameterize:
+            warnings.warn('set reparameterize False while using multi-head policy')
+
+        if return_info:
+            info = {}
+            if return_log_prob:
+                if without_sampling:
+                    warnings.warn('require log_prob while using multi-head policy without sampling')
+                else:
+                    prob = probability[torch.arange(batch_size), choices].reshape(-1,1)
+                    info['log_prob'] = torch.log(prob)
+
+            if return_distribution:
+                info['actions'] = actions
+                info['probability'] = probability
+
+            return action, info
         else:
             return action
 
 # assert the PDF of the output distribution is continuous to ensure the correctness of log_prob
+# otherwise, set 'discrete' as True
 class TanhPolicyModule(nn.Module):
-    def __init__(self, policy):
+    def __init__(self, policy, discrete=False):
         super(TanhPolicyModule, self).__init__()
         self._inner_policy = policy
+        self.discrete = discrete
     
     def forward(
             self,
@@ -176,7 +279,10 @@ class TanhPolicyModule(nn.Module):
                 v = info.pop(k)
                 info['pretanh_'+k] = v
                 if k == 'log_prob':
-                    log_prob = v - torch.log(1 - action * action + 1e-6)
+                    if self.discrete:
+                        log_prob = v
+                    else:
+                        log_prob = v - torch.log(1 - action * action + 1e-6)
                     info['log_prob'] = log_prob
             if return_pretanh_action:
                 info['pretanh_action'] = pre_action

@@ -36,7 +36,7 @@ class MLP(nn.Module):
 
     def _get_layers(self):
         self.fcs = []
-        for i in range(len(layers)-1):
+        for i in range(len(self.layers)-1):
             fc = self._get_single_layer(i)
             setattr(self, 'layer%d'%i, fc)
             self.fcs.append(fc)
@@ -136,11 +136,14 @@ class NoisyMLP(MLP):
                                        hidden_layers, 
                                        ensemble_size, 
                                        **mlp_kwargs)
+        self.output_dim = 2 if self.ensemble_size is None else 3
 
     def _get_single_layer(self, i):
         noise_type = self.noise_types[i]
         if noise_type is None:
             return super(NoisyMLP, self)._get_single_layer(i)
+
+        factorised = self.factorised[i]
 
         if self.ensemble_size is None:
             fc = NoisyLinear(self.layers[i],
@@ -158,3 +161,9 @@ class NoisyMLP(MLP):
                                      which_nonlinearity=self.nonlinearities[i],
                                      **self.fc_kwargs)
         return fc
+
+    def forward(self, x, **kwargs):
+        x = super(NoisyMLP, self).forward(x, **kwargs)
+        if x.dim() > self.output_dim:
+            x = x.squeeze(-2)
+        return x

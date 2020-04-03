@@ -74,6 +74,11 @@ def randn(*args, torch_device=None, **kwargs):
         torch_device = device
     return torch.randn(*args, **kwargs, device=torch_device)
 
+def randn_like(*args, torch_device=None, **kwargs):
+    if torch_device is None:
+        torch_device = device
+    return torch.randn_like(*args, **kwargs, device=torch_device)
+
 def tensor(*args, torch_device=None, **kwargs):
     if torch_device is None:
         torch_device = device
@@ -82,8 +87,16 @@ def tensor(*args, torch_device=None, **kwargs):
 def normal(*args, **kwargs):
     return torch.normal(*args, **kwargs).to(device)
 
-def rand(*args, **kwargs):
-    return torch.rand(*args, **kwargs).to(device)
+def rand(*args, torch_device=None, **kwargs):
+    if torch_device is None:
+        torch_device = device
+    return torch.rand(*args, **kwargs, device=torch_device)
+
+def rand_like(*args, torch_device=None, **kwargs):
+    if torch_device is None:
+        torch_device = device
+    return torch.rand_like(*args, **kwargs, device=torch_device)
+
 
 ############################ our utils ############################
 

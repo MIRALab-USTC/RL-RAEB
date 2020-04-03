@@ -57,7 +57,7 @@
         },
         {
             "name": "policy",
-            "class": "tanh_gaussian_policy",
+            "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
                 "hidden_layers": [256,256],
