@@ -219,10 +219,10 @@ class MultiHeadPolicyModule(MLP):
             probability = ptu.ones(actions.shape[:2]) / self.number_of_heads
 
         if self.with_expectation:
-            #有问题，忘了考虑probability
-            noises = actions - actions.mean(dim=1, keepdim=True)
+            weight = probability.reshape(-1, self.number_of_heads, 1)
+            noises = actions - (actions * weight).sum(dim=1, keepdim=True)
             expectation = output[:,-self.action_size:]
-            actions = actions + noises
+            actions = expectation + noises
 
         if without_sampling:
             action = actions[:,0]
@@ -235,7 +235,8 @@ class MultiHeadPolicyModule(MLP):
                 if self.with_expectation:
                     action = expectation
                 else:
-                    action = actions.mean(dim=1)
+                    weight = probability.reshape(-1, self.number_of_heads, 1)
+                    action = (actions * weight).sum(dim=1, keepdim=True)
 
         if not reparameterize:
             warnings.warn('set reparameterize False while using multi-head policy')
@@ -256,6 +257,9 @@ class MultiHeadPolicyModule(MLP):
             return action, info
         else:
             return action
+
+
+
 
 # assert the PDF of the output distribution is continuous to ensure the correctness of log_prob
 # otherwise, set 'discrete' as True

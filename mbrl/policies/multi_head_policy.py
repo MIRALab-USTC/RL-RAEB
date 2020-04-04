@@ -28,7 +28,7 @@ class MultiHeadPolicy(nn.Module, RandomPolicy):
         self.tanh_action = tanh_action
         
         if tanh_action:
-            self.module = TanhPolicyModule(multi_head, discrete=False)
+            self.module = TanhPolicyModule(multi_head, discrete=True)
         else:
             self.module = multi_head
     

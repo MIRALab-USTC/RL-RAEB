@@ -24,6 +24,7 @@ class BatchRLAlgorithm(RLAlgorithm, metaclass=abc.ABCMeta):
             item_dict_config={},
     ):
         super().__init__(num_epochs, item_dict_config)
+        self._need_snapshot.append('trainer')
         self.batch_size = batch_size
         self.num_eval_steps_per_epoch = num_eval_steps_per_epoch
         self.num_expl_steps_per_train_loop = num_expl_steps_per_train_loop
