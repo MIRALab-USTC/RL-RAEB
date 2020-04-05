@@ -171,6 +171,40 @@ class NoisyNetworkPolicyModule(NoisyMLP):
         else:
             return action
 
+class ExpectationNoisyPolicyModule(NoisyMLP):
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 policy_name='noisy_network_policy',
+                 **noisy_mlp_kwargs):
+        super(NoisyNetworkPolicyModule, self).__init__(
+            obs_size,
+            action_size,
+            module_name=policy_name,
+            **noisy_mlp_kwargs
+        )
+        self.obs_size = obs_size
+        self.action_size = action_size
+
+    def forward(self, 
+                obs,
+                return_info=True,
+                return_log_prob=False,
+                reparameterize=True,
+                **kwargs):
+        action = super(NoisyNetworkPolicyModule, self).forward(obs, **kwargs)
+        if not reparameterize:
+            warnings.warn('set reparameterize False while using noisy network policy')
+        if return_info:
+            if return_log_prob:
+                warnings.warn('require log_prob while using noisy network policy')
+            info = {}
+            return action, info
+        else:
+            return action
+
+            
+
 class MultiHeadPolicyModule(MLP):
     def __init__(self, 
                  obs_size, 
@@ -220,8 +254,8 @@ class MultiHeadPolicyModule(MLP):
 
         if self.with_expectation:
             weight = probability.reshape(-1, self.number_of_heads, 1)
-            noises = actions - (actions * weight).sum(dim=1, keepdim=True)
-            expectation = output[:,-self.action_size:]
+            noises = actions - (actions * weight).sum(dim=-2, keepdim=True)
+            expectation = output[:,-self.action_size:].reshape(-1,1,self.action_size)
             actions = expectation + noises
 
         if without_sampling:
@@ -236,7 +270,7 @@ class MultiHeadPolicyModule(MLP):
                     action = expectation
                 else:
                     weight = probability.reshape(-1, self.number_of_heads, 1)
-                    action = (actions * weight).sum(dim=1, keepdim=True)
+                    action = (actions * weight).sum(dim=-2, keepdim=True)
 
         if not reparameterize:
             warnings.warn('set reparameterize False while using multi-head policy')

@@ -28,10 +28,7 @@ class NNPTrainerMH(NNPTrainer):
         q = self.qf.value(new_obs, x, return_info=False, use_target_value=use_target_value)
         average_q = q.reshape(batch_size, -1, 1).mean(1)
 
-        if not self.use_automatic_bonus_tuning and self.alpha_if_not_automatic == 0:
-            return average_q, ptu.from_numpy(np.array(0))
-
-        elif 'phi' in self.bonus_type:
+        if 'phi' in self.bonus_type:
             x1 = x.reshape(batch_size, 1,sample_number, self.action_size)
             x2 = x.reshape(batch_size, sample_number,1, self.action_size)
             distance_x1_x2 = (x1 - x2)**2

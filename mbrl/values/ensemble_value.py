@@ -42,11 +42,11 @@ class EnsembleStateValue(nn.Module, StateValue):
                 ensemble_value = self.module(obs)
 
             if mode == 'min':
-                value = torch.min(ensemble_value, dim=0)[0]
+                value = torch.min(ensemble_value, dim=-3)[0]
             elif mode == 'mean':
-                value = torch.mean(ensemble_value, dim=0)[0]
+                value = torch.mean(ensemble_value, dim=-3)[0]
             elif mode == 'max':
-                value = torch.max(ensemble_value, dim=0)[0]
+                value = torch.max(ensemble_value, dim=-3)[0]
             elif mode == 'sample':
                 index = np.random.randint(self.ensemble_size)
                 value = ensemble_value[index]
@@ -124,11 +124,11 @@ class EnsembleQValue(nn.Module, QValue):
                 ensemble_value = self.module(input_tensor)
 
             if mode == 'min':
-                value = torch.min(ensemble_value, dim=0)[0]
+                value = torch.min(ensemble_value, dim=-3)[0]
             elif mode == 'mean':
-                value = torch.mean(ensemble_value, dim=0)[0]
+                value = torch.mean(ensemble_value, dim=-3)[0]
             elif mode == 'max':
-                value = torch.max(ensemble_value, dim=0)[0]
+                value = torch.max(ensemble_value, dim=-3)[0]
             elif mode == 'sample':
                 index = np.random.randint(self.ensemble_size)
                 value = ensemble_value[index]

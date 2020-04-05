@@ -29,7 +29,7 @@ class NNPTrainer(BatchTorchTrainer):
             plotter=None,
             render_eval_paths=False,
             
-            alpha_if_not_automatic=1e-2,
+            alpha_if_not_automatic=0,
             use_automatic_bonus_tuning=True,
             target_bonus=None,
             bonus_type='phi_power',
@@ -119,15 +119,12 @@ class NNPTrainer(BatchTorchTrainer):
 
     def compute_average_q_and_bonus(self, obs, use_target_value=False):
         #batch_size = state.shape[0]
-        new_obs = obs.repeat(self.sample_number,1)
+        new_obs = obs.expand(self.sample_number,*obs.shape)
         x, x_info = self.policy.action(
             new_obs, reparameterize=True, return_log_prob=True,
             )
-        q = self.qf.value(new_obs, x, return_info=False, use_target_value=use_target_value)
-        average_q = q.reshape(self.sample_number, -1, 1).mean(0)
-
-        if not self.use_automatic_bonus_tuning and self.alpha_if_not_automatic == 0:
-            return average_q, ptu.from_numpy(np.array(0))
+        q = self.qf.value(new_obs.unsqueeze(-3), x.unsqueeze(-3), return_info=False, use_target_value=use_target_value)
+        average_q = q.mean(0)
 
         if self.bonus_type == 'entropy':
             log_prob = x_info['log_prob']
@@ -140,7 +137,7 @@ class NNPTrainer(BatchTorchTrainer):
             distance_x1_x2 = (x1 - x2)**2
             if self.bonus_type == 'phi_power':
                 part1 = ((distance_x1_x2+1e-6) ** self.exponent).sum(dim=-1, keepdim=True)
-                part1 = (part1 * self.weight_matrix).sum(dim=[0,1])
+                part1 = (part1 * self.weight_matrix).sum(dim=[-3,-4])
                 part2 = self.phi_f(x).sum(dim=-1, keepdim=True)
                 part2 = part2.reshape(self.sample_number, -1, 1).mean(0)
                 bonus = part1 + self.expectation_yy - 2*part2

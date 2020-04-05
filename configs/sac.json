@@ -1,7 +1,7 @@
 {
     "experiment":{
         "tag": "my_sac",
-        "use_gpu": false,
+        "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/qizhou/test_data",
         "exp_prefix": "my_sac_cheetah"

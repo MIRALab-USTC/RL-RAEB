@@ -8,10 +8,10 @@ class MultiHeadPolicy(nn.Module, RandomPolicy):
                   env, 
                   obs_processor=None,
                   deterministic=False,
-                  number_of_heads=16,
+                  number_of_heads=32,
                   learn_probability=False,
+                  with_expectation=False,
                   tanh_action=True,
-                  with_expectation=True,
                   policy_name='multi_head_policy',
                   **mlp_kwargs):
 

@@ -33,6 +33,7 @@ class MLP(nn.Module):
         self.layers = [input_size] + hidden_layers + [output_size]
         self.fc_kwargs = fc_kwargs
         self._get_layers()
+        self.min_output_dim = 2 if self.ensemble_size is None else 3
 
     def _get_layers(self):
         self.fcs = []
@@ -99,9 +100,17 @@ class MLP(nn.Module):
         self.load_snapshot(loaded_state_dict, net_name)
 
     def forward(self, x, **kwargs):
+        if self.ensemble_size is None:
+            output_dim  = x.dim()
+        else:
+            output_dim  = x.dim() + 1
+
         for fc,act_f in zip(self.fcs, self.activation_functions):
             x = fc(x, **kwargs)
             x = act_f(x)
+        
+        while x.dim() > output_dim:
+            x = x.squeeze(0)
         return x
 
     def get_weight_decay(self, weight_decays):
@@ -117,7 +126,7 @@ class NoisyMLP(MLP):
                  output_size, 
                  hidden_layers=[128,128], 
                  ensemble_size=None, 
-                 noise_type='gaussian', #uniform 
+                 noise_type='gaussian', #'uniform', None 
                  output_noise_type='gaussian',
                  factorised=True,
                  output_factorised=True,
@@ -136,7 +145,6 @@ class NoisyMLP(MLP):
                                        hidden_layers, 
                                        ensemble_size, 
                                        **mlp_kwargs)
-        self.output_dim = 2 if self.ensemble_size is None else 3
 
     def _get_single_layer(self, i):
         noise_type = self.noise_types[i]
@@ -161,9 +169,3 @@ class NoisyMLP(MLP):
                                      which_nonlinearity=self.nonlinearities[i],
                                      **self.fc_kwargs)
         return fc
-
-    def forward(self, x, **kwargs):
-        x = super(NoisyMLP, self).forward(x, **kwargs)
-        if x.dim() > self.output_dim:
-            x = x.squeeze(-2)
-        return x

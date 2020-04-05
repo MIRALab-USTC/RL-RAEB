@@ -60,6 +60,9 @@ class Linear(nn.Module):
             self.in_features, self.out_features, self.with_bias)
 
     def forward(self, x):
+        while x.dim() < 2:
+            x = x.unsqueeze(0)
+
         if self.with_bias:
             return x.matmul(self.weight) + self.bias
         else:
@@ -113,6 +116,9 @@ class EnsembleLinear(Linear):
             self.in_features, self.out_features, self.ensemble_size, self.with_bias)
 
     def forward(self, x):
+        while x.dim() < 3:
+            x = x.unsqueeze(0)
+
         w = torch.stack(self.weights, 0)
         if self.with_bias:
             b = torch.stack(self.biases, 0)
@@ -174,26 +180,6 @@ class NoisyLinear(Linear):
             bias_epsilon = None
 
         return weight_epsilon, bias_epsilon
-
-    def _get_noise(self, x):
-        batch_size = x.shape[-3]
-        weight_epsilon_1_size = (batch_size, self.in_features, 1)
-        weight_epsilon_2_size = (batch_size, 1, self.out_features)
-        weight_epsilon_size = (batch_size, self.in_features, self.out_features)
-        bias_epsilon_size = (batch_size, 1, self.out_features)
-        weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
-                                                         weight_epsilon_2_size,
-                                                         weight_epsilon_size,
-                                                         bias_epsilon_size)
-
-        weight_noise = weight_epsilon * self.sigma_weight
-        weight_noise.requires_grad_(True)
-        if self.with_bias:
-            bias_noise = bias_epsilon * self.sigma_bias
-            bias_noise.requires_grad_(True)
-            return x.matmul(weight_noise) + bias_noise
-        else:
-            return x.matmul(weight_noise)
     
     def _get_sigma_parameters(self):
         self.sigma_weight, self.sigma_bias = self._creat_weight_and_bias()
@@ -208,16 +194,37 @@ class NoisyLinear(Linear):
             nn.init.constant_(sigma_bias, scale / math.sqrt(fan_in))
     
     def forward(self, x, deterministic=False):
-        if x.dim() < 3:
-            x = x.unsqueeze(-2)
-        mean = super(NoisyLinear, self).forward(x)
         if deterministic:
+            mean = super(NoisyLinear, self).forward(x)
             return mean
-        noise = self._get_noise(x)
-        return mean + noise
+
+        while x.dim() < 3:
+            x = x.unsqueeze(0)
+
+        batch_size = x.shape[-3]
+        weight_epsilon_1_size = (batch_size, self.in_features, 1)
+        weight_epsilon_2_size = (batch_size, 1, self.out_features)
+        weight_epsilon_size = (batch_size, self.in_features, self.out_features)
+        bias_epsilon_size = (batch_size, 1, self.out_features)
+        weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
+                                                         weight_epsilon_2_size,
+                                                         weight_epsilon_size,
+                                                         bias_epsilon_size)
+
+        weight_noise = weight_epsilon * self.sigma_weight
+        weight_noise.requires_grad_(True)
+        
+        if self.with_bias:
+            bias_noise = bias_epsilon * self.sigma_bias
+            bias_noise.requires_grad_(True)
+            return x.matmul(self.weight + weight_noise) + self.bias  + bias_noise
+        else:
+            return x.matmul(self.weight + weight_noise)
+            
 
 
 class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
+#may with some bugs
     def __init__(self, 
                  in_features, 
                  out_features, 
@@ -238,29 +245,6 @@ class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
         self.reset_parameters(gain_coef=0.5)
         self._get_sigma_parameters()
         self.reset_sigma_parameters()
-
-
-    def _get_noise(self, x):
-        batch_size = x.shape[-3]
-        weight_epsilon_1_size = (self.ensemble_size, batch_size, self.in_features, 1)
-        weight_epsilon_2_size = (self.ensemble_size, batch_size, 1, self.out_features)
-        weight_epsilon_size = (self.ensemble_size, batch_size, self.in_features, self.out_features)
-        bias_epsilon_size = (self.ensemble_size, batch_size, 1, self.out_features)
-        weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
-                                                         weight_epsilon_2_size,
-                                                         weight_epsilon_size,
-                                                         bias_epsilon_size)
-
-        sigma_weight = torch.stack(self.sigma_weights, 0)
-        weight_noise = weight_epsilon * sigma_weight
-        weight_noise.requires_grad_(True)
-        if self.with_bias:
-            sigma_bias = torch.stack(self.sigma_biases, 0)
-            bias_noise = bias_epsilon * sigma_bias
-            bias_noise.requires_grad_(True)
-            return x.matmul(weight_noise) + bias_noise
-        else:
-            return x.matmul(weight_noise)
     
     def _get_sigma_parameters(self):
         self.sigma_weights, self.sigma_biases = [], []
@@ -277,10 +261,33 @@ class NoisyEnsembleLinear(NoisyLinear, EnsembleLinear):
             self._reset_sigma_weight_and_bias(w, s, scale)
     
     def forward(self, x, deterministic=False):
-        if x.dim() < 4:
-            x = x.unsqueeze(-2)
-        mean = EnsembleLinear.forward(self, x)
         if deterministic:
+            mean = super(NoisyLinear, self).forward(x)
             return mean
-        noise = self._get_noise(x)
-        return mean + noise
+        
+        while x.dim() < 4:
+            x = x.unsqueeze(0)
+
+        batch_size = x.shape[-4]
+        weight_epsilon_1_size = (batch_size, self.ensemble_size, self.in_features, 1)
+        weight_epsilon_2_size = (batch_size, self.ensemble_size, 1, self.out_features)
+        weight_epsilon_size = (batch_size, self.ensemble_size, self.in_features, self.out_features)
+        bias_epsilon_size = (batch_size, self.ensemble_size, 1, self.out_features)
+        weight_epsilon, bias_epsilon = self._get_epsilon(weight_epsilon_1_size,
+                                                         weight_epsilon_2_size,
+                                                         weight_epsilon_size,
+                                                         bias_epsilon_size)
+
+        sigma_weight = torch.stack(self.sigma_weights, 0)
+        weight_noise = weight_epsilon * sigma_weight
+        weight_noise.requires_grad_(True)
+
+        w = torch.stack(self.weights, 0)
+        if self.with_bias:
+            b = torch.stack(self.biases, 0)
+            sigma_bias = torch.stack(self.sigma_biases, 0)
+            bias_noise = bias_epsilon * sigma_bias
+            bias_noise.requires_grad_(True)
+            return x.matmul(w + weight_noise) + b + bias_noise
+        else:
+            return x.matmul(w + weight_noise)

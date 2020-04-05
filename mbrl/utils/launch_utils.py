@@ -225,13 +225,23 @@ def update_config_by_cmd(config, cmd_config):
     for k,v in cmd_config.items():
         _set_config_by_k_v(config, k, v)
 
-def run_experiment(config_path, cmd_config):
-    import copy
-    from mbrl.algorithms.utils import get_item
-
+def run_experiments(config_path, cmd_config):
     config = json.load(open(config_path, 'r'))
     update_config_by_cmd(config, cmd_config)
 
+    if 'exp_prefix' not in config['experiment']:
+        exp_prefix = osp.basename(config_path)
+        exp_prefix = exp_prefix.split('.')[0]
+        config['experiment']['exp_prefix'] = exp_prefix
+    repeat = config['experiment'].pop('repeat', 1)
+    
+    for _ in range(repeat):
+        run_single_experiments(config)
+
+def run_single_experiments(config):
+    import copy
+    from mbrl.algorithms.utils import get_item
+    config = copy.deepcopy(config)
     experiment_kwargs = config['experiment']
     seed = experiment_kwargs.get('seed', None)
     seed = set_global_seed(seed)

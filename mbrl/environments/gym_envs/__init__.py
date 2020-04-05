@@ -37,11 +37,13 @@ register(
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
+    "mbrl_cheetah": "MBRLHalfCheetah-v0",
     "mbrl_swimmer": "MBRLSwimmer-v0",
     "mbrl_ant": "MBRLAnt-v0",
     "mbrl_hopper": "MBRLHopper-v0",
     "mbrl_walker2d": "MBRLWalker2d-v0",
     "half_cheetah": "HalfCheetah-v2",
+    "cheetah": "HalfCheetah-v2",
     "swimmer": "Swimmer-v2",
     "ant": "Ant-v2",
     "hopper": "Hopper-v2",
