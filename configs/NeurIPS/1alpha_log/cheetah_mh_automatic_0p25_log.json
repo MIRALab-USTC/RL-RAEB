@@ -4,7 +4,7 @@
         "use_gpu": true,
         "repeat": 3,
         "seed": null,
-        "base_log_dir": "/home/qizhou/data/NeurIPS/alpha"
+        "base_log_dir": "/home/qizhou/data/NeurIPS/alpha_log"
     },
     "algorithm": {
         "name": "nnp",
@@ -16,7 +16,7 @@
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "min_num_steps_before_training": 1000,
+            "min_num_steps_before_training": 10000,
             "record_video_freq": 20,
             "silent": false
         }
@@ -26,7 +26,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "humanoid",
+                "env_name": "cheetah",
                 "reward_scale": 1
             }
         },
@@ -34,7 +34,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "humanoid",
+                "env_name": "cheetah",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -43,7 +43,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "humanoid"
+                "env_name": "cheetah"
             }
         }
     ],
@@ -93,9 +93,8 @@
             "soft_target_tau": 5e-3,
             "use_automatic_bonus_tuning": true,
             "alpha_if_not_automatic": 0,
-            "bonus_type": "phi_power",
-            "exponent": 0.25,
-            "target_gaussian_std": 0.20
+            "bonus_type": "phi_log",
+            "target_gaussian_std": 0.25
         }
     },
     "pool": {

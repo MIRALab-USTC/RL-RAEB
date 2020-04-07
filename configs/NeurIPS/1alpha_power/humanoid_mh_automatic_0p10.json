@@ -16,17 +16,17 @@
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "min_num_steps_before_training": 1000,
+            "min_num_steps_before_training": 10000,
             "record_video_freq": 20,
             "silent": false
         }
     },
     "environment": [
         {
-            "name": "expl_env",
+            "name": "expl_env", 
             "class": "simple_env",
             "kwargs": {
-                "env_name": "cheetah",
+                "env_name": "humanoid",
                 "reward_scale": 1
             }
         },
@@ -34,7 +34,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "cheetah",
+                "env_name": "humanoid",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -43,7 +43,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "cheetah"
+                "env_name": "humanoid"
             }
         }
     ],
@@ -95,7 +95,7 @@
             "alpha_if_not_automatic": 0,
             "bonus_type": "phi_power",
             "exponent": 0.25,
-            "target_gaussian_std": 0.15
+            "target_gaussian_std": 0.10
         }
     },
     "pool": {

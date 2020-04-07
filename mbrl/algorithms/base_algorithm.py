@@ -26,6 +26,7 @@ class RLAlgorithm(object, metaclass=abc.ABCMeta):
             num_epochs,
             item_dict_config={},
     ):
+        gt.reset_root()
         self.num_epochs = num_epochs
         self.item_dict_config = item_dict_config
         self.item_dict = get_dict_of_items_from_config(item_dict_config)

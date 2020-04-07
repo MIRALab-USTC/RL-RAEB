@@ -37,11 +37,12 @@ class NNPTrainerMH(NNPTrainer):
             weight_matrix = p2 * p1
             if self.bonus_type == 'phi_power':
                 part1 = ((distance_x1_x2+1e-6) ** self.exponent).sum(dim=-1, keepdim=True)
-                part1 = (part1 * weight_matrix).sum(dim=[1,2])
+            elif self.bonus_type == 'phi_log':
+                part1 = torch.log(distance_x1_x2+1e-6).sum(dim=-1, keepdim=True)
 
-                part2 = self.phi_f(actions).sum(dim=-1, keepdim=True)
-                weight_vector = probability.reshape(batch_size, sample_number, 1)
-                part2 = (part2 * weight_vector).sum(1)
-                bonus = part1 + self.expectation_yy - 2*part2
-                return average_q, bonus
-
+            part1 = (part1 * weight_matrix).sum(dim=[-2,-3])
+            part2 = self.torch_phi_f(actions).sum(dim=-1, keepdim=True)
+            weight_vector = probability.reshape(batch_size, sample_number, 1)
+            part2 = (part2 * weight_vector).sum(1)
+            bonus = part1 + self.expectation_yy - 2*part2
+            return average_q, bonus

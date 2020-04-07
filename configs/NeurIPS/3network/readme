@@ -1,0 +1,5 @@
+使用最优的alpha和bonus_type
+使用不同类型的netowrk，包括两种mh，高斯和噪声    
+每一个都应该包括sac或改进版本sac
+
+如果可能每个网络都应该所有type都尝试一下

@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+import math
 import numpy as np
 import torch
 import torch.optim as optim
@@ -98,7 +99,17 @@ class NNPTrainer(BatchTorchTrainer):
                     a = 2*e+1
                     y = ( (1+x+1e-6)**a + (1-x+1e-6)**a ) / (a*2)
                     return y
-                self.phi_f = phi_f
+                self.torch_phi_f = self.numpy_phi_f = phi_f
+            if self.bonus_type == 'phi_log':
+                self.expectation_yy = (2*math.log(2)-3) * self.action_size
+                def numpy_phi_f(x):
+                    y = (1-x)*np.log(1+1e-6-x) + (1+x)*np.log(1+1e-6+x) - 2
+                    return y
+                def torch_phi_f(x):
+                    y = (1-x)*torch.log(1+1e-6-x) + (1+x)*torch.log(1+1e-6+x) - 2
+                    return y
+                self.numpy_phi_f = numpy_phi_f
+                self.torch_phi_f = torch_phi_f
     
     def get_recommended_target(self, target_gaussian_std):
         action_size = self.action_size
@@ -113,9 +124,12 @@ class NNPTrainer(BatchTorchTrainer):
 
             if self.bonus_type == 'phi_power':
                 part1 = np.sum((distance_x1_x2+1e-6) ** self.exponent, axis=-1)
-                part2 = self.phi_f(x1_samples).sum(axis=-1)\
-                        + self.phi_f(x2_samples).sum(axis=-1)
-                return part1.mean() + self.expectation_yy - part2.mean()
+            elif self.bonus_type == 'phi_log':
+                part1 = np.sum(np.log(distance_x1_x2+1e-6), axis=-1)
+
+            part2 = self.numpy_phi_f(x1_samples).sum(axis=-1)\
+                    + self.numpy_phi_f(x2_samples).sum(axis=-1)
+            return part1.mean() + self.expectation_yy - part2.mean()
 
     def compute_average_q_and_bonus(self, obs, use_target_value=False):
         #batch_size = state.shape[0]
@@ -137,11 +151,14 @@ class NNPTrainer(BatchTorchTrainer):
             distance_x1_x2 = (x1 - x2)**2
             if self.bonus_type == 'phi_power':
                 part1 = ((distance_x1_x2+1e-6) ** self.exponent).sum(dim=-1, keepdim=True)
-                part1 = (part1 * self.weight_matrix).sum(dim=[-3,-4])
-                part2 = self.phi_f(x).sum(dim=-1, keepdim=True)
-                part2 = part2.reshape(self.sample_number, -1, 1).mean(0)
-                bonus = part1 + self.expectation_yy - 2*part2
-                return average_q, bonus
+            elif self.bonus_type == 'phi_log':
+                part1 = torch.log(distance_x1_x2+1e-6).sum(dim=-1, keepdim=True)
+            part1 = (part1 * self.weight_matrix).sum(dim=[-3,-4])
+            part2 = self.torch_phi_f(x).sum(dim=-1, keepdim=True)
+            part2 = part2.reshape(self.sample_number, -1, 1).mean(0)
+            bonus = part1 + self.expectation_yy - 2*part2
+            return average_q, bonus
+            
 
 
     def train_from_torch_batch(self, batch):
