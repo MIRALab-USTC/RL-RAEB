@@ -161,7 +161,7 @@ class NoisyMLP(MLP):
                              which_nonlinearity=self.nonlinearities[i],
                              **self.fc_kwargs)
         else:
-            fc = EnsembleNoisyLinear(self.layers[i], 
+            fc = NoisyEnsembleLinear(self.layers[i], 
                                      self.layers[i+1], 
                                      self.ensemble_size,
                                      noise_type=noise_type,

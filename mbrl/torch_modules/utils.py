@@ -97,6 +97,11 @@ def rand_like(*args, torch_device=None, **kwargs):
         torch_device = device
     return torch.rand_like(*args, **kwargs, device=torch_device)
 
+def randint(*args, torch_device=None, **kwargs):
+    if torch_device is None:
+        torch_device = device
+    return torch.randint(*args, **kwargs, device=torch_device)
+
 
 ############################ our utils ############################
 

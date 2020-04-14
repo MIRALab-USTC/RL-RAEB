@@ -10,6 +10,7 @@ import random
 import numpy as np
 import torch
 from collections import OrderedDict
+import time
 
 import mbrl
 from mbrl.utils.logger import logger
@@ -157,7 +158,7 @@ def setup_logger(
 
 def set_global_seed(seed=None):
     if seed is None:
-        seed = random.randint(0,4096)
+        seed = int(time.time())%4096
     np.random.seed(seed)    
     random.seed(seed)    
     torch.manual_seed(seed) #cpu    
@@ -202,7 +203,9 @@ def _set_config_by_k_v(config, k, v):
     v = try_eval(v)
     keys = k.split('.')
     if len(keys) == 2:
-        if keys[0][:5] == "type-":
+        if keys[0] == 'experiment':
+            config['experiment'][keys[1]] = v
+        elif keys[0][:5] == "type-":
             for _,item_type,_,kwargs in _visit_all_items(config):
                 if item_type == keys[0][5:]:
                     kwargs[keys[1]] = v
@@ -221,24 +224,48 @@ def _set_config_by_k_v(config, k, v):
     return config
 
 
-def update_config_by_cmd(config, cmd_config):
+def update_config(config, cmd_config):
     for k,v in cmd_config.items():
         _set_config_by_k_v(config, k, v)
 
-def run_experiments(config_path, cmd_config):
+def get_config_from_file(config_path):
     config = json.load(open(config_path, 'r'))
-    update_config_by_cmd(config, cmd_config)
 
-    if 'exp_prefix' not in config['experiment']:
-        exp_prefix = osp.basename(config_path)
-        exp_prefix = exp_prefix.split('.')[0]
-        config['experiment']['exp_prefix'] = exp_prefix
-    repeat = config['experiment'].pop('repeat', 1)
-    
-    for _ in range(repeat):
-        run_single_experiments(config)
+    if 'base_config_file' in config:
+        base_config_file = config.pop('base_config_file')
+        base_config = get_config_from_file(base_config_file)
+        base_config.update(config)
+        config = base_config
 
-def run_single_experiments(config):
+    if 'cmd_config' in config:
+        cmd_config = config.pop('cmd_config')
+        update_config(config, cmd_config)
+
+    return config
+
+def run_experiments(config_path, cmd_config):
+    if osp.isdir(config_path):
+        for file_name in os.listdir(config_path):
+            if file_name[-5:] == '.json':
+                json_path = osp.join(config_path, file_name)
+                _run_experiments(json_path, cmd_config)
+    else:
+        _run_experiments(config_path, cmd_config)
+        
+def _run_experiments(config_path, cmd_config):
+        config = get_config_from_file(config_path)
+        update_config(config, cmd_config)
+
+        if 'exp_prefix' not in config['experiment']:
+            exp_prefix = osp.basename(config_path)
+            exp_prefix = exp_prefix.split('.')[0]
+            config['experiment']['exp_prefix'] = exp_prefix
+        repeat = config['experiment'].pop('repeat', 1)
+        
+        for _ in range(repeat):
+            run_single_experiment(config)
+
+def run_single_experiment(config):
     import copy
     from mbrl.algorithms.utils import get_item
     config = copy.deepcopy(config)

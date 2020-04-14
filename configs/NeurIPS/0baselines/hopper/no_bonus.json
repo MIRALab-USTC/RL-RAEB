@@ -1,0 +1,10 @@
+{
+    "base_config_file": "configs/aceb/aceb.json",
+    "cmd_config":{
+        "repeat": 2,
+        "base_log_dir": "/home/qizhou/data/neurips_data/comparison/hopper",
+        "type-environment.env_name": "hopper",
+        "trainer.bonus_type": "phi_power",
+        "trainer.use_automatic_bonus_tuning": false
+    }
+}

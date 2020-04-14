@@ -176,89 +176,61 @@ class MultiHeadPolicyModule(MLP):
                  obs_size, 
                  action_size, 
                  number_of_heads,
-                 learn_probability=False,
-                 with_expectation=True,
+                 independent,
                  policy_name='noisy_network_policy',
                  **mlp_kwargs):
-        self.total_actions_size = output_size = action_size*number_of_heads
-        if learn_probability:
-            output_size += number_of_heads
-        if with_expectation:
-            output_size += action_size
-
         super(MultiHeadPolicyModule, self).__init__(
             obs_size,
-            output_size,
+            action_size*number_of_heads,
             module_name=policy_name,
             **mlp_kwargs
         )
         self.obs_size = obs_size
         self.action_size = action_size
-        self.learn_probability = learn_probability
         self.number_of_heads = number_of_heads
-        self.with_expectation = with_expectation
+        self.independent = independent
 
     def forward(self, 
                 obs,
                 return_info=True,
                 deterministic=False,
-                return_log_prob=False,
                 return_distribution=False,
                 without_sampling=False,
                 reparameterize=True,
+                return_log_prob=False,
                 **kwargs):
-        output = super(MultiHeadPolicyModule, self).forward(obs, **kwargs)
-        
-        end = self.total_actions_size
-        actions = output[:,:end]
-        actions = actions.reshape(-1, self.number_of_heads, self.action_size)
-        
-        if self.learn_probability:
-            probability = torch.softmax(output[:,end:end+self.number_of_heads], dim=-1) 
-        else:
-            probability = ptu.ones(actions.shape[:2]) / self.number_of_heads
+        actions = super(MultiHeadPolicyModule, self).forward(obs, **kwargs)
 
-        if self.with_expectation:
-            weight = probability.reshape(-1, self.number_of_heads, 1)
-            noises = actions - (actions * weight).sum(dim=-2, keepdim=True)
-            expectation = output[:,-self.action_size:].reshape(-1,1,self.action_size)
-            actions = expectation + noises
+        batch_size = actions.shape[:-1]
+        actions = actions.reshape(batch_size+(self.number_of_heads, self.action_size))
 
         if without_sampling:
-            action = actions[:,0]
+            action = actions[...,0,:]
         else:
-            batch_size = actions.size(0)
-            if not deterministic:
-                choices = torch.multinomial(probability, 1).flatten()
-                action = actions[torch.arange(batch_size), choices]
+            ind_size = batch_size + (1,self.action_size)
+            if deterministic:
+                action = actions.mean(dim=-2)
             else:
-                if self.with_expectation:
-                    action = expectation
+                if self.independent:
+                    ind = ptu.randint(0,self.number_of_heads,size=ind_size).long()
                 else:
-                    weight = probability.reshape(-1, self.number_of_heads, 1)
-                    action = (actions * weight).sum(dim=-2, keepdim=True)
+                    ind = ptu.randint(0,self.number_of_heads,size=batch_size + (1,1)).long()
+                    ind = ind.expand(ind_size)
+                action = actions.gather(-2, ind).squeeze(-2)
 
         if not reparameterize:
             warnings.warn('set reparameterize False while using multi-head policy')
+        if return_log_prob:
+            warnings.warn('require log_prob while using multi-head policy')
 
         if return_info:
             info = {}
-            if return_log_prob:
-                if without_sampling:
-                    warnings.warn('require log_prob while using multi-head policy without sampling')
-                else:
-                    prob = probability[torch.arange(batch_size), choices].reshape(-1,1)
-                    info['log_prob'] = torch.log(prob)
 
             if return_distribution:
                 info['actions'] = actions
-                info['probability'] = probability
-
             return action, info
         else:
             return action
-
-
 
 
 # assert the PDF of the output distribution is continuous to ensure the correctness of log_prob

@@ -1,0 +1,33 @@
+{
+    "base_config_file": "configs/aceb/aceb.json",
+    "cmd_config":{
+        "trainer.bonus_type": "entropy",
+        "base_log_dir": "/home/qizhou/data/neurips_data/comparison/humanoid",
+        "type-environment.env_name": "humanoid"
+    },
+    "policy": [
+        {
+            "name": "init_expl_policy",
+            "class": "uniformly_random_policy",
+            "kwargs":{
+                "env": "$expl_env"
+            }
+        },
+        {
+            "name": "policy",
+            "class": "gaussian_policy",
+            "kwargs": {
+                "env": "$expl_env",
+                "hidden_layers": [256,256],
+                "nonlinearity": "relu"
+            }
+        },
+        {
+            "name": "eval_policy",
+            "class": "MakeDeterministic",
+            "kwargs":{
+                "random_policy": "$policy"
+            }
+        }
+    ]
+}
