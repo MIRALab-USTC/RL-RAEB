@@ -132,7 +132,7 @@ class ACEBTrainer(BatchTorchTrainer):
         if self.bonus_type == 'entropy':
             return (0.5 + 0.5 * math.log(2 * math.pi) + math.log(target_gaussian_std) ) * action_size
 
-        if self.bonus_type == 'entropy':
+        if self.bonus_type == 'variance':
             return (target_gaussian_std ** 2)  * action_size
         
         elif 'phi' in self.bonus_type:
