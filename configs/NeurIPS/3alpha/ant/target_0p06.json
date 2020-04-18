@@ -1,0 +1,10 @@
+
+{
+    "base_config_file": "configs/aceb/aceb.json",
+    "cmd_config":{
+        "trainer.bonus_type": "phi_power",
+        "base_log_dir": "/home/qizhou/data/neurips_data/alpha/ant",
+        "type-environment.env_name": "ant",
+        "trainer.target_gaussian_std":0.06
+    }
+}

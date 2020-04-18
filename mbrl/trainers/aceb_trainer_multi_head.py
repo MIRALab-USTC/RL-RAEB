@@ -37,6 +37,11 @@ class ACEBTrainerMH(ACEBTrainer):
                 part1 = torch.log(distance_x1_x2+1e-6).sum(dim=-1, keepdim=True)
 
             part1 = part1.mean(1).mean(1)
-            part2 = self.torch_phi_f(actions).sum(dim=-1, keepdim=True).mean(1)
-            bonus = part1 + self.expectation_yy - 2*part2
+
+            if self.only_xx:
+                bonus = part1
+            else:
+                part2 = self.torch_phi_f(actions).sum(dim=-1, keepdim=True).mean(1)
+                bonus = part1 + self.expectation_yy - 2*part2
+
             return average_q, bonus

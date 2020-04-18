@@ -3,7 +3,7 @@
     "base_config_file": "configs/aceb/aceb_mh_dependent.json",
     "cmd_config":{
         "trainer.bonus_type": "phi_power",
-        "base_log_dir": "/home/qizhou/data/neurips_data/network/cheetah",
-        "type-environment.env_name": "cheetah"
+        "base_log_dir": "/home/qizhou/data/neurips_data/network/walker2d",
+        "type-environment.env_name": "walker2d"
     }
 }

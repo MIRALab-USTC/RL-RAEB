@@ -3,7 +3,7 @@
     "cmd_config":{
         "trainer.bonus_type": "phi_power",
         "trainer.exponent": 0.5,
-        "base_log_dir": "/home/qizhou/data/neurips_data/bonus_typre/humanoid",
-        "type-environment.env_name": "humanoid"
+        "base_log_dir": "/home/qizhou/data/neurips_data/bonus_typre/ant",
+        "type-environment.env_name": "ant"
     }
 }

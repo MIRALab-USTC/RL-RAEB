@@ -4,6 +4,7 @@
     "cmd_config":{
         "trainer.bonus_type": "phi_power",
         "base_log_dir": "/home/qizhou/data/neurips_data/network/humanoid",
-        "type-environment.env_name": "humanoid"
+        "type-environment.env_name": "humanoid",
+        "trainer.use_automatic_bonus_tuning": false
     }
 }

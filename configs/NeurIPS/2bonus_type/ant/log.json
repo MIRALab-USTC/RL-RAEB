@@ -1,0 +1,8 @@
+{
+    "base_config_file": "configs/aceb/aceb.json",
+    "cmd_config":{
+        "trainer.bonus_type": "phi_log",
+        "base_log_dir": "/home/qizhou/data/neurips_data/bonus_typre/ant",
+        "type-environment.env_name": "ant"
+    }
+}
