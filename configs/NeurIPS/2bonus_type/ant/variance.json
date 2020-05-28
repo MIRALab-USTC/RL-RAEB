@@ -2,7 +2,7 @@
     "base_config_file": "configs/aceb/aceb.json",
     "cmd_config":{
         "trainer.bonus_type": "variance",
-        "base_log_dir": "/home/qizhou/data/neurips_data/bonus_typre/ant",
+        "base_log_dir": "/home/qizhou/data/neurips_data/bonus_type/ant",
         "type-environment.env_name": "ant"
     }
 }

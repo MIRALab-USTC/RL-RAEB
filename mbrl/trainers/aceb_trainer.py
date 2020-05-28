@@ -32,8 +32,9 @@ class ACEBTrainer(BatchTorchTrainer):
 
             bonus_type='phi_power',
             use_automatic_bonus_tuning=True,
+            init_log_alpha=0,
             alpha_if_not_automatic=0,
-            target_gaussian_std=0.15,
+            target_gaussian_std=0.09,
 
             end_target_gaussian_std=None,
             end_reducing_exploration=1000,
@@ -72,6 +73,7 @@ class ACEBTrainer(BatchTorchTrainer):
             self.end_reducing_exploration = end_reducing_exploration
             
             self.log_alpha = ptu.zeros(1, requires_grad=True)
+            self.log_alpha.data = ptu.FloatTensor([init_log_alpha])
             self.alpha_optimizer = optimizer_class(
                 [self.log_alpha],
                 lr=policy_lr,
@@ -160,7 +162,7 @@ class ACEBTrainer(BatchTorchTrainer):
         x, x_info = self.policy.action(
             new_obs, reparameterize=True, return_log_prob=True,
             )
-        q = self.qf.value(new_obs.unsqueeze(-3), x.unsqueeze(-3), return_info=False, use_target_value=use_target_value)
+        q = self.qf.value(new_obs, x, return_info=False, use_target_value=use_target_value)
         average_q = q.mean(0)
 
         if self.bonus_type == 'entropy':

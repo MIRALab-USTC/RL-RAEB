@@ -7,7 +7,9 @@ import torch.nn.functional as F
 from torch.distributions import Normal
 import warnings
 
+from mbrl.torch_modules.flows import RealNVP
 from mbrl.torch_modules.mlp import MLP, NoisyMLP
+from mbrl.torch_modules.linear import Linear
 import mbrl.torch_modules.utils as ptu
 from mbrl.torch_modules.linear import *
 LOG_STD_MAX = 2
@@ -57,7 +59,7 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
             info = {}
             if return_log_prob:
                 log_prob = normal.log_prob(action)
-                info['log_prob'] = log_prob
+                info['log_prob'] = log_prob.sum(-1, keepdim=True)
             if return_mean_std:
                 info['mean'] = mean
                 info['std'] = std
@@ -73,7 +75,7 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
         mean, std = self.get_mean_std(obs)
         normal = Normal(mean, std)
         log_prob = normal.log_prob(action)
-        return log_prob
+        return log_prob.sum(-1, keepdim=True)
 
     def get_entroy(self, obs):
         _,log_std = self.get_mean_std(obs,return_log_std=True)
@@ -232,6 +234,90 @@ class MultiHeadPolicyModule(MLP):
         else:
             return action
 
+class GeneratorPolicyModule(MeanLogstdGaussianPolicyModule):  
+    def __init__(self, 
+                 obs_size, 
+                 action_size, 
+                 last_hidden_each_dim=16,
+                 last_nonlinearity='relu',
+                 policy_name='generator_policy',
+                 **mlp_kwargs):
+        super(GeneratorPolicyModule, self).__init__(
+            obs_size,
+            action_size*last_hidden_each_dim,
+            policy_name=policy_name,
+            **mlp_kwargs
+        )
+        self.action_size=action_size
+        self.last_hidden_each_dim = last_hidden_each_dim
+        self.last_fc=Linear(last_hidden_each_dim, 1)
+        self.last_nl=ptu.get_nonlinearity(last_nonlinearity)
+
+    def forward(self, 
+                obs, 
+                return_info=True,
+                deterministic=False,
+                reparameterize=True,
+                return_log_prob=False):
+        h = super(GeneratorPolicyModule, self).forward(
+            obs,
+            False,
+            deterministic,
+            reparameterize
+        )
+        batch_size = h.shape[:-1]
+        h = h.reshape(batch_size+(self.action_size,-1))
+        actions = self.last_fc(h).squeeze(-1)
+
+        if return_log_prob:
+            warnings.warn('require log_prob while using generator policy')
+
+        if return_info:
+            return actions, {}
+        else:
+            return actions
+
+
+class NormalizingFlowPolicyModule(MeanLogstdGaussianPolicyModule):  
+    def __init__(self, 
+                 obs_size, 
+                 action_size,  
+                 n_blocks=4, 
+                 n_hidden_per_block=3,
+                 policy_name='generator_policy',
+                 **mlp_kwargs):
+        super(NormalizingFlowPolicyModule, self).__init__(
+            obs_size,
+            action_size,
+            policy_name=policy_name,
+            **mlp_kwargs
+        )
+        self.NL = RealNVP(self.action_size, n_blocks, n_hidden_per_block)
+
+    def forward(self, 
+                obs, 
+                return_info=True,
+                deterministic=False,
+                reparameterize=True,
+                return_log_prob=False):
+        h, info = super(NormalizingFlowPolicyModule, self).forward(
+            obs,
+            True,
+            deterministic,
+            reparameterize,
+            return_log_prob
+        )
+        actions, log_det = self.NL(h,return_log_prob)
+        
+        if return_log_prob:
+            info['log_prob'] = info['log_prob'] - log_det
+        if return_info:
+            return actions, info
+        else:
+            return actions
+
+    def log_prob(self, obs, action):
+        raise NotImplementedError
 
 # assert the PDF of the output distribution is continuous to ensure the correctness of log_prob
 # otherwise, set 'discrete' as True
@@ -259,7 +345,7 @@ class TanhPolicyModule(nn.Module):
                     if self.discrete:
                         log_prob = v
                     else:
-                        log_prob = v - torch.log(1 - action * action + 1e-6)
+                        log_prob = v - torch.log(1 - action * action + 1e-8).sum(-1, keepdim=True)
                     info['log_prob'] = log_prob
             if return_pretanh_action:
                 info['pretanh_action'] = pre_action

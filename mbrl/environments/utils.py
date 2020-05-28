@@ -1,4 +1,4 @@
-from mbrl.environments.gym_envs import env_name_to_gym_registry_dict
+from mbrl.environments.our_envs import env_name_to_gym_registry_dict
 import gym
 import warnings
 

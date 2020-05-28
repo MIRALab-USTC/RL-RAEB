@@ -3,7 +3,6 @@ import mbrl.torch_modules.utils as ptu
 
 class Value(object, metaclass=abc.ABCMeta):
     def __init__(self, env, obs_processor=None):
-        self._env = env
         self.action_shape = env.action_space.shape
         self.observation_shape = env.observation_space.shape
         if obs_processor is None:

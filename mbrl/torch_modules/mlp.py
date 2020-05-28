@@ -101,15 +101,15 @@ class MLP(nn.Module):
 
     def forward(self, x, **kwargs):
         if self.ensemble_size is None:
-            output_dim  = x.dim()
+            max_output_dim  = x.dim()
         else:
-            output_dim  = x.dim() + 1
+            max_output_dim  = x.dim() + 1
 
         for fc,act_f in zip(self.fcs, self.activation_functions):
             x = fc(x, **kwargs)
             x = act_f(x)
         
-        while x.dim() > output_dim:
+        while x.dim() > max_output_dim:
             x = x.squeeze(0)
         return x
 

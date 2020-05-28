@@ -1,0 +1,9 @@
+{
+    "base_config_file": "configs/aceb/aceb_gaussian.json",
+    "cmd_config":{
+        "repeat": 6,
+        "trainer.bonus_type": "phi_log",
+        "base_log_dir": "/home/qizhou/data/neurips_data/comparison/swimmer",
+        "type-environment.env_name": "swimmer"
+    }
+}

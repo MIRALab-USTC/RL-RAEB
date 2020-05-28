@@ -34,6 +34,8 @@ class EnsembleStateValue(nn.Module, StateValue):
             self.update_target(1)
     
     def _value(self, obs, return_info=False, use_target_value=False, mode='min', return_ensemble=False):
+        if obs.dim() > 2:
+            obs = obs.unsqueeze(-3)
 
         if self.ensemble_size is not None:
             if use_target_value:
@@ -115,6 +117,9 @@ class EnsembleQValue(nn.Module, QValue):
             self.update_target(1)
     
     def _value(self, obs, action, return_info=False, use_target_value=False, mode='min', return_ensemble=False):
+        if obs.dim() > 2:
+            obs = obs.unsqueeze(-3)
+            action = action.unsqueeze(-3)
         input_tensor = torch.cat([obs, action], dim=-1)
 
         if self.ensemble_size is not None:

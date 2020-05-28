@@ -44,8 +44,6 @@ class SimpleEnv(MbrlEnv):
         action = action[0]
         action = np.clip(action, -1.0, 1.0)
         action = self.low + (action + 1.0) * (self.high - self.low) * 0.5
-        if len(action.shape) == len(self.action_space.shape):
-            action = np.array([action])
         o, r, d, info = self.env.step(action)
         if self.cur_step_id >= self.max_length:
             done = 1.0
@@ -53,4 +51,4 @@ class SimpleEnv(MbrlEnv):
         for k in info:
             info[k] = np.array([[info[k]]])
         return o, r, d, info
-
+    

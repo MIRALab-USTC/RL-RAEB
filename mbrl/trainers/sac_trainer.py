@@ -31,7 +31,8 @@ class SACTrainer(BatchTorchTrainer):
 
             alpha_if_not_automatic=1e-2,
             use_automatic_entropy_tuning=True,
-            target_entropy=None,
+            init_log_alpha=0,
+            target_entropy=None
     ):
         super().__init__()
         if isinstance(optimizer_class, str):
@@ -49,7 +50,8 @@ class SACTrainer(BatchTorchTrainer):
                 self.target_entropy = target_entropy
             else:
                 self.target_entropy = -np.prod(self.env.action_space.shape).item()  # heuristic value from Tuomas
-            self.log_alpha = ptu.zeros(1, requires_grad=True)
+            self.log_alpha = ptu.FloatTensor([init_log_alpha])
+            self.log_alpha.requires_grad_(True)
             self.alpha_optimizer = optimizer_class(
                 [self.log_alpha],
                 lr=policy_lr,
@@ -130,7 +132,7 @@ class SACTrainer(BatchTorchTrainer):
         """
         q_new_action, _ = self.qf.value(obs, new_action, return_ensemble=False)
         policy_loss = (alpha*log_prob_new_action - q_new_action).mean()
-
+        
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
