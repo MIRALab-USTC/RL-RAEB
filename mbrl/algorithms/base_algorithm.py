@@ -20,7 +20,7 @@ def _get_epoch_timings():
     return times
 
 
-class RLAlgorithm(object, metaclass=abc.ABCMeta):
+class RLAlgorithm(object):
     def __init__(
             self,
             num_epochs,
@@ -30,6 +30,7 @@ class RLAlgorithm(object, metaclass=abc.ABCMeta):
         self.num_epochs = num_epochs
         self.item_dict_config = item_dict_config
         self.item_dict = get_dict_of_items_from_config(item_dict_config)
+        print(f"item_dict_from_config: {self.item_dict}")
         self.__dict__.update(self.item_dict)
         self._need_snapshot = []
 

@@ -75,4 +75,5 @@ env_name_to_gym_registry_dict = {
     "hopper": "Hopper-v2",
     "walker2d": "Walker2d-v2",
     "humanoid": "Humanoid-v2",
+    "mountaincar": "MountainCarContinuous-v0",
 }

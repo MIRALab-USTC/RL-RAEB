@@ -3,7 +3,7 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/qizhou/data/test_nf",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/test",
         "exp_prefix": "my_sac_cheetah"
     },
     "algorithm": {
@@ -32,7 +32,7 @@
         },
         {
             "name": "eval_env",
-            "class": "gaussian_policy",
+            "class": "normalized_vector_env",
             "kwargs": {
                 "env_name": "half_cheetah",
                 "n_env":8,
@@ -57,7 +57,7 @@
         },
         {
             "name": "policy",
-            "class": "normalizing_flow_policy",
+            "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
                 "hidden_layers": [128,128],
@@ -79,6 +79,17 @@
             "env": "$expl_env",
             "hidden_layers": [256,256]
         } 
+    },
+    "model": {
+        "name": "base_model_without_reward",
+        "class": "ModelNoReward",
+        "kwargs": {
+            "env": "$expl_env",
+            "layers_num": 4, 
+            "hidden_size": [512,512,512,512],
+            "ensemble_size": 1, 
+            "non_linearity": "swish"   
+        }
     },
     "trainer":{
         "name": "trainer",

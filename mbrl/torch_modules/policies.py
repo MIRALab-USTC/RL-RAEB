@@ -37,6 +37,7 @@ class GaussianPolicyModule(MLP, metaclass=abc.ABCMeta):
         :return: 
         """
         mean, log_std = self.get_mean_std(obs,return_log_std=True)
+        log_std = torch.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
         std = torch.exp(log_std)
         if deterministic:
             action = mean
@@ -135,6 +136,7 @@ class MeanLogstdGaussianPolicyModule(GaussianPolicyModule):
     def get_mean_std(self, obs, return_log_std=False):
         output=MLP.forward(self, obs)
         mean, log_std = torch.chunk(output,2,-1)
+        #print(f"log_std: {log_std}")
         log_std = torch.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
         if return_log_std:
             return mean, log_std

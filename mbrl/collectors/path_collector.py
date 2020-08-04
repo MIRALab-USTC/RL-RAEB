@@ -50,6 +50,7 @@ class SimplePathCollector(PathCollector):
             cut=True,
             stop_if_terminal=True,
     ):
+    # 收集新的 paths
         max_path_length = min(self._env.horizon,max_path_length)
         paths = []
         path_lens = []

@@ -25,12 +25,18 @@ def _under_score_to_camel(word):
     return ''.join(parts)
 
 def get_item_class(item_type, item_class_name):
+    print(f"itme_type: {item_type}")
+    print(f"item_class_name: {item_class_name}")
     path = 'mbrl.'+_plural(item_type)
+    print(f"path: {path}")
     base_class_name = _under_score_to_camel(item_type)
     item_class_name = _under_score_to_camel(item_class_name)
     import importlib
     module = importlib.import_module(path)
+    print(f"base_class: {base_class_name}")
+    print(f"item_class_name: {item_class_name}")
     base_class = getattr(module, base_class_name)
+
     item_class = get_subclass(base_class, item_class_name)
     if item_class is None:
         raise RuntimeError("There is no class corresponding to %s"%item_class_name)

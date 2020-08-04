@@ -10,3 +10,4 @@ MANIFEST
 .VS*
 *.egg-info
 \.idea/
+o_*.txt

@@ -255,7 +255,7 @@ def run_experiments(config_path, cmd_config):
 def _run_experiments(config_path, cmd_config):
         config = get_config_from_file(config_path)
         update_config(config, cmd_config)
-
+        print(f"config: {config}")
         if 'exp_prefix' not in config['experiment']:
             exp_prefix = osp.basename(config_path)
             exp_prefix = exp_prefix.split('.')[0]
@@ -291,6 +291,7 @@ def run_single_experiment(config):
     algo_class = algo['class']
     algo_kwargs = algo['kwargs']
     algo_kwargs['item_dict_config'] = config
+    print(f"launch_utils_config: {config}")
 
     algo = get_item('algorithm', algo_class, algo_kwargs)
     algo.to(ptu.device)
