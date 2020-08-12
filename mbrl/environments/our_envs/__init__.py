@@ -59,6 +59,24 @@ register(
     max_episode_steps=30,
 )
 
+register(
+    id='MagellanAnt-v2',
+    entry_point='mbrl.environments.our_envs.ant:MagellanAntEnv',
+    max_episode_steps=300
+)
+
+
+register(
+    id='MagellanHalfCheetah-v2',
+    entry_point='mbrl.environments.our_envs.half_cheetah:MagellanHalfCheetahEnv',
+    max_episode_steps=100
+)
+
+register(
+    id='MagellanSparseMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car:MagellanSparseContinuousMountainCarEnv',
+    max_episode_steps=500
+)
 
 
 env_name_to_gym_registry_dict = {
@@ -76,4 +94,7 @@ env_name_to_gym_registry_dict = {
     "walker2d": "Walker2d-v2",
     "humanoid": "Humanoid-v2",
     "mountaincar": "MountainCarContinuous-v0",
+    "ant_maze": "MagellanAnt-v2",
+    "mountaincar_sparse": "MagellanSparseMountainCar-v0",
+    "cheetah_sparse": "MagellanHalfCheetah-v2",
 }

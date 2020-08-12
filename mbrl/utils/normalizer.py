@@ -15,7 +15,8 @@ class TransitionNormalizer:
         mean = torch.FloatTensor(mean).to(x.device)
         stdev = torch.FloatTensor(stdev).to(x.device)
 
-        assert x.size(-1) == mean.size(-1), f'sizes: {x.size()}, {mean.size()}'
+        assert x.size(-1) == mean.size(-1)
+        #, f'sizes: {x.size()}, {mean.size()}'
 
         mean, stdev = mean.clone().detach(), stdev.clone().detach()
         mean, stdev = mean.to(x.device), stdev.to(x.device)

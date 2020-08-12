@@ -70,6 +70,7 @@ class EnsembleDenseLayer(nn.Module):
 
 class Model(object, metaclass=abc.ABCMeta):
     def __init__(self, env, hidden_size, layers_num, ensemble_size, non_linearity):
+        self.env = env
         self.dim_action = env.action_space.shape[0]
         self.dim_state = env.observation_space.shape[0]
 
@@ -99,7 +100,8 @@ class Model(object, metaclass=abc.ABCMeta):
     def forward(self, normalize_input_obs, normalize_input_action, unnormalize_output_obs):
         # predict with raw datas
         pass
-
+    def forward_all(self, states, actions):
+        pass
     def loss(self, states, actions, state_deltas, training_noise_stdev=0):
         # loss function for training models
         pass
@@ -109,8 +111,6 @@ class Model(object, metaclass=abc.ABCMeta):
 
 
 class ModelNoReward(nn.Module, Model):
-
-
     def __init__(self, env, hidden_size, layers_num, ensemble_size, non_linearity):
         nn.Module.__init__(self)
         Model.__init__(self, env, hidden_size, layers_num, ensemble_size, non_linearity)
@@ -176,6 +176,23 @@ class ModelNoReward(nn.Module, Model):
         next_state_mean = delta_mean + states.to(self.device)
         return next_state_mean, var
 
+    def forward_all(self, states, actions):
+        """
+        predict next state mean and variance of a batch of states and actions for all models.
+        takes in raw states and actions and internally normalizes it.
+
+        Args:
+            states (torch tensor): (batch size, dim_state)
+            actions (torch tensor): (batch size, dim_action)
+
+        Returns:
+            next state means (torch tensor): (batch size, ensemble_size, dim_state)
+            next state variances (torch tensor): (batch size, ensemble_size, dim_state)
+        """
+        states = states.unsqueeze(0).repeat(self.ensemble_size, 1, 1)
+        actions = actions.unsqueeze(0).repeat(self.ensemble_size, 1, 1)
+        next_state_means, next_state_vars = self(states, actions)
+        return next_state_means.transpose(0, 1), next_state_vars.transpose(0, 1)
     def _propagate_network(self, normalized_states, normalized_actions):
         inp = torch.cat((normalized_states, normalized_actions), dim=2)
         op = self.layers(inp)
@@ -226,4 +243,17 @@ class ModelNoReward(nn.Module, Model):
     def get_diagnostics():
         pass
 
+    def sample(self, mean, var):
+        """
+        sample next state, given next state mean and variance
+
+        Args:
+            mean (torch tensor): any shape
+            var (torch tensor): any shape
+
+        Returns:
+            next state (torch tensor): same shape as inputs
+        """
+
+        return Normal(mean, torch.sqrt(var)).sample()
 

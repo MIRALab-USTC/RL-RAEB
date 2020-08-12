@@ -1,6 +1,9 @@
 import numpy as np 
 
 from mbrl.pools.simple_pool import SimplePool
+from mbrl.pools.utils import random_batch_ensemble
+from mbrl.pools.utils import _shuffer_and_random_batch_model
+
 
 class NormalizeSimplePool(SimplePool):
     def __init__(self, env, max_size=1e6, compute_mean_std=False):
@@ -26,5 +29,13 @@ class NormalizeSimplePool(SimplePool):
             "obs_delta_mean": obs_delta_mean,
             "obs_delta_std": obs_delta_std
         }
-
         return mean_std_dict
+    
+    def sample_ensemble_batch(self, batch_size, ensemble_size, keys=None):
+        keys = self._check_keys(keys)
+        return random_batch_ensemble(self.dataset, batch_size, self._size, ensemble_size, keys)
+
+    def shuffer_and_random_batch_model(self, batch_size, ensemble_size, keys=None):
+        keys = self._check_keys(keys)
+        for batch in _shuffer_and_random_batch_model(self.dataset, batch_size, self._size, ensemble_size, keys):
+            yield batch 

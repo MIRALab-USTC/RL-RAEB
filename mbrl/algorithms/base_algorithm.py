@@ -6,6 +6,7 @@ from mbrl.algorithms.utils import get_dict_of_items_from_config
 from mbrl.utils.eval_util import get_generic_path_information
 from mbrl.utils.logger import logger
 
+from mbrl.environments.utils import rate_buffer
 
 def _get_epoch_timings():
     times_itrs = gt.get_times().stamps.itrs
@@ -30,7 +31,6 @@ class RLAlgorithm(object):
         self.num_epochs = num_epochs
         self.item_dict_config = item_dict_config
         self.item_dict = get_dict_of_items_from_config(item_dict_config)
-        print(f"item_dict_from_config: {self.item_dict}")
         self.__dict__.update(self.item_dict)
         self._need_snapshot = []
 
@@ -74,11 +74,11 @@ class RLAlgorithm(object):
             if hasattr(item, 'end_epoch'):
                 item.end_epoch(epoch)
         self._end_epoch(epoch)
-        gt.stamp('ending epoch')
+        gt.stamp('ending epoch', unique=False)
         if epoch is not None and epoch >= 0:
             snapshot = self.get_snapshot()
             logger.save_itr_params(epoch, snapshot)
-            gt.stamp('saving')
+            gt.stamp('saving', unique=False)
             self.log_stats(epoch)
 
     def _end_epoch(self, epoch):
@@ -106,6 +106,13 @@ class RLAlgorithm(object):
             )
 
         """
+        Virtual Pool
+        """
+        #if hasattr(self, 'virtual_pool'):
+        #    logger.log(
+        #        self.virtual_pool.get_diagnostics()
+        #    )
+        """
         Trainer
         """
         if hasattr(self, 'trainer'):
@@ -122,7 +129,7 @@ class RLAlgorithm(object):
                 self.expl_env.get_diagnostics(expl_paths),
                 prefix='exploration/',
             )
-
+        """
         if hasattr(self, 'expl_collector'):
             expl_paths = self.expl_collector.get_epoch_paths()
             logger.record_dict(
@@ -133,7 +140,7 @@ class RLAlgorithm(object):
                 get_generic_path_information(expl_paths),
                 prefix="exploration/",
             )
-
+        """
         """
         Evaluation
         """
@@ -152,6 +159,28 @@ class RLAlgorithm(object):
             logger.record_dict(
                 get_generic_path_information(eval_paths),
                 prefix="evaluation/",
+            )
+        
+        """
+        Imagination
+        """
+        if hasattr(self, 'trainer'):
+            if hasattr(self.trainer, 'agent'):
+                logger.record_dict(
+                    self.trainer.agent.get_diagnostics(),
+                    prefix='imagination/',
+                )
+
+        """
+        zhihai add
+        """
+        converage = compute_converage_ant_maze(self.pool)
+        print(f"converage: {converage}")
+
+        if hasattr(self, 'pool'):
+            logger.record_dict(
+                compute_converage_ant_maze(self.pool),
+                prefix='evaluation/',
             )
 
         """
@@ -176,3 +205,10 @@ class RLAlgorithm(object):
         for item_name, item in self.item_dict.items():
             if hasattr(item, 'to'):
                 item.to(device)
+
+
+
+def compute_converage_ant_maze(pool):
+    converage = rate_buffer(pool)   
+    diagnostic = {"converage": converage}
+    return diagnostic

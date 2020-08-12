@@ -33,9 +33,24 @@ def get_batch(dataset, batch_index, keys=None):
         batch[key] = value[batch_index]
     return batch
 
+def _get_ensemble_batch(dataset, batch_indexes, ensemble_size, keys=None):
+    if keys is None:
+        keys = list(dataset.keys())
+    batch = {}
+    for key in keys:
+        value = dataset[key]
+        batch[key] = [value[batch_indexes[i]] for i in range(ensemble_size)]
+        batch[key] = np.stack(batch[key])
+    return batch
+
+    
 def _random_batch_independently(dataset, batch_size, valid_size, keys=None):
     batch_index = np.random.randint(0, valid_size, batch_size)
     return get_batch(dataset, batch_index, keys=keys)
+
+def random_batch_ensemble(dataset, batch_size, valid_size, ensemble_size, keys=None):
+    indices = [np.random.randint(0, valid_size, batch_size) for _ in range(ensemble_size)]
+    return _get_ensemble_batch(dataset, indices, ensemble_size, keys)
 
 def random_batch_independently(dataset, batch_size, keys=None):
     valid_size = get_valid_dataset_size(dataset, keys=keys)
@@ -55,3 +70,13 @@ def shuffer_and_random_batch(dataset, batch_size, keys=None):
     valid_size = get_valid_dataset_size(dataset, keys=keys)
     for batch in _shuffer_and_random_batch(dataset, batch_size, valid_size, keys):
         yield batch
+
+def _shuffer_and_random_batch_model(dataset, batch_size, valid_size, ensemble_size, keys=None):
+    _batch_indexes = np.array([np.random.permutation(np.arange(valid_size)) for _ in range(ensemble_size)])
+    ts = 0 
+    while ts < (valid_size-1):
+        te = ts + batch_size
+        if te > valid_size:
+            te = valid_size-1
+        yield _get_ensemble_batch(dataset, _batch_indexes[:, ts:te], ensemble_size, keys=keys)
+        ts = te

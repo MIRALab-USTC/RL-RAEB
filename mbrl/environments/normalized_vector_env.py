@@ -33,8 +33,8 @@ class NormalizedVectorEnv(MbrlEnv):
 
         self.reward_scale = reward_scale
         self.max_length = max_length
-        self.low = np.maximum(self.env.single_action_space.low, -10)
-        self.high = np.minimum(self.env.single_action_space.high, 10)
+        self.low = np.maximum(self.env.single_action_space.low, -1)
+        self.high = np.minimum(self.env.single_action_space.high, 1)
         self.observation_space = self.env.single_observation_space
         ub = np.ones(self.env.single_action_space.shape)
         self.action_space = Box(-1 * ub, ub)

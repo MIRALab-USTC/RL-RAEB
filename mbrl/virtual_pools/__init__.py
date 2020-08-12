@@ -1,0 +1,2 @@
+from mbrl.virtual_pools.base_virtual_pool import VirtualPool
+from mbrl.virtual_pools.simplehash_virtual_pool import SimpleVirtualPool

@@ -12,6 +12,7 @@ def get_generic_path_information(paths, stat_prefix='', report_final_initial=Fal
     """
 
     statistics = OrderedDict()
+
     returns = [np.sum(path["rewards"]) for path in paths]
 
     rewards = np.vstack([path["rewards"] for path in paths])
@@ -46,7 +47,6 @@ def get_generic_path_information(paths, stat_prefix='', report_final_initial=Fal
                     all_ks,
                     stat_prefix='{}/'.format(info_name),
                 ))
-
     return statistics
 
 
