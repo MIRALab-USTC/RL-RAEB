@@ -3,7 +3,7 @@
         "tag": "model_based_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/alg_comparsion_max_len200",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/ablation_exp/human",
         "exp_prefix": "humanoid_surprise_based"
     },
     "algorithm": {
@@ -27,7 +27,7 @@
     "environment": [
         {
             "name": "expl_env",
-            "class": "delay_reward_env",
+            "class": "simple_env",
             "kwargs": {
                 "env_name": "humanoid",
                 "reward_scale": 1

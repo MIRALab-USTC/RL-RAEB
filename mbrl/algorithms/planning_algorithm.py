@@ -98,7 +98,7 @@ class PlanningImagineAlgorithm(RLAlgorithm):
     def _train_model(self):
         for _ in range(self.num_train_model_epochs):
             tr_loss = self._train_model_epoch()
-            return tr_loss
+        return tr_loss
 
     def _train_model_epoch(self):
         losses = []
@@ -114,9 +114,7 @@ class PlanningImagineAlgorithm(RLAlgorithm):
         # use another pool 
         # train model
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)
-        # to do check 没有normalizer 是否ok？
-        normalizer = self.get_normalizer()
-        self.trainer.model.setup_normalizer(normalizer)
+
         env = self.expl_collector._env
         state = env.reset()
         
@@ -125,9 +123,12 @@ class PlanningImagineAlgorithm(RLAlgorithm):
         agent = None
 
         for step_num in range(1, self.n_exploration_steps + 1):
+            # to do check 没有normalizer 是否ok？
             gt.stamp('start_training', unique=False)
             if step_num > self.min_num_steps_before_training:
                 # planning to action
+                normalizer = self.get_normalizer()
+                self.trainer.model.setup_normalizer(normalizer)
                 if mdp is None:
                     mdp = Imagination(horizon=self.imagine_policy_horizon, n_actors=self.imagine_policy_actors, model=self.trainer.model, measure=self.measure)
                 mdp.update_init_state(state)
@@ -136,8 +137,10 @@ class PlanningImagineAlgorithm(RLAlgorithm):
                     action, mdp, agent, policy_value = self.get_action(mdp, agent)
                 else:
                     # 如果agent 是None,需要重新planning 训练 策略网络
+
                     agent = self.reset_agent()
                     ep_returns = []
+
                     for i in range(self.policy_episodes):
                         #gt.stamp('policy training', unique=False)
                         progress.update()
@@ -147,15 +150,9 @@ class PlanningImagineAlgorithm(RLAlgorithm):
                         else:
                             ep_return = agent.episode(env=mdp, warm_up=False)
                         ep_returns.append(ep_return)
-                        params = {
-                            "best_ep_return": max(ep_returns),
-                            "model loss": tr_loss,
-                        }
-                        progress.set_description(format_for_process(params))
-                # 复制 虚拟数据训练的网络的参数 到 真实policy中
-                #self.policy.load_state_dict(self.trainer.agent.policy.state_dict())
-                #self.policy = copy.deepcopy(agent.policy)
-    
+                    # 复制 虚拟数据训练的网络的参数 到 真实policy中
+                    #self.policy.load_state_dict(self.trainer.agent.policy.state_dict())
+                    #self.policy = copy.deepcopy(agent.policy)
             else:
                 action = env.action_space.sample()
             
@@ -189,21 +186,25 @@ class PlanningImagineAlgorithm(RLAlgorithm):
             time_to_update = ((step_num % self.train_model_freq) == 0)
             just_finished_warm_up = (step_num == self.min_num_steps_before_training)
             if (train_at_end_of_episode and episode_done) or time_to_update or just_finished_warm_up:
-                self.reset_model()
+                #self.reset_model()
                 # train model from real data 
                 tr_loss = self._train_model()
                 # discard old solution and MDP as models changed
+                params = {
+                    "model loss": tr_loss,
+                }
+                progress.set_description(format_for_process(params))
                 mdp = None
                 agent = None
 
-
-            self.eval_collector.collect_new_paths(
-                self.num_eval_steps_per_epoch,
-                self.max_path_length,
-                discard_incomplete_paths=True,
-            )
-            # 每一个 step 是一个 epoch
-            self.end_epoch(step_num)
+            if step_num % self.record_video_freq == 0:
+                self.eval_collector.collect_new_paths(
+                    self.num_eval_steps_per_epoch,
+                    self.max_path_length,
+                    discard_incomplete_paths=True,
+                )
+                # 每一个 step 是一个 epoch
+                self.end_epoch(step_num)
 
 
     
@@ -240,4 +241,5 @@ class PlanningImagineAlgorithm(RLAlgorithm):
         d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau = self.trainer.agent.d_state, self.trainer.agent.d_action, self.trainer.agent.replay_size, self.trainer.agent.batch_size, self.trainer.agent.n_updates, self.trainer.agent.n_hidden, self.trainer.agent.gamma, self.trainer.agent.alpha, self.trainer.agent.lr, self.trainer.agent.tau
         agent = SAC(d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau)
         agent = agent.to(device)
+        #agent.setup_normalizer(self.trainer.model.normalizer)
         return agent

@@ -26,13 +26,13 @@ class SACPlanningTrainer(SACTrainer):
             policy_active_updates=1,
             policy_batch_size = 4096,
             policy_n_hidden = 256,
-            alpha = 0.1,
+            alpha = 0.02,
 
             intrinsic_coeff=0.1,
             discount=0.99,
             reward_scale=1.0,
 
-            model_lr=1e-6,
+            model_lr=1e-3,
             training_noise_stdev=0,
             grad_clip=5,
 
@@ -245,7 +245,9 @@ class SACPlanningTrainer(SACTrainer):
 
     def train_model_from_batch(self, states, actions, state_deltas):
         self.model_optimizer.zero_grad()
+
         model_loss = self.model.loss(states, actions, state_deltas, training_noise_stdev=self.training_noise_stdev)
+        print(f"model_loss: {model_loss.item()}")
         model_loss.backward()
         torch.nn.utils.clip_grad_value_(self.model.parameters(), self.grad_clip)
         self.model_optimizer.step()

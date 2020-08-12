@@ -186,7 +186,7 @@ class RLAlgorithm(object):
         """
         Misc
         """
-        gt.stamp('logging')
+        gt.stamp('logging', unique=False)
         logger.record_dict(_get_epoch_timings())
         logger.record_tabular('Epoch', epoch)
         logger.dump_tabular(with_prefix=False, with_timestamp=False)

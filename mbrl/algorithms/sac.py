@@ -79,6 +79,7 @@ class Replay:
         self.actions[i:j] = actions[include_mask]
         self.rewards[i:j] = rewards[include_mask]
         self.next_states[i:j] = next_states[include_mask]
+        print(f"masks: {masks}")
         self.masks[i:j] = masks
 
         self.ptr = j
