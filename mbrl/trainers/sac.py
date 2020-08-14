@@ -351,8 +351,8 @@ class SAC(nn.Module):
         return self.returns
 
 class SACMaxEnt(SAC):
-    def __init__(self, d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau, n_components, eps, int_coeff):
-        SAC().__init__(d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau)
+    def __init__(self, d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau, n_components=32, eps=0.001, int_coeff=0.1):
+        SAC.__init__(self, d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau)
 
         self.reward_fn = None
         self.n_components = n_components

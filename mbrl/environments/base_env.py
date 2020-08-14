@@ -56,7 +56,7 @@ class SimpleEnv(MbrlEnv):
 class DelayRewardEnv(SimpleEnv):
     def __init__(self, 
                  env_name,
-                 steps_delay=40,
+                 steps_delay=20,
                  reward_scale=1.0,
                  max_length=np.inf):
         SimpleEnv.__init__(

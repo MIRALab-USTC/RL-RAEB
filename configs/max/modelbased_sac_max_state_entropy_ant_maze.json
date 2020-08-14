@@ -4,32 +4,32 @@
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/comparsion_max_20200813",
-        "exp_prefix": "swimmer_surprise_based"
+        "exp_prefix": "ant_maze_max_my_idea"
     },
     "algorithm": {
-        "name": "model_based_sac_surprise",
-        "class": "ModelBasedBatchRLAlgorithm",
+        "name": "model_based_sac_max",
+        "class": "planning_imagine_algorithm",
         "kwargs": {
-            "num_epochs": 2000,
+            "num_epochs": 1,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
+            "max_path_length": 300,
             "num_train_models_per_epoch": 1000,
-            "max_path_length": 1000,
             "train_model_freq": 25,
-            "min_num_steps_before_training": 5000,
-            "record_video_freq": 200,
+            "min_num_steps_before_training": 256,
+            "record_video_freq": 100,
             "silent": false
         }
     },
     "environment": [
         {
             "name": "expl_env",
-            "class": "delay_reward_env",
+            "class": "simple_env",
             "kwargs": {
-                "env_name": "swimmer",
+                "env_name": "ant_maze",
                 "reward_scale": 1
             }
         },
@@ -37,8 +37,8 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "swimmer",
-                "n_env":4,
+                "env_name": "ant_maze",
+                "n_env":8,
                 "reward_scale": 1
             }
         },
@@ -46,7 +46,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "swimmer"
+                "env_name": "ant_maze"
             }
         }
     ],
@@ -63,7 +63,7 @@
             "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
-                "hidden_layers": [128,128],
+                "hidden_layers": [256,256],
                 "nonlinearity": "relu"
             }
         },
@@ -90,13 +90,13 @@
             "env": "$expl_env",
             "layers_num": 4, 
             "hidden_size": [512,512,512,512,512],
-            "ensemble_size": 1, 
+            "ensemble_size": 32, 
             "non_linearity": "swish"   
         }
     },
     "trainer":{
         "name": "trainer",
-        "class": "Surprise_Based_SAC_Trainer",
+        "class": "SAC_planning_trainer_state_entropy",
         "kwargs": {
             "env": "$expl_env",
             "policy": "$policy",

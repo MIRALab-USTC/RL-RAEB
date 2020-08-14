@@ -7,3 +7,4 @@ CUDA_VISIBLE_DEVICES=4 nohup  python scripts/run.py configs/surprise-based/model
 sleep 10s
 
 
+CUDA_VISIBLE_DEVICES=5 python scripts/run.py configs/surprise-based/modelbased_sac_surprise_car_human.json

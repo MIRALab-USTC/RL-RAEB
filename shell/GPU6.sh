@@ -1,6 +1,6 @@
 #!/bin/bash
-CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/max/modelbased_sac_max_ant_maze.json > o_maze_max1.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-virtual-novelty/modelbased_sac_virtual_loss_surprise_human.json > o_human_virtualloss1.txt 2>&1 &
 sleep 10s
-CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/max/modelbased_sac_max_ant_maze.json > o_maze_max2.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-virtual-novelty/modelbased_sac_virtual_loss_surprise_human.json > o_human_virtualloss2.txt 2>&1 &
 sleep 10s
-CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/max/modelbased_sac_max_ant_maze.json > o_maze_max3.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-virtual-novelty/modelbased_sac_virtual_loss_surprise_human.json > o_human_virtualloss3.txt 2>&1 &

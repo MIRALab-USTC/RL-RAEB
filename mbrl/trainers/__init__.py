@@ -7,3 +7,5 @@ import mbrl.trainers.sac_trainer_surprise_based
 import mbrl.trainers.max_sac_trainer
 import mbrl.trainers.sac_trainer_surprise_based_virtual_loss
 import mbrl.trainers.sac_planning_trainer
+import mbrl.trainers.sac_planning_trainer_state_entropy
+import mbrl.trainers.sac

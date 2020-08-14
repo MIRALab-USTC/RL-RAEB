@@ -155,8 +155,8 @@ class ModelBasedBatchRLAlgorithm(RLAlgorithm):
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)
         
         # to do check 没有normalizer 是否ok？
-        normalizer = self.get_normalizer()
-        self.trainer.model.setup_normalizer(normalizer)
+        #normalizer = self.get_normalizer()
+        #self.trainer.model.setup_normalizer(normalizer)
         for i in range(max(self.num_train_loops_per_epoch, self.num_train_models_per_epoch)):
             # sample a transition
             self._sample(self.num_expl_steps_per_train_loop)
@@ -254,8 +254,8 @@ class VirtualLossBatchRLAlgorithm(RLAlgorithm):
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)
         
         # to do check 没有normalizer 是否ok？
-        normalizer = self.get_normalizer()
-        self.trainer.model.setup_normalizer(normalizer)
+        #normalizer = self.get_normalizer()
+        #self.trainer.model.setup_normalizer(normalizer)
         for i in range(max(self.num_train_loops_per_epoch, self.num_train_models_per_epoch)):
             # sample a transition
             self._sample(self.num_expl_steps_per_train_loop)

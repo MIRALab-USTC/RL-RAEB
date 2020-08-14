@@ -121,9 +121,12 @@ class PlanningImagineAlgorithm(RLAlgorithm):
         # train policy in imagine MDP        
         mdp = Imagination(horizon=self.imagine_policy_horizon, n_actors=self.imagine_policy_actors, model=self.trainer.model, measure=self.measure)
         agent = None
-
+        print(f"train_model_device: {self.trainer.model.device}")
         for step_num in range(1, self.n_exploration_steps + 1):
             # to do check 没有normalizer 是否ok？
+            print(f"train_model_device: {self.trainer.model.device}")
+            if agent is not None:
+                print(f"agent: {agent.device}")
             gt.stamp('start_training', unique=False)
             if step_num > self.min_num_steps_before_training:
                 # planning to action

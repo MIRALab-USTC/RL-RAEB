@@ -174,10 +174,8 @@ class RLAlgorithm(object):
         """
         zhihai add
         """
-        converage = compute_converage_ant_maze(self.pool)
-        print(f"converage: {converage}")
 
-        if hasattr(self, 'pool'):
+        if hasattr(self, 'expl_env') and 'Ant' in self.expl_env.env_name:
             logger.record_dict(
                 compute_converage_ant_maze(self.pool),
                 prefix='evaluation/',
