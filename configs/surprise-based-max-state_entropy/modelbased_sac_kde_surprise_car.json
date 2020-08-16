@@ -4,7 +4,7 @@
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/comparsion_max_20200813",
-        "exp_prefix": "mountaincar_max_state_entropy"
+        "exp_prefix": "mountaincar_max_state_entropy_reward_decay"
     },
     "algorithm": {
         "name": "model_based_sac_surprise_kde",

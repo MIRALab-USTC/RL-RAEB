@@ -75,11 +75,12 @@ class SurpriseBasedSACTrainer(SACTrainer):
             lr=model_lr,
         )        
         self._need_to_update_model = True
-        
+        self._need_to_update_int_reward = True
+
     def reward_function_novelty(self, obs, actions, next_obs):
         # resieze to  (ensemble_size, batch size, dim_state)
         # output: (ensemble_size, batch size, dim_state)
-
+        diagnostics = OrderedDict()
 
         obs =  obs.repeat(self.model.ensemble_size, 1, 1)
         actions = actions.repeat(self.model.ensemble_size, 1, 1)
@@ -92,6 +93,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
             # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
             rewards_int = - self.intrinsic_coeff * torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
+            diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
+            if self._need_to_update_int_reward:
+                self._need_to_update_int_reward = False
+                self.eval_statistics.update(diagnostics)
+
             return rewards_int
         else:
             raise NotImplementedError
@@ -244,3 +250,4 @@ class SurpriseBasedSACTrainer(SACTrainer):
     def end_epoch(self, epoch):
         self._need_to_update_eval_statistics = True
         self._need_to_update_model = True
+        self._need_to_update_int_reward = True

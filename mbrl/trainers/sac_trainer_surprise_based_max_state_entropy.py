@@ -85,8 +85,10 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
         reward_virtual_count = self.virtual_pool.compute_virtual_loss(next_obs)
         #reward_virtual_count = reward_virtual_count_obs + reward_virtual_count_next_obs
         reward_virtual_count = reward_virtual_count.unsqueeze(1)
-        reward_virtual = self.virtual_bonus_beta / torch.sqrt(1.0+reward_virtual_count)
-        #reward_decay = (self.virtual_reward_decay ** reward_virtual_count).to(obs.device)
+        reward_virtual_count = torch.where(reward_virtual_count > 1000, torch.full_like(reward_virtual_count, 1000), reward_virtual_count)
+        #reward_virtual = self.virtual_bonus_beta / torch.sqrt(1.0+reward_virtual_count)
+        reward_virtual = self.virtual_reward_decay ** reward_virtual_count
+        # reward_decay = (self.virtual_reward_decay ** reward_virtual_count).to(obs.device)
         #virtual_reward_loss = torch.sqrt(reward_virtual_count).to(obs.device)
         reward_virtual = reward_virtual.to(obs.device)
         diagnostics['state_entropy'] = np.mean(ptu.get_numpy(reward_virtual))
@@ -104,7 +106,13 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
             # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
             rewards_int = - self.intrinsic_coeff * torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
             #rewards_int = rewards_int - virtual_reward_loss
+            diagnostics['model_int_reward'] = np.mean(ptu.get_numpy(rewards_int))
             rewards_int = rewards_int * reward_virtual
+            diagnostics['rewards_int'] = np.mean(ptu.get_numpy(rewards_int))
+            if self._need_to_update_int_reward:
+                self._need_to_update_int_reward = False
+                self.eval_statistics.update(diagnostics)
+
             return rewards_int
         else:
             raise NotImplementedError
@@ -257,10 +265,6 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
         self.virtual_pool = state_distri_estimator.update_virtual_pool()
 
         return model_loss
-
-    def end_epoch(self, epoch):
-        self._need_to_update_eval_statistics = True
-        self._need_to_update_model = True
 
 
 class StateEstimator:
