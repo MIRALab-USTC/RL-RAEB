@@ -1,7 +1,9 @@
 from mbrl.policies.base_policy import RandomPolicy
 from mbrl.torch_modules.policies import MeanLogstdGaussianPolicyModule, TanhPolicyModule
 from mbrl.utils.logger import logger
+import torch
 from torch import nn
+from torch.distributions import Normal
 
 class GaussianPolicy(nn.Module, RandomPolicy):
     def __init__( self, 
@@ -53,4 +55,48 @@ class GaussianPolicy(nn.Module, RandomPolicy):
     def get_snapshot(self):
         return self.module.get_snapshot()
 
+LOG_STD_MIN = -20
+LOG_STD_MAX = 2
+EPS = 1e-6
 
+class SimpleGaussianPolicy(nn.Module):
+    def __init__(self, env, n_hidden):
+        super().__init__()
+        d_state = env.observation_space.shape[0]
+        d_action = env.action_space.shape[0]
+
+        one = nn.Linear(d_state, n_hidden)
+        self.init_weights(one)
+        two = nn.Linear(n_hidden, n_hidden)
+        self.init_weights(two)
+        three = nn.Linear(n_hidden, 2 * d_action)
+        self.init_weights(three)
+
+        self.layers = nn.Sequential(one,
+                                    nn.LeakyReLU(),
+                                    two,
+                                    nn.LeakyReLU(),
+                                    three)
+
+    def forward(self, state):
+        y = self.layers(state)
+        mu, log_std = torch.split(y, y.size(1) // 2, dim=1)
+
+        log_std = torch.tanh(log_std)
+        log_std = LOG_STD_MIN + 0.5 * (LOG_STD_MAX - LOG_STD_MIN) * (log_std + 1)
+        std = torch.exp(log_std)
+
+        normal = Normal(mu, std)
+        pi = normal.rsample()           # with re-parameterization
+        logp_pi = normal.log_prob(pi).sum(dim=1, keepdim=True)
+
+        # bounds
+        mu = torch.tanh(mu)
+        pi = torch.tanh(pi)
+        logp_pi -= torch.sum(torch.log(torch.clamp(1 - pi.pow(2), min=0, max=1) + EPS), dim=1, keepdim=True)
+
+        return pi, logp_pi, mu, log_std
+
+    def init_weights(self, layer):
+        nn.init.orthogonal_(layer.weight)
+        nn.init.constant_(layer.bias, 0)

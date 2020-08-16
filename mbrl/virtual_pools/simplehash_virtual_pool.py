@@ -1,11 +1,12 @@
 import torch
+import numpy as np
 
 from mbrl.virtual_pools.base_virtual_pool import VirtualPool
 
 # Implementing SimHash from paper: Exploration: A Study of Count-Based Exploration for Deep Reinforcement Learning
 
 class SimpleVirtualPool(VirtualPool):
-    def __init__(self, env, clear, d=4, k=3):
+    def __init__(self, env, d=4, k=3):
         self.hash_table = {}
         self._env = env
 
@@ -18,8 +19,6 @@ class SimpleVirtualPool(VirtualPool):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         self.A = torch.normal(mu, std).to(self.device)
-        
-        self.clear = clear
 
         self.states = []
 
@@ -27,17 +26,23 @@ class SimpleVirtualPool(VirtualPool):
         self.states.append(states)
 
     def update_hash_table(self, data):
-        state = data['observations']
-        next_state = data['next_observations']
-        
-        state = torch.FloatTensor(state).to(self.device)
-        next_state = torch.FloatTensor(next_state).to(self.device)
+        state = None
+        if isinstance(data, dict):
+            state = data['observations']
+            #next_state = data['next_observations']
+        else:
+            state = data
+        if isinstance(state, torch.Tensor):
+            state = state.to(self.device)
+        else:
+            state = torch.FloatTensor(state).to(self.device)
+        #next_state = torch.FloatTensor(next_state).to(self.device)
         if len(state.shape) > 1:
             self._update_batch(state)
-            self._update_batch(next_state)
+            #self._update_batch(next_state)
         else:
             self._update(state)
-            self._update(next_state)
+            #self._update(next_state)
 
     def _update(self, state):
         phi = torch.matmul(self.A, state)
@@ -56,6 +61,7 @@ class SimpleVirtualPool(VirtualPool):
                 self.hash_table[encode_phi[i]] += 1
             else:
                 self.hash_table[encode_phi[i]] = 1
+
     def compute_virtual_loss(self, states):
         # states shape (batch_size, dim_state)
         batch_phi = torch.matmul(states, torch.t(self.A))

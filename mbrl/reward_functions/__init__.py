@@ -1,0 +1,2 @@
+from mbrl.reward_functions.base_reward_function import BaseRewardFn as RewardFunction
+from mbrl.reward_functions.kde_reward_function import KDERewardFn
