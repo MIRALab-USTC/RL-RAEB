@@ -11,6 +11,7 @@ from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.trainers.sac_trainer_surprise_based import SurpriseBasedSACTrainer
 from mbrl.environments.image_envs.imagination import Imagine
 
+import time
 class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
     def __init__(
             self,
@@ -25,6 +26,10 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
             intrinsic_coeff=0.1,
             discount=0.99,
             reward_scale=1.0,
+
+            n_actors=128,
+            policy_horizon=50,
+            num_init_states=20,
 
             model_lr=1e-6,
             training_noise_stdev=0,
@@ -75,6 +80,10 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
         self.virtual_pool = virtual_pool
         self.virtual_reward_decay = virtual_reward_decay
         self.virtual_bonus_beta = virtual_bonus_beta
+
+        self.n_actors = n_actors 
+        self.policy_horizon = policy_horizon
+        self.num_init_states = num_init_states
 
     def reward_function_novelty(self, obs, actions, next_obs):
         # resieze to  (ensemble_size, batch size, dim_state)
@@ -261,7 +270,7 @@ class SurpriseBasedSACTrainerMSE(SurpriseBasedSACTrainer):
         self.model_optimizer.step()
         
         # update virtual pool
-        state_distri_estimator = StateEstimator(self.policy, self.env, self.model, self.virtual_pool)
+        state_distri_estimator = StateEstimator(self.policy, self.env, self.model, self.virtual_pool, self.n_actors, self.policy_horizon, self.num_init_states)
         self.virtual_pool = state_distri_estimator.update_virtual_pool()
 
         return model_loss
@@ -293,13 +302,18 @@ class StateEstimator:
     def update_virtual_pool(self):
         self.virtual_pool.clear()
         self.get_init_states()
-
+        batch_states = None
         for i in range(self.num_init_states):
             init_state = self.init_states[i]
             self.imagine_mdp.update_init_state(init_state)
             # collect n_actors * episode data
-            self.episode()
-        
+            start = time.time()
+            batch_states = self.episode(batch_states)
+            episode_time = time.time() - start
+        start_v_pool = time.time()
+        self.virtual_pool.update_hash_table(batch_states)
+        v_pool_end = time.time() - start_v_pool
+
         return self.virtual_pool
 
 
@@ -310,18 +324,22 @@ class StateEstimator:
             state = self.env.reset()
             self.init_states[i] = state # numpy array shape: (num_init_states, obs_shape)
 
-    def episode(self):
+    def episode(self, batch_states):
         ep_length = 0
         done = False
         states = self.imagine_mdp.reset() # shape: (n_actors, obs_shape)
+        
         while not done:
             with torch.no_grad():
                 actions, _ = self.policy.action(
                     states, reparameterize=True, return_log_prob=False,
                 )
             next_states, rewards, done, _ = self.imagine_mdp.step(actions)
-            
-            self.virtual_pool.update_hash_table(next_states)
+            if batch_states is None:
+                batch_states = next_states
+            else:
+                batch_states = torch.cat([batch_states, next_states], 0)
             ep_length += 1
 
             states = next_states
+        return batch_states

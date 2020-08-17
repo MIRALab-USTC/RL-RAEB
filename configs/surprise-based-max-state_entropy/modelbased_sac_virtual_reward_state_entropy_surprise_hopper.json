@@ -4,7 +4,7 @@
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/comparsion_max_20200813/max_future_state_entropy",
-        "exp_prefix": "hopper_max_future_state_entropy"
+        "exp_prefix": "hopper_max_future_state_entropy_delay_reward_env"
     },
     "algorithm": {
         "name": "model_based_sac_surprise_vnl",
@@ -27,7 +27,7 @@
     "environment": [
         {
             "name": "expl_env",
-            "class": "simple_env",
+            "class": "delay_reward_env",
             "kwargs": {
                 "env_name": "hopper",
                 "reward_scale": 1

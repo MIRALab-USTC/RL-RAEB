@@ -3,34 +3,33 @@
         "tag": "model_based_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/test",
-        "exp_prefix": "mountaincar_max_future_state_entropy_reward_decay_real_fix_pool_bug_k6_actor32"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/lookahead_novelty",
+        "exp_prefix": "walker2d_max_future_state_entropy_delay_reward_env"
     },
     "algorithm": {
         "name": "model_based_sac_surprise_vnl",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 300,
+            "num_epochs": 2000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "max_path_length": 200,
+            "max_path_length": 1000,
             "num_train_models_per_epoch": 1000,
             "train_model_freq": 25,
-            "model_normalize": true,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
+            "record_video_freq": 200,
             "silent": false
         }
     },
     "environment": [
         {
             "name": "expl_env",
-            "class": "simple_env",
+            "class": "delay_reward_env",
             "kwargs": {
-                "env_name": "mountaincar",
+                "env_name": "walker2d",
                 "reward_scale": 1
             }
         },
@@ -38,7 +37,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "mountaincar",
+                "env_name": "walker2d",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -47,7 +46,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "mountaincar"
+                "env_name": "walker2d"
             }
         }
     ],
@@ -105,11 +104,11 @@
             "model": "$model_without_reward",
             "virtual_pool": "$virtual_pool",
             "reward_scale":1,
+            "num_init_states": 10,
+            "n_actors": 64,
+            "policy_horizon": 50,
             "policy_lr": 3e-4,
             "qf_lr": 3e-4,
-            "num_init_states": 20,
-            "n_actors": 32,
-            "policy_horizon": 50,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
             "alpha_if_not_automatic": 0
@@ -128,7 +127,7 @@
         "class": "simple_virtual_pool",
         "kwargs": {
             "env": "$expl_env",
-            "k": 9
+            "k": 11
         }
     },
     "collector": [
