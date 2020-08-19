@@ -60,6 +60,17 @@ register(
 )
 
 register(
+    id='NChainOur-v0',
+    entry_point='mbrl.environments.our_envs.n_chain:NChainOursEnv',
+    kwargs={
+        'n':50,
+        'small':1,
+        'large': 100
+    },
+    max_episode_steps=59,
+)
+
+register(
     id='MagellanAnt-v2',
     entry_point='mbrl.environments.our_envs.ant:MagellanAntEnv',
     max_episode_steps=300
@@ -97,4 +108,5 @@ env_name_to_gym_registry_dict = {
     "ant_maze": "MagellanAnt-v2",
     "mountaincar_sparse": "MagellanSparseMountainCar-v0",
     "cheetah_sparse": "MagellanHalfCheetah-v2",
+    "n_chain":"NChainOur-v0",
 }

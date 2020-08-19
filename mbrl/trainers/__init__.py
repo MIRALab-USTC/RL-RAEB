@@ -11,3 +11,4 @@ import mbrl.trainers.sac_planning_trainer_state_entropy
 import mbrl.trainers.sac
 import mbrl.trainers.sac_trainer_surprise_based_kde
 import mbrl.trainers.sac_trainer_surprise_based_max_state_entropy
+import mbrl.trainers.sac_trainer_surprise_based_max_state_entropy_auto_eta

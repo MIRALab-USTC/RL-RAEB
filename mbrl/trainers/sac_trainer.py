@@ -201,3 +201,5 @@ class SACTrainer(BatchTorchTrainer):
             qf1=self.qf
         )
 
+    def train_model_from_torch_batch(self, batch):
+        pass

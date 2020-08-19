@@ -1,6 +1,7 @@
 import random
 import abc
 import numpy as np
+from gym.spaces import Discrete
 from gym import Wrapper
 from gym.spaces import Box
 from mbrl.environments.utils import make_gym_env
@@ -26,10 +27,15 @@ class SimpleEnv(MbrlEnv):
         Wrapper.__init__(self, inner_env)
         self.reward_scale = reward_scale
         self.max_length = max_length
-        self.low = np.maximum(self.env.action_space.low, -1)
-        self.high = np.minimum(self.env.action_space.high, 1)
-        ub = np.ones(self.env.action_space.shape)
-        self.action_space = Box(-1 * ub, ub)
+        if isinstance(self.env.action_space, Box):
+            self.low = np.maximum(self.env.action_space.low, -1)
+            self.high = np.minimum(self.env.action_space.high, 1)
+            ub = np.ones(self.env.action_space.shape)
+            self.action_space = Box(-1 * ub, ub)
+        elif isinstance(self.env.action_space, Discrete):
+            self.low = 0
+            self.high = self.env.action_space.n - 1
+            self.action_space = Discrete(self.env.action_space.n)
 
     @property
     def horizon(self):

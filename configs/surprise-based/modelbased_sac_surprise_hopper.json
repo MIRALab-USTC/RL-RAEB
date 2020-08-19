@@ -4,10 +4,10 @@
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/lookahead_novelty",
-        "exp_prefix": "hopper_max_future_state_entropy_auto_eta"
+        "exp_prefix": "hopper_surprise_based_auto_eta"
     },
     "algorithm": {
-        "name": "model_based_sac_surprise_vnl",
+        "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
             "num_epochs": 2000,
@@ -16,8 +16,8 @@
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "max_path_length": 1000,
             "num_train_models_per_epoch": 1000,
+            "max_path_length": 1000,
             "train_model_freq": 25,
             "min_num_steps_before_training": 5000,
             "record_video_freq": 100,
@@ -96,19 +96,17 @@
     },
     "trainer":{
         "name": "trainer",
-        "class": "Surprise_Based_SAC_Trainer_MSE_auto_eta",
+        "class": "Surprise_Based_SAC_Trainer",
         "kwargs": {
             "env": "$expl_env",
             "policy": "$policy",
             "qf": "$qf",
             "model": "$model_without_reward",
-            "virtual_pool": "$virtual_pool",
             "reward_scale":1,
-            "num_init_states": 10,
-            "n_actors": 32,
-            "policy_horizon": 50,
             "policy_lr": 3e-4,
             "qf_lr": 3e-4,
+            "discount": 1.0,
+            "model_lr":1e-6,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
             "alpha_if_not_automatic": 0
@@ -120,14 +118,6 @@
         "kwargs": {
             "env": "$expl_env",
             "max_size": 1e6
-        }
-    },
-    "virtual_pool":{
-        "name": "virtual_pool",
-        "class": "simple_virtual_pool",
-        "kwargs": {
-            "env": "$expl_env",
-            "k": 9
         }
     },
     "collector": [

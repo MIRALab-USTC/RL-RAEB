@@ -3,8 +3,8 @@
         "tag": "model_based_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/alg_comparsion_max_len200",
-        "exp_prefix": "ant_maze_surprise_based"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/lookahead_novelty",
+        "exp_prefix": "mountaincar_surprise_based_discount_1"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
@@ -29,7 +29,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_maze",
+                "env_name": "mountaincar",
                 "reward_scale": 1
             }
         },
@@ -37,7 +37,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_maze",
+                "env_name": "mountaincar",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -46,7 +46,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_maze"
+                "env_name": "mountaincar"
             }
         }
     ],
@@ -105,6 +105,8 @@
             "reward_scale":1,
             "policy_lr": 3e-4,
             "qf_lr": 3e-4,
+            "discount": 1.0,
+            "model_lr":1e-6,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
             "alpha_if_not_automatic": 0

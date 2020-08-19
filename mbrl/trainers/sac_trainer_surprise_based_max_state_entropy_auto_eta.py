@@ -8,17 +8,53 @@ from torch.distributions.normal import Normal
 
 import mbrl.torch_modules.utils as ptu
 from mbrl.utils.eval_util import create_stats_ordered_dict
-from mbrl.trainers.base_trainer import BatchTorchTrainer
-from mbrl.trainers.sac_trainer import SACTrainer
+from mbrl.trainers.sac_trainer_surprise_based import SurpriseBasedSACTrainer
+from mbrl.environments.image_envs.imagination import Imagine
 
-class SurpriseBasedSACTrainer(SACTrainer):
+import time
+class SurpriseBasedSACTrainerMSEAutoEta(SurpriseBasedSACTrainer):
     def __init__(
             self,
             env,
             policy,
             qf,
             model,
+            virtual_pool,
 
+            virtual_reward_decay=0.999,
+            virtual_bonus_beta=1.0,
+            intrinsic_coeff=0.01,
+            discount=0.99,
+            reward_scale=1.0,
+
+            n_actors=128,
+            policy_horizon=50,
+            num_init_states=20,
+
+            model_lr=3e-4,
+            training_noise_stdev=0,
+            grad_clip=5,
+
+            policy_lr=3e-4,
+            qf_lr=3e-4,
+            optimizer_class='Adam',
+
+            soft_target_tau=5e-3,
+            target_update_period=1,
+            plotter=None,
+            render_eval_paths=False,
+
+            alpha_if_not_automatic=1e-2,
+            use_automatic_entropy_tuning=True,
+            init_log_alpha=0,
+            target_entropy=None
+    ):
+        SurpriseBasedSACTrainer.__init__(
+            self,
+            env,
+            policy,
+            qf,
+            model,
             intrinsic_coeff=0.1,
             discount=0.99,
             reward_scale=1.0,
@@ -40,60 +76,48 @@ class SurpriseBasedSACTrainer(SACTrainer):
             use_automatic_entropy_tuning=True,
             init_log_alpha=0,
             target_entropy=None
-    ):
-        SACTrainer.__init__(
-            self,
-            env,
-            policy,
-            qf,    
-            discount=0.99,
-            reward_scale=1.0,
-            policy_lr=3e-4,
-            qf_lr=3e-4,
-            optimizer_class='Adam',
-            soft_target_tau=5e-3,
-            target_update_period=1,
-            plotter=None,
-            render_eval_paths=False,
-            alpha_if_not_automatic=1e-2,
-            use_automatic_entropy_tuning=True,
-            init_log_alpha=0,
-            target_entropy=None
         )
-        if isinstance(optimizer_class, str):
-            optimizer_class = eval('optim.'+optimizer_class)
-        
-        # 传入的model 是已经 normalizer设置过的
-        self.model = model 
-        self.intrinsic_coeff = intrinsic_coeff
-        self.model_lr = model_lr
-        self.training_noise_stdev = training_noise_stdev
-        self.grad_clip = grad_clip
+        self.virtual_pool = virtual_pool
+        self.virtual_reward_decay = virtual_reward_decay
+        self.virtual_bonus_beta = virtual_bonus_beta
 
-        self.model_optimizer = optimizer_class(
-            self.model.parameters(),
-            lr=model_lr,
-        )        
-        self._need_to_update_model = True
-        self._need_to_update_int_reward = True
+        self.n_actors = n_actors 
+        self.policy_horizon = policy_horizon
+        self.num_init_states = num_init_states
 
     def reward_function_novelty(self, obs, actions, next_obs):
         # resieze to  (ensemble_size, batch size, dim_state)
         # output: (ensemble_size, batch size, dim_state)
         diagnostics = OrderedDict()
+        # virtual loss
+        #reward_virtual_count_obs = self.virtual_pool.compute_virtual_loss(obs)
+        reward_virtual_count = self.virtual_pool.compute_virtual_loss(next_obs)
+        #reward_virtual_count = reward_virtual_count_obs + reward_virtual_count_next_obs
+        reward_virtual_count = reward_virtual_count.unsqueeze(1)
+        reward_virtual_count = torch.where(reward_virtual_count > 1000, torch.full_like(reward_virtual_count, 1000), reward_virtual_count)
+        #reward_virtual = self.virtual_bonus_beta / torch.sqrt(1.0+reward_virtual_count)
+        reward_virtual = self.virtual_reward_decay ** reward_virtual_count
+        # reward_decay = (self.virtual_reward_decay ** reward_virtual_count).to(obs.device)
+        #virtual_reward_loss = torch.sqrt(reward_virtual_count).to(obs.device)
+        reward_virtual = reward_virtual.to(obs.device)
+        diagnostics['state_entropy'] = np.mean(ptu.get_numpy(reward_virtual))
 
         obs =  obs.repeat(self.model.ensemble_size, 1, 1)
         actions = actions.repeat(self.model.ensemble_size, 1, 1)
         next_predicted_obs_mean, var = self.model(obs, actions)
 
         if self.model.ensemble_size == 1:
-            next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
+            next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)  # shape (batch_size, dim_state)
             var = torch.squeeze(var)
             p = Normal(next_predicted_obs_mean, torch.sqrt(var))
 
+
             # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
-            rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
-            diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
+            rewards_int = -torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
+            #rewards_int = rewards_int - virtual_reward_loss
+            diagnostics['model_int_reward'] = np.mean(ptu.get_numpy(rewards_int))
+            rewards_int = rewards_int * reward_virtual
+            diagnostics['rewards_int'] = np.mean(ptu.get_numpy(rewards_int))
             if self._need_to_update_int_reward:
                 self._need_to_update_int_reward = False
                 self.eval_statistics.update(diagnostics)
@@ -101,7 +125,6 @@ class SurpriseBasedSACTrainer(SACTrainer):
             return rewards_int
         else:
             raise NotImplementedError
-
 
     def train_model_from_torch_batch(self, batch):
         rewards = batch['rewards']
@@ -134,7 +157,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
         eta = self.get_eta(rewards_int)
         rewards = rewards + eta * rewards_int
         diagnostics['eta'] = eta
-
+        
         """
         Alpha
         """
@@ -247,13 +270,81 @@ class SurpriseBasedSACTrainer(SACTrainer):
         model_loss.backward()
         torch.nn.utils.clip_grad_value_(self.model.parameters(), self.grad_clip)
         self.model_optimizer.step()
-        return model_loss
+        
+        # update virtual pool
+        state_distri_estimator = StateEstimator(self.policy, self.env, self.model, self.virtual_pool, self.n_actors, self.policy_horizon, self.num_init_states)
+        self.virtual_pool = state_distri_estimator.update_virtual_pool()
 
-    def end_epoch(self, epoch):
-        self._need_to_update_eval_statistics = True
-        self._need_to_update_model = True
-        self._need_to_update_int_reward = True
+        return model_loss
 
     def get_eta(self, rewards_int):
         eta = self.intrinsic_coeff / max(1, np.mean(ptu.get_numpy(rewards_int)))
         return eta
+
+class StateEstimator:
+    def __init__(
+            self,
+            policy,
+            env,
+            model,
+            virtual_pool,
+
+            n_actors=128,
+            policy_horizon=50,
+            num_init_states=20
+        ):
+
+        self.policy = policy
+        self.env = env
+        self.model = model 
+        self.imagine_mdp = Imagine(model, n_actors, policy_horizon)
+        self.virtual_pool = virtual_pool
+
+        self.num_init_states = num_init_states
+
+        self.init_states = None
+
+    def update_virtual_pool(self):
+        self.virtual_pool.clear()
+        self.get_init_states()
+        batch_states = None
+        for i in range(self.num_init_states):
+            init_state = self.init_states[i]
+            self.imagine_mdp.update_init_state(init_state)
+            # collect n_actors * episode data
+            start = time.time()
+            batch_states = self.episode(batch_states)
+            episode_time = time.time() - start
+        start_v_pool = time.time()
+        self.virtual_pool.update_hash_table(batch_states)
+        v_pool_end = time.time() - start_v_pool
+
+        return self.virtual_pool
+
+
+    def get_init_states(self):
+        if self.init_states is None:
+            self.init_states = np.zeros((self.num_init_states, self.env.observation_space.shape[0]))
+        for i in range(self.num_init_states):
+            state = self.env.reset()
+            self.init_states[i] = state # numpy array shape: (num_init_states, obs_shape)
+
+    def episode(self, batch_states):
+        ep_length = 0
+        done = False
+        states = self.imagine_mdp.reset() # shape: (n_actors, obs_shape)
+        
+        while not done:
+            with torch.no_grad():
+                actions, _ = self.policy.action(
+                    states, reparameterize=True, return_log_prob=False,
+                )
+            next_states, rewards, done, _ = self.imagine_mdp.step(actions)
+            if batch_states is None:
+                batch_states = next_states
+            else:
+                batch_states = torch.cat([batch_states, next_states], 0)
+            ep_length += 1
+
+            states = next_states
+        return batch_states
