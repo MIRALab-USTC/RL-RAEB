@@ -89,6 +89,11 @@ register(
     max_episode_steps=500
 )
 
+register(
+    id='AntMazeResource-v0',
+    entry_point='mbrl.environments.our_envs.ant_maze_env:MazeEnv',
+    max_episode_steps=500
+)
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -109,4 +114,5 @@ env_name_to_gym_registry_dict = {
     "mountaincar_sparse": "MagellanSparseMountainCar-v0",
     "cheetah_sparse": "MagellanHalfCheetah-v2",
     "n_chain":"NChainOur-v0",
+    "ant_maze_resource": "AntMazeResource-v0",
 }

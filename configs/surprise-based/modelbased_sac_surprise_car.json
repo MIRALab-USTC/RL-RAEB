@@ -3,7 +3,7 @@
         "tag": "model_based_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/lookahead_novelty",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/test",
         "exp_prefix": "mountaincar_surprise_based_discount_1"
     },
     "algorithm": {

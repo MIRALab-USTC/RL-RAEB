@@ -5,7 +5,7 @@
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/lookahead_novelty/sparse_sac",
-        "exp_prefix": "sac_sparse_walker_delay_40"
+        "exp_prefix": "sac_sparse_walker_delay_500"
     },
     "environment": [
         {
@@ -14,7 +14,7 @@
             "kwargs": {
                 "env_name": "walker2d",
                 "reward_scale": 1,
-                "steps_delay": 40
+                "steps_delay": 500
             }
         },
         {

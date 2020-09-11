@@ -3,4 +3,4 @@ CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/sac/sac_walker.json >
 sleep 10s
 CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/sac/sac_walker.json > o_walker_sac2.txt 2>&1 &
 sleep 10s
-CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac/sac_walker.json > o_walker_sac3.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac/sac_walker.json > o_walker_sac3.txt 2>&1 &

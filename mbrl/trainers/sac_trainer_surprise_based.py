@@ -138,6 +138,8 @@ class SurpriseBasedSACTrainer(SACTrainer):
         """
         Alpha
         """
+        print(f"discount: {self.discount}")
+        
         new_action, policy_info = self.policy.action(
             obs, reparameterize=True, return_log_prob=True,
         )
