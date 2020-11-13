@@ -1,0 +1,29 @@
+{
+    "base_config_file": "configs/surprise-based/surprise.json",
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "simple_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource",
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource",
+                "n_env":8,
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "video_env",
+            "class": "video_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource"
+            }
+        }
+    ]
+}

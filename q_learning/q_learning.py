@@ -4,7 +4,7 @@ import argparse
 
 import numpy as np 
 from n_chain_resource import NChainResource
-
+from n_chain_multi_resources import NChainMultiResources
 class base_q_learning():
     def __init__(
         self,
@@ -175,12 +175,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.env_name == 'chain_resource':
-        env = NChainResource(n=20)
+        env = NChainResource(n=5)
         print(f"env_n: {env.n}")
-    
+    elif  args.env_name == 'chain_multi_resources':
+        env = NChainMultiResources(n=10, resources_num=5)
+        print(f"env_n: {env.n}") 
     #agent = None
     if args.alg == 'epsilon':
-        agent = epsilon_greedy_q_learning(env)
+        agent = epsilon_greedy_q_learning(env, epsilon=0.0)
         print(f"start_training")
         agent.train(args.epochs)
     elif args.alg == 'UCB':

@@ -1,3 +1,5 @@
+'''Adapted from Model-Based Active Exploration (https://github.com/nnaisense/max)'''
+
 import numpy as np
 
 from gym import utils
@@ -29,6 +31,7 @@ def get_state_block(state):
         y_block = 'right'
     else:
         raise Exception
+    
 
     if x_block == 'low' and y_block == 'left':
         return 0
@@ -43,18 +46,20 @@ def get_state_block(state):
     elif x_block == 'high' and y_block == 'center':
         return 5
     elif x_block == 'high' and y_block == 'left':
+        #print(f"x: {x}")
+        #print(f"y: {y}")
+        #print(f"x_block: {x_block}")
+        #print(f"y_block: {y_block}")
         return 6
-
 
 def rate_buffer(buffer):
     visited_blocks = [get_state_block(state) for state in buffer.states]
     n_unique = len(set(visited_blocks))
     return n_unique
 
-
 class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     """
-    Observation Space:
+    Observation Space: 
         - x torso COM velocity
         - y torso COM velocity
         - 15 joint positions
@@ -76,6 +81,7 @@ class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
         return obs, 0, False, {}
+    
 
     def _get_obs(self):
         position = self.sim.data.qpos.flat.copy()
@@ -109,7 +115,29 @@ class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.elevation = -85
         self.viewer.cam.azimuth = 235
 
-    @property
-    def tasks(self):
-        t = dict()
-        return t
+class AntMazeEnv(MagellanAntEnv):
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action, self.frame_skip)
+        obs = self._get_obs()
+        reward = self._judge_position(obs)
+        #print(f"reward: {reward}")
+        return obs, 0, False, {}
+
+    def _judge_position(self, state):
+        if get_state_block(state) == 6:
+            return 1
+        else:
+            return 0
+
+
+if __name__=='__main__':
+    # test ant maze env
+    env = AntMazeEnv()
+
+    state = env.reset_model()
+    action = env.action_space.sample() # action_space
+    _, reward, _, _ = env.step(action)
+
+    print(reward)

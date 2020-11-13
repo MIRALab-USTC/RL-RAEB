@@ -94,6 +94,17 @@ register(
     entry_point='mbrl.environments.our_envs.ant_maze_env:MazeEnv',
     max_episode_steps=500
 )
+register(
+    id='ContinuousMountaincarResource-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car_resources:ResourceMountainCarEnv',
+    max_episode_steps=1000
+)
+register(
+    id='AntMaze-v0',
+    entry_point='mbrl.environments.our_envs.ant:AntMazeEnv',
+    max_episode_steps=1000
+)
+
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -115,4 +126,6 @@ env_name_to_gym_registry_dict = {
     "cheetah_sparse": "MagellanHalfCheetah-v2",
     "n_chain":"NChainOur-v0",
     "ant_maze_resource": "AntMazeResource-v0",
+    "continuous_car_resource": "ContinuousMountaincarResource-v0",
+    "ant_maze_v0": "AntMaze-v0"
 }
