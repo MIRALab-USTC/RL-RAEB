@@ -104,7 +104,11 @@ register(
     entry_point='mbrl.environments.our_envs.ant:AntMazeEnv',
     max_episode_steps=1000
 )
-
+register(
+    id='AntMazeDenseReward-v0',
+    entry_point='mbrl.environments.our_envs.ant:AntMazeEnvDenseReward',
+    max_episode_steps=1000
+)
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -127,5 +131,6 @@ env_name_to_gym_registry_dict = {
     "n_chain":"NChainOur-v0",
     "ant_maze_resource": "AntMazeResource-v0",
     "continuous_car_resource": "ContinuousMountaincarResource-v0",
-    "ant_maze_v0": "AntMaze-v0"
+    "ant_maze_v0": "AntMaze-v0",
+    "ant_maze_dense_reward_v0": "AntMazeDenseReward-v0"
 }

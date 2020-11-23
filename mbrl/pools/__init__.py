@@ -3,3 +3,5 @@ import mbrl.pools.simple_pool
 import mbrl.pools.extra_field_pool
 import mbrl.pools.normalize_simple_pool
 import mbrl.pools.simple_pool_with_hash
+import mbrl.pools.simple_pool_with_hash_stateaction
+import mbrl.pools.simple_pool_with_tabular

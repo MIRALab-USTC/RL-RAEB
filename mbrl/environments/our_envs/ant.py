@@ -1,6 +1,7 @@
 '''Adapted from Model-Based Active Exploration (https://github.com/nnaisense/max)'''
 
 import numpy as np
+import pandas as pd 
 
 from gym import utils
 from gym.envs.mujoco import mujoco_env
@@ -11,8 +12,8 @@ from mujoco_py.generated import const
 
 
 def get_state_block(state):
-    x = state[2].item()
-    y = state[3].item()
+    x = state[3].item()
+    y = state[2].item()
 
     if -1 < x < 1:
         x_block = 'low'
@@ -115,23 +116,54 @@ class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.elevation = -85
         self.viewer.cam.azimuth = 235
 
-class AntMazeEnv(MagellanAntEnv):
+class AntMazeEnvDenseReward(MagellanAntEnv):
     def step(self, action):
         self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
         self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
         reward = self._judge_position(obs)
-        #print(f"reward: {reward}")
-        return obs, 0, False, {}
+        if reward > 0:
+            print(f"reward: {reward}")
+        return obs, reward, False, {}
+
+    def _judge_position(self, state):
+        return get_state_block(state) * 100
+
+class AntMazeEnv(MagellanAntEnv):
+    def __init__(self):
+        MagellanAntEnv.__init__(self)
+        self.step_id = 0
+        self.block = 0
+        self.block_array = {"step_id": [0], "block": [0]}
+
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action, self.frame_skip)
+        obs = self._get_obs()
+        reward = self._judge_position(obs)
+        #if reward > 0:
+        #    print(f"reward: {reward}")
+        self.step_id += 1
+        self.block = get_state_block(state)
+        self.block_array['step_id'].append(self.step_id)
+        self.block_array['block'].append(self.block)
+        
+        if self.step_id % 5e4 == 0:
+            if not os.path.exists("./block.csv"):
+                df = pd.DataFrame(self.block_array)
+                df.to_csv("/home/rl_shared/zhihaiwang/block.csv")
+
+        return obs, reward, False, {}
 
     def _judge_position(self, state):
         if get_state_block(state) == 6:
-            return 1
+            return 100
         else:
             return 0
 
-
+ 
 if __name__=='__main__':
     # test ant maze env
     env = AntMazeEnv()

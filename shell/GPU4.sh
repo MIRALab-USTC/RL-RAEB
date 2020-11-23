@@ -8,3 +8,6 @@ CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based-max-st
 
 
 python scripts/run.py configs/sac/sac_hash/sac_with_hash.json
+
+
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac/sac.json > o_sac_ant_maze.txt 2>&1 &
