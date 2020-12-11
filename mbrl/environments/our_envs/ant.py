@@ -7,50 +7,46 @@ from gym import utils
 from gym.envs.mujoco import mujoco_env
 
 import os
+import math 
 
 from mujoco_py.generated import const
 
 
 def get_state_block(state):
-    x = state[3].item()
-    y = state[2].item()
-
-    if -1 < x < 1:
-        x_block = 'low'
-    elif 1 < x < 3:
-        x_block = 'mid'
-    elif 3 < x < 5:
-        x_block = 'high'
-    else:
-        raise Exception
+    x = state[2].item()
+    y = state[3].item()
 
     if -1 < y < 1:
-        y_block = 'left'
+        y_block = 'low'
     elif 1 < y < 3:
-        y_block = 'center'
+        y_block = 'mid'
     elif 3 < y < 5:
-        y_block = 'right'
+        y_block = 'high'
     else:
         raise Exception
-    
 
-    if x_block == 'low' and y_block == 'left':
+    if -1 < x < 1:
+        x_block = 'left'
+    elif 1 < x < 3:
+        x_block = 'center'
+    elif 3 < x < 5:
+        x_block = 'right'
+    else:
+        raise Exception
+
+    if x_block == 'left' and y_block == 'low':
         return 0
-    elif x_block == 'low' and y_block == 'center':
+    elif x_block == 'center' and y_block == 'low':
         return 1
-    elif x_block == 'low' and y_block == 'right':
+    elif x_block == 'right' and y_block == 'low':
         return 2
-    elif x_block == 'mid' and y_block == 'right':
+    elif x_block == 'right' and y_block == 'mid':
         return 3
-    elif x_block == 'high' and y_block == 'right':
+    elif x_block == 'right' and y_block == 'high':
         return 4
-    elif x_block == 'high' and y_block == 'center':
+    elif x_block == 'center' and y_block == 'high':
         return 5
-    elif x_block == 'high' and y_block == 'left':
-        #print(f"x: {x}")
-        #print(f"y: {y}")
-        #print(f"x_block: {x_block}")
-        #print(f"y_block: {y_block}")
+    elif x_block == 'left' and y_block == 'high':
         return 6
 
 def rate_buffer(buffer):
@@ -107,7 +103,8 @@ class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return self._get_obs()
 
     def viewer_setup(self):
-        self.viewer.cam.type = const.CAMERA_TRACKING
+        #self.viewer.cam.type = const.CAMERA_TRACKING
+        self.viewer.cam.type = const.CAMERA_USER
         self.viewer.cam.trackbodyid = 0
         self.viewer.cam.distance = self.model.stat.extent
         self.viewer.cam.lookat[0] += 1  # x,y,z offset from the object (works if trackbodyid=-1)
@@ -116,54 +113,166 @@ class MagellanAntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.elevation = -85
         self.viewer.cam.azimuth = 235
 
-class AntMazeEnvDenseReward(MagellanAntEnv):
+class AntMazeEnv(MagellanAntEnv):
     def step(self, action):
         self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
         self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
         self.do_simulation(action, self.frame_skip)
         obs = self._get_obs()
-        reward = self._judge_position(obs)
-        if reward > 0:
-            print(f"reward: {reward}")
-        return obs, reward, False, {}
+        done = False
+        reward = 0
+        if get_state_block(obs) >= 2:
+            done = True
+            reward = 100
+        return obs, reward, done, {}
 
-    def _judge_position(self, state):
-        return get_state_block(state) * 100
-
-class AntMazeEnv(MagellanAntEnv):
+class AntMazeEnvForwardReward(MagellanAntEnv):
     def __init__(self):
-        MagellanAntEnv.__init__(self)
         self.step_id = 0
         self.block = 0
         self.block_array = {"step_id": [0], "block": [0]}
+        MagellanAntEnv.__init__(self)
+        
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        xposbefore = self.get_body_com("torso")[0]
+        self.do_simulation(action, self.frame_skip)
+        xposafter = self.get_body_com("torso")[0]
+        forward_reward = (xposafter - xposbefore)/self.dt
+        ctrl_cost = .5 * np.square(action).sum()
+        contact_cost = 0.5 * 1e-3 * np.sum(
+            np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        #survive_reward = 1.0
+        reward = forward_reward - ctrl_cost - contact_cost
+
+        obs = self._get_obs()
+
+        #notdone = np.isfinite(obs).all() \
+        #    and obs[2] >= 0.2 and obs[2] <= 1.0
+        done = False
+        if get_state_block(obs)==3:
+            done = True
+        
+        if done or self.step_id >= 500:
+            self.step_id = 0
+
+        self.step_id += 1
+        self.block = get_state_block(obs)
+        self.block_array['step_id'].append(self.step_id)
+        self.block_array['block'].append(self.block)
+        
+        if self.step_id > 400:
+            if not os.path.exists("./block.csv"):
+                df = pd.DataFrame(self.block_array)
+                df.to_csv("/home/rl_shared/zhihaiwang/block.csv")
+        
+        return obs, reward, done, dict(
+            reward_forward=forward_reward,
+            reward_ctrl=-ctrl_cost,
+            reward_contact=-contact_cost)
+
+class AntMazeEnvGoal(MagellanAntEnv):
+    def __init__(self, goal_pos):
+        self.step_id = 0
+        self.block = 0
+        self.block_array = {"step_id": [0], "block": [0]}
+        self.goal_pos = goal_pos
+
+        MagellanAntEnv.__init__(self)
+
+    def distance_l2(self, pos_dict):
+        d_r = 0
+        for key, value in self.goal_pos.items():
+            d = (value-pos_dict[key]) ** 2
+            d_r += d
+
+        return - math.sqrt(d_r)
 
     def step(self, action):
         self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
         self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        xposbefore = self.get_body_com("torso")[0]
         self.do_simulation(action, self.frame_skip)
+        xposafter = self.get_body_com("torso")[0]
+        yposafter = self.get_body_com("torso")[1]
+        
+        # sport reward
+        #forward_reward = (xposafter - xposbefore)/self.dt
+        #ctrl_cost = .5 * np.square(action).sum()
+        #contact_cost = 0.5 * 1e-3 * np.sum(
+        #    np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        #survive_reward = 1.0
+        #reward = forward_reward - ctrl_cost - contact_cost
+        
+        # distance reward 
+
+        reward = self.distance_l2(dict(x=xposafter, y=yposafter))
+
         obs = self._get_obs()
-        reward = self._judge_position(obs)
-        #if reward > 0:
-        #    print(f"reward: {reward}")
+
+        #notdone = np.isfinite(obs).all() \
+        #    and obs[2] >= 0.2 and obs[2] <= 1.0
+        done = False
+        if get_state_block(obs)==3:
+            done = True
+        
+        if done or self.step_id >= 500:
+            self.step_id = 0
+
         self.step_id += 1
-        self.block = get_state_block(state)
+        self.block = get_state_block(obs)
         self.block_array['step_id'].append(self.step_id)
         self.block_array['block'].append(self.block)
         
-        if self.step_id % 5e4 == 0:
+        if self.step_id > 400:
             if not os.path.exists("./block.csv"):
                 df = pd.DataFrame(self.block_array)
-                df.to_csv("/home/rl_shared/zhihaiwang/block.csv")
+                df.to_csv("./block.csv")
+        
+        return obs, reward, done, {}
 
-        return obs, reward, False, {}
+class AntMazeEnvGoalForwardReward(AntMazeEnvGoal):
 
-    def _judge_position(self, state):
-        if get_state_block(state) == 6:
-            return 100
-        else:
-            return 0
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        xposbefore = self.get_body_com("torso")[0]
+        self.do_simulation(action, self.frame_skip)
+        xposafter = self.get_body_com("torso")[0]
+        yposafter = self.get_body_com("torso")[1]
+        
+        # sport reward
+        forward_reward = (xposafter - xposbefore)/self.dt
+        ctrl_cost = .5 * np.square(action).sum()
+        contact_cost = 0.5 * 1e-3 * np.sum(
+            np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        #survive_reward = 1.0
+        reward = forward_reward - ctrl_cost - contact_cost
+        
+        # distance reward 
 
- 
+        d_reward = self.distance_l2(dict(x=xposafter, y=yposafter))
+
+        reward += d_reward
+
+        obs = self._get_obs()
+
+        #notdone = np.isfinite(obs).all() \
+        #    and obs[2] >= 0.2 and obs[2] <= 1.0
+        done = False
+        if get_state_block(obs)==3:
+            done = True
+        
+        if done or self.step_id >= 500:
+            self.step_id = 0
+
+        return obs, reward, done, dict(
+            reward_forward=forward_reward,
+            reward_ctrl=-ctrl_cost,
+            reward_contact=-contact_cost)
+
+
 if __name__=='__main__':
     # test ant maze env
     env = AntMazeEnv()

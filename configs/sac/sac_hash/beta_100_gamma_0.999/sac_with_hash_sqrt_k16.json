@@ -4,8 +4,8 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/rllr/comparsion/sac_hash_count_based/beta_100_discount_0.999",
-        "exp_prefix": "sac_ant_maze_hash"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ant_maze_result_20201206/forward_reward/sac_hash",
+        "exp_prefix": "sac_hash_ant_maze_forward_reward"
     },
     "algorithm": {
         "name": "sac",
@@ -28,7 +28,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_maze_v0",
+                "env_name": "ant_maze_forward_reward",
                 "reward_scale": 1
             }
         },
@@ -36,7 +36,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_maze_v0",
+                "env_name": "ant_maze_forward_reward",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -45,7 +45,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_maze_v0"
+                "env_name": "ant_maze_forward_reward"
             }
         }
     ],
@@ -56,7 +56,7 @@
             "env": "$expl_env",
             "max_size": 1e6,
             "hash_k": 16,
-            "beta": 100
+            "beta": 0.01
         }
     },
     "trainer":{

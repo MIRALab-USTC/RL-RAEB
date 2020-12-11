@@ -11,3 +11,4 @@ MANIFEST
 *.egg-info
 \.idea/
 o_*.txt
+*.txt

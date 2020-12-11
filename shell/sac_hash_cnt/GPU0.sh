@@ -21,4 +21,4 @@ CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/resour
 CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/resource-augmented/comparsion/modelbased_sac_surprise_ant_maze_discount_1.json > o_surprise_1.txt 2>&1 &
 
 
-CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac/sac_hash/beta_100_gamma_0.999/sac_with_hash_sqrt_k16.json > o_maze_hash_state_beta100_gamma_0.999.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac/sac_hash/beta_100_gamma_0.999/sac_with_hash_sqrt_k16.json > o_maze_hash_state_beta100_gamma_0.999.txt 2>&1 &

@@ -25,6 +25,7 @@ class HashCntSACTrainer(SACTrainer):
         self.hash_table = self.pool_with_hash.hash_table
         self.beta = self.pool_with_hash.beta
         self.cnt_with_sqrt = cnt_with_sqrt
+        
     def get_rewards_plus_bonus(self, states, rewards):
         # states shape (batch_size, dim_state)
         # states torch 
