@@ -1,0 +1,36 @@
+{
+    "base_config_file": "configs/sac/sac.json",
+    "experiment":{
+        "tag": "my_sac",
+        "use_gpu": true,
+        "seed": null,
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/rllr/comparsion/",
+        "exp_prefix": "sac"
+    },
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "simple_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource",
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource",
+                "n_env":8,
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "video_env",
+            "class": "video_env",
+            "kwargs": {
+                "env_name": "continuous_car_resource"
+            }
+        }
+    ]
+}

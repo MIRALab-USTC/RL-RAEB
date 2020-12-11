@@ -37,6 +37,7 @@ class SACTrainer(BatchTorchTrainer):
         super().__init__()
         if isinstance(optimizer_class, str):
             optimizer_class = eval('optim.'+optimizer_class)
+            self.optimizer_class = optimizer_class
         self.env = env
         self.policy = policy
         self.qf = qf
@@ -201,3 +202,5 @@ class SACTrainer(BatchTorchTrainer):
             qf1=self.qf
         )
 
+    def train_model_from_torch_batch(self, batch):
+        pass

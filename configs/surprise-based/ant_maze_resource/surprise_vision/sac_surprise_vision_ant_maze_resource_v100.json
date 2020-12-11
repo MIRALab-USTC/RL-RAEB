@@ -1,0 +1,143 @@
+{
+    "experiment":{
+        "tag": "model_based_sac",
+        "use_gpu": true,
+        "seed": null,
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/valid_exp_maze_resource_maze_block2_4_fixed_cargo_reset/our_methods/sac_surprise_vision",
+        "exp_prefix": "ant_maze_resource_surprise_vision_beta100"
+    },
+    "algorithm": {
+        "name": "model_based_sac_surprise",
+        "class": "ModelBasedBatchRLAlgorithm",
+        "kwargs": {
+            "num_epochs": 10000,
+            "batch_size": 256,
+            "num_eval_steps_per_epoch":8000,
+            "num_train_loops_per_epoch": 1000,
+            "num_expl_steps_per_train_loop": 1,
+            "num_trains_per_train_loop": 1,
+            "num_train_models_per_epoch": 1000,
+            "max_path_length": 200,
+            "train_model_freq": 25,
+            "min_num_steps_before_training": 5000,
+            "record_video_freq": 10,
+            "silent": false
+        }
+    },
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "simple_env",
+            "kwargs": {
+                "env_name": "ant_maze_resource_v100",
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "ant_maze_resource_v100",
+                "n_env":8,
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "video_env",
+            "class": "video_env",
+            "kwargs": {
+                "env_name": "ant_maze_resource_v100"
+            }
+        }
+    ],
+    "policy": [
+        {
+            "name": "init_expl_policy",
+            "class": "uniformly_random_policy",
+            "kwargs":{
+                "env": "$expl_env"
+            }
+        },
+        {
+            "name": "policy",
+            "class": "gaussian_policy",
+            "kwargs": {
+                "env": "$expl_env",
+                "hidden_layers": [128,128],
+                "nonlinearity": "relu"
+            }
+        },
+        {
+            "name": "eval_policy",
+            "class": "MakeDeterministic",
+            "kwargs":{
+                "random_policy": "$policy"
+            }
+        }
+    ],
+    "value": {
+        "name": "qf",
+        "class": "ensemble_q_value",
+        "kwargs": {
+            "env": "$expl_env",
+            "hidden_layers": [256,256]
+        } 
+    },
+    "model": {
+        "name": "model_without_reward",
+        "class": "model_no_reward",
+        "kwargs": {
+            "env": "$expl_env",
+            "layers_num": 4, 
+            "hidden_size": [512,512,512,512,512],
+            "ensemble_size": 1, 
+            "non_linearity": "swish"   
+        }
+    },
+    "trainer":{
+        "name": "trainer",
+        "class": "Vision_Surprise_SAC_Trainer",
+        "kwargs": {
+            "env": "$expl_env",
+            "policy": "$policy",
+            "qf": "$qf",
+            "model": "$model_without_reward",
+            "intrinsic_coeff": 0.01,
+            "model_lr": 3e-4,
+            "training_noise_stdev": 0.1,
+            "grad_clip": 1,
+            "reward_scale":1,
+            "policy_lr": 3e-4,
+            "qf_lr": 3e-4,
+            "soft_target_tau": 5e-3,
+            "use_automatic_entropy_tuning": true,
+            "alpha_if_not_automatic": 0
+        }
+    },
+    "pool": {
+        "name": "pool",
+        "class": "normalize_simple_pool",
+        "kwargs": {
+            "env": "$expl_env",
+            "max_size": 1e6
+        }
+    },
+    "collector": [
+        {
+            "name": "expl_collector",
+            "class": "simple_step_collector",
+            "kwargs": {
+                "env": "$expl_env",
+                "policy": "$policy"
+            }
+        },
+        {
+            "name": "eval_collector",
+            "class": "simple_path_collector",
+            "kwargs": {
+                "env": "$eval_env",
+                "policy": "$eval_policy"
+            }
+        }
+    ]
+}

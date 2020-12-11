@@ -3,8 +3,8 @@
         "tag": "model_based_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/alg_comparsion_ant_maze_20200810",
-        "exp_prefix": "ant_maze_max"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/valid_exp/comparsion_max_20200813",
+        "exp_prefix": "ant_maze_max_baseline"
     },
     "algorithm": {
         "name": "model_based_sac_max",

@@ -64,7 +64,8 @@ class EnsembleDenseLayer(nn.Module):
 
     def forward(self, inp):
         # torch.baddbmm 矩阵乘法
-        op = torch.baddbmm(self.biases, inp, self.weights)
+        #op = torch.baddbmm(self.biases, inp, self.weights)
+        op = torch.matmul(inp, self.weights) + self.biases
         return self.non_linearity(op)
 
 
@@ -235,9 +236,8 @@ class ModelNoReward(nn.Module, Model):
         mu, var = self._propagate_network(states, actions)      # delta and variance
 
         # negative log likelihood
-        loss = (mu - targets) ** 2 / (var+1e-6) + torch.log(var+1e-6)
+        loss = (mu - targets) ** 2 / (var) + torch.log(var)
         loss = torch.mean(loss)
-
         return loss
         
     def get_diagnostics():

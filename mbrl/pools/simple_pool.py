@@ -1,5 +1,7 @@
 import numpy as np
 import warnings
+import torch 
+
 from collections import OrderedDict
 
 from mbrl.utils.mean_std import RunningMeanStd
@@ -142,4 +144,3 @@ class SimplePool(Pool):
             ('size', self._size)
         ])
 
-        

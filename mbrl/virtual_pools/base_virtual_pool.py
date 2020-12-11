@@ -10,15 +10,13 @@ class VirtualPool(object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def update_hash_table(self, states):
-        pass
-
-
-    @abc.abstractmethod
     def clear(self):
         # 清空pool
         pass
 
+    def update_hash_table(self, states):
+        pass
+    
     def get_diagnostics(self):
         return {}
 

@@ -5,6 +5,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
 from torch.distributions import Normal
+# The RewardFn object determines the reward the ApproxPlan implementation awards
+# to a given state if the MaxEnt implmentation uses a density estimation kernel. 
+# (i.e currently only Humanoid)
+# RewardFn copy from MaxEnt
+
+from sklearn.datasets import load_digits
+from sklearn.neighbors import KernelDensity
+from sklearn.decomposition import PCA 
+from sklearn.model_selection import GridSearchCV
 
 
 LOG_STD_MIN = -20
@@ -214,7 +223,7 @@ class SAC(nn.Module):
         self.batch_size = batch_size
         self.n_hidden = n_hidden
         self.lr = lr
-        
+
 
 
         self.replay = Replay(d_state=d_state, d_action=d_action, size=replay_size)
@@ -340,3 +349,135 @@ class SAC(nn.Module):
 
     def get_diagnostics(self):
         return self.returns
+
+class SACMaxEnt(SAC):
+    def __init__(self, d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau, n_components=32, eps=0.001, int_coeff=0.1):
+        SAC.__init__(self, d_state, d_action, replay_size, batch_size, n_updates, n_hidden, gamma, alpha, lr, tau)
+
+        self.reward_fn = None
+        self.n_components = n_components
+        self.eps = eps
+        self.int_coeff = int_coeff
+
+    def update_reward_fn(self):
+        data = np.array(self.Replay.states)
+        self.reward_fn = RewardFn(data, self.n_components, self.eps)
+
+    def update(self):
+        sample = self.replay.sample(self.batch_size)
+        states, actions, rewards, next_states, masks = [s.to(self.device) for s in sample]
+        # state_entropy_rewards
+        rewards_state_entropy = 0.5 * self.reward_fn.reward(np.array(states)) + 0.5 * self.reward_fn.reward(np.array(next_states))
+        rewards += self.int_coeff * rewards_state_entropy
+
+        q1, q2 = self.qf(states, actions)
+        pi, logp_pi, mu, log_std = self.policy(states)
+        q1_pi, q2_pi = self.qf(states, pi)
+        v = self.vf(states)
+
+        # target value network
+        v_target = self.vf_target(next_states)
+
+        # min double-Q:
+        min_q_pi = torch.min(q1_pi, q2_pi)
+
+        # targets for Q and V regression
+        q_backup = rewards + self.gamma * masks * v_target
+        v_backup = min_q_pi - self.alpha * logp_pi
+
+        # SAC losses
+        pi_loss = torch.mean(self.alpha * logp_pi - min_q_pi)
+        pi_loss += 0.001 * mu.pow(2).mean()
+        pi_loss += 0.001 * log_std.pow(2).mean()
+
+        q1_loss = 0.5 * F.mse_loss(q1, q_backup.detach())
+        q2_loss = 0.5 * F.mse_loss(q2, q_backup.detach())
+        v_loss = 0.5 * F.mse_loss(v, v_backup.detach())
+        value_loss = q1_loss + q2_loss + v_loss
+
+        self.policy_optim.zero_grad()
+        pi_loss.backward()
+        torch.nn.utils.clip_grad_value_(self.policy.parameters(), self.grad_clip)
+        self.policy_optim.step()
+
+        self.qf_optim.zero_grad()
+        self.vf_optim.zero_grad()
+        value_loss.backward()
+        torch.nn.utils.clip_grad_value_(self.qf.parameters(), self.grad_clip)
+        torch.nn.utils.clip_grad_value_(self.vf.parameters(), self.grad_clip)
+        self.qf_optim.step()
+        self.vf_optim.step()
+
+        for target_param, param in zip(self.vf_target.parameters(), self.vf.parameters()):
+            target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
+
+        return v_loss.item(), q1_loss.item(), q2_loss.item(), pi_loss.item(), rewards_state_entropy
+    
+    def episode(self, env, warm_up=False, train=True, verbosity=0, _log=None):
+        ep_returns = 0
+        ep_length = 0
+        states = env.reset()
+        done = False
+        while not done:
+            if warm_up:
+                actions = env.action_space.sample()
+                actions = torch.from_numpy(actions)
+            else:
+                with torch.no_grad():
+                    actions = self(states)
+
+            next_states, rewards, done, _ = env.step(actions)
+            self.replay.add(states, actions, rewards, next_states)
+            if verbosity >= 3 and _log is not None:
+                _log.info(f'step_reward. mean: {torch.mean(rewards).item():5.2f} +- {torch.std(rewards).item():.2f} [{torch.min(rewards).item():5.2f}, {torch.max(rewards).item():5.2f}]')
+
+            ep_returns += torch.mean(rewards).item()
+            ep_length += 1
+
+            states = next_states
+
+        if train:
+            if not warm_up:
+                self.update_reward_fn()
+                for _ in range(self.n_updates * ep_length):
+                    _, _, _, _, reward_state_entropy = self.update()
+        self.returns['returns_imagine_mean'] = ep_returns
+        self.returns['reward_state_entropy'] = np.mean(reward_state_entropy)
+        return ep_returns
+
+class RewardFn:
+    def __init__(self, data, n_components=None, eps=.001):
+        self.eps = eps
+        self.kde = None
+        self.pca = None
+
+        if data is not None:
+            data = np.array(data)
+
+            if n_components is not None:
+                self.pca = PCA(n_components=n_components, whiten=False)
+                data = self.pca.fit_transform(data)
+
+            self.kde = self.fit_distribution(data)
+
+    def fit_distribution(self, data):
+        kde = KernelDensity(bandwidth=.1, kernel='epanechnikov').fit(data)
+        return kde
+
+    def get_prob(self, x):
+        if self.pca is not None:
+            x = self.pca.transform(x)
+        return np.exp(self.kde.score(x))
+
+    def reward(self, x):
+        if self.kde is None:
+            return 0.
+        
+        prob_x = self.get_prob(x)
+        return 1/(prob_x + self.eps)
+
+    def test(self, x, env):
+        for data in x:
+            continue
+            prob = self.get_prob([data])
+
