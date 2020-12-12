@@ -234,8 +234,8 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_weight(self, states, actions):
-        w = self.env.f_batch(states, actions)
-        return 1.0/w
+        w = self.env.get_long_term_weight_batch(states, actions)
+        return w
 
     def train_from_torch_batch(self, batch):
         # train policy / value 

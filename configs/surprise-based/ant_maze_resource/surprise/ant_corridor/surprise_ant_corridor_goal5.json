@@ -4,7 +4,7 @@
         "tag": "surprise",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps/ant_corridor/goal5/surprise",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal5/surprise",
         "exp_prefix": "ant_corridor_surprise_goal5"
     },
     "algorithm": {

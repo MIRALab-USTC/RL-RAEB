@@ -4,7 +4,7 @@
         "tag": "surprise_vision",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps/ant_corridor/goal9/our_methods/sac_surprise_vision",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal9/our_methods/sac_surprise_vision",
         "exp_prefix": "ant_corridor_surprise_vision_goal9"
     },
     "algorithm": {

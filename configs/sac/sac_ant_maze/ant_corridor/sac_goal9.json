@@ -4,7 +4,7 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps/ant_corridor/goal9/sac",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal9/sac",
         "exp_prefix": "sac_goal9"
     },
     "algorithm": {
