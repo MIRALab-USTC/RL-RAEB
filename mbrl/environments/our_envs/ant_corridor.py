@@ -11,9 +11,14 @@ import os
 import math 
 
 from mujoco_py.generated import const
-from mbrl.environments.our_envs.ant import MagellanAntEnv
-#from ant import MagellanAntEnv
+# For test
+# import sys
+# sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
 
+from mbrl.environments.our_envs.ant import MagellanAntEnv
+# For test
+#from ant import MagellanAntEnv
+#from mbrl.environments.video_env import VideoEnv
 
 
 class AntCorridorEnv(MagellanAntEnv):
@@ -27,7 +32,6 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.cargo_num = cargo_num # the number of resources 
         self.cur_cargo = cargo_num
         self.beta = beta
-        self.flag_lease_resources = False
         self.reward_block = reward_block
         AntCorridorEnv.__init__(self)
 
@@ -45,15 +49,20 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
         self.do_simulation(action[:-1], self.frame_skip)
         action_cargo = action[-1]
+
+        # the resource of last state
+        cargo_last = self.cur_cargo
+        
+        # update resource 
         obs = self._get_obs(action_cargo)
 
+        cargo_now = self.cur_cargo
         done = False
         reward = 0
         cur_x_pos_r = self.get_state_pos(obs)
-        if cur_x_pos_r and self.flag_lease_resources:
+        if cur_x_pos_r and cargo_now < cargo_last:
             done = True
             reward = 100
-            self.flag_lease_resources = False
         
         return obs, reward, done, dict(action_cargo=action_cargo)
 
@@ -80,12 +89,10 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         # discrete resorces
         # assert action_resources <= 1, "action resources out bound"
         if action_resources >= 0.5:
-            if self.cur_cargo > 0:
-                self.flag_lease_resources = True
             self.cur_cargo = max(0, self.cur_cargo - 1)
-            cargo_num = max(0, self.cargo_num - 1)
+            # cargo_num = max(0, self.cargo_num - 1)
+            cargo_num = self.cur_cargo
         else:
-            self.cur_cargo = max(0, self.cur_cargo)
             cargo_num = self.cur_cargo
 
         # contact_force = self.contact_forces.flat.copy()
@@ -103,6 +110,33 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         obs[-1] = self.cargo_num
         self.cur_cargo = self.cargo_num
         return obs
+
+    def viewer_setup(self):
+        self.viewer.cam.type = const.CAMERA_TRACKING
+        #self.viewer.cam.type = const.CAMERA_USER
+        #self.viewer.cam.type = const.CAMERA_FIXED
+        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.distance = self.model.stat.extent * 0.5
+        self.viewer.cam.lookat[0] += 1  # x,y,z offset from the object (works if trackbodyid=-1)
+        self.viewer.cam.lookat[1] += 1
+        self.viewer.cam.lookat[2] += 1
+        self.viewer.cam.elevation = -90
+        self.viewer.cam.azimuth = 270
+
+        #self.viewer.cam.distance = self.model.stat.extent * 0.5
+        #self.viewer.cam.trackbodyid = 1
+        #self.viewer.cam.distance = self.model.stat.extent * 1.0
+        #self.viewer.cam.lookat[2] = 0.8925
+        #self.viewer.cam.elevation = -20
+
+        # self.viewer.cam.trackbodyid = 0         # id of the body to track ()
+        # self.viewer.cam.distance = self.model.stat.extent * 1.0         # how much you "zoom in", model.stat.extent is the max limits of the arena
+        # self.viewer.cam.lookat[0] += 0.5         # x,y,z offset from the object (works if trackbodyid=-1)
+        # self.viewer.cam.lookat[1] += 0.5
+        # self.viewer.cam.lookat[2] += 0.5
+        # self.viewer.cam.elevation = 0           # camera rotation around the axis in the plane going through the frame origin (if 0 you just see a line)
+        # self.viewer.cam.azimuth = 0              # camera rotation around the camera's vertical axis
+
 
     def f_batch(self, states, actions):
         actions_cargo = actions[:,-1]
@@ -126,10 +160,14 @@ class AntCorridorResourceEnv(AntCorridorEnv):
 
 if __name__=='__main__':
     # test ant maze env
-    env = AntCorridorResourceEnv(4,5,[7,7])
+    env_name = "ant_corridor_resource_env_goal_7_v0"
+    video_env = VideoEnv(env_name, "./videos")
 
-    state = env.reset_model()
-    action = env.action_space.sample() # action_space
-    _, reward, _, _ = env.step(action)
+    LEN = 200
+    video_env.set_video_name("test")
+    o = video_env.reset()
+    for i in range(LEN):
+        action = video_env.action_space.sample() # action_space
+        next_o, _, _, _ = video_env.step(action)
 
-    print(reward)
+
