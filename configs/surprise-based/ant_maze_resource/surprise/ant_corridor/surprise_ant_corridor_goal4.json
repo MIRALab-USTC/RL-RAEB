@@ -1,11 +1,11 @@
 {
-    "base_config_file": "configs/surprise-based/ant_maze_resource/surprise_vision/surprise_vision.json",
+    "base_config_file": "configs/surprise-based/ant_maze_resource/surprise/surprise.json",
     "experiment":{
-        "tag": "surprise_vision",
+        "tag": "surprise",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal7/our_methods/sac_surprise_vision",
-        "exp_prefix": "ant_corridor_surprise_vision_goal7"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal4/surprise",
+        "exp_prefix": "ant_corridor_surprise_goal4"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
@@ -30,7 +30,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_7_v0",
+                "env_name": "ant_corridor_resource_env_goal_4_v0",
                 "reward_scale": 1
             }
         },
@@ -38,7 +38,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_7_v0",
+                "env_name": "ant_corridor_resource_env_goal_4_v0",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -47,7 +47,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_7_v0"
+                "env_name": "ant_corridor_resource_env_goal_4_v0"
             }
         }
     ]

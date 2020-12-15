@@ -12,13 +12,13 @@ import math
 
 from mujoco_py.generated import const
 # For test
-# import sys
-# sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
+import sys
+sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
 
 from mbrl.environments.our_envs.ant import MagellanAntEnv
 # For test
-#from ant import MagellanAntEnv
-#from mbrl.environments.video_env import VideoEnv
+# from ant import MagellanAntEnv
+from mbrl.environments.video_env import VideoEnv
 
 
 class AntCorridorEnv(MagellanAntEnv):
@@ -35,6 +35,14 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.reward_block = reward_block
         AntCorridorEnv.__init__(self)
 
+    def _set_action_space(self):
+        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+        low, high = bounds.T
+        low = np.concatenate((low, [0]))
+        high = np.concatenate((high,[self.cargo_num]))
+        self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
+        return self.action_space
+
     def get_state_pos(self, state):
         x = state[2].item()
         r_x_low = self.reward_block[0]
@@ -50,10 +58,10 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.do_simulation(action[:-1], self.frame_skip)
         action_cargo = action[-1]
 
-        # the resource of last state
+        # the cargo of last state
         cargo_last = self.cur_cargo
         
-        # update resource 
+        # update cargo 
         obs = self._get_obs(action_cargo)
 
         cargo_now = self.cur_cargo
@@ -66,14 +74,6 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         
         return obs, reward, done, dict(action_cargo=action_cargo)
 
-    def _set_action_space(self):
-        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
-        low, high = bounds.T
-        low = np.concatenate((low, [0]))
-        high = np.concatenate((high,[self.cargo_num]))
-        self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
-        return self.action_space
-
     def _get_obs(self, action_resources):
         # state: raw_state + cargo_num
         position = self.sim.data.qpos.flat.copy()
@@ -84,7 +84,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         y_torso = np.copy(self.get_body_com("torso")[1:2])
         y_velocity = (y_torso - self.prev_y_torso) / self.dt
         
-        if action_resources >= 0.5:
+        if action_resources > 0.5:
             self.cur_cargo = max(0, self.cur_cargo - 1)
             # cargo_num = max(0, self.cargo_num - 1)
             cargo_num = self.cur_cargo
@@ -117,36 +117,56 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.viewer.cam.elevation = -90
         self.viewer.cam.azimuth = 270
 
+    def get_long_term_weight_batch(self, states, actions):
+        I_s = self.I_batch(states)
+        f_s_a = self.f_batch(states, actions)
+        w = self.beta * (1 + I_s.float() - f_s_a.float()) / (1 + self.cargo_num)
+        return w
+
+
+    def I_batch(self, states):
+        state_cargo = states[:,-1]
+        state_cargo = state_cargo.reshape((state_cargo.shape[0],1))
+        if not torch.is_tensor(state_cargo):
+            state_cargo = torch.from_numpy(state_cargo)
+        return state_cargo
+    
     def f_batch(self, states, actions):
+        # a\in [0,1] wrapped by env
         actions_cargo = actions[:,-1]
-        states_cargo = states[:,-1]
         if not torch.is_tensor(actions_cargo):
             actions_cargo = torch.from_numpy(actions_cargo)
-        if not torch.is_tensor(states_cargo):
-            states_cargo = torch.from_numpy(states_cargo)
         actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1))
-        w = torch.sign(actions_cargo)
+        actions_cargo = actions_cargo * 2 - 1
+        
+        w = torch.sign(actions_cargo) 
         zero = torch.zeros_like(w)
         w = torch.where(w <= 0, zero, w)
-        w = self.beta * w
-        one = torch.ones_like(w)
-        w = torch.where(w <= 0, one, w)
 
         # state cargo is 0 
+        states_cargo = states[:,-1]
+        if not torch.is_tensor(states_cargo):
+            states_cargo = torch.from_numpy(states_cargo)
         indexes_invalid = torch.where(states_cargo==0)
-        w[indexes_invalid] = 1
+        w[indexes_invalid] = 0
         return w
 
 if __name__=='__main__':
     # test ant maze env
     env_name = "ant_corridor_resource_env_goal_7_v0"
-    video_env = VideoEnv(env_name, "./videos")
+    video_env = AntCorridorResourceEnv(4,5,[7,8])
 
     LEN = 200
-    video_env.set_video_name("test")
-    o = video_env.reset()
-    for i in range(LEN):
-        action = video_env.action_space.sample() # action_space
-        next_o, _, _, _ = video_env.step(action)
+    state = video_env.reset()
+    action = video_env.action_space.sample()
+
+    states = np.repeat(np.expand_dims(state, axis=0), 3, axis=0)
+    actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
+
+    w = video_env.get_long_term_weight_batch(states, actions)
+
+    #for i in range(LEN):
+    #    action = video_env.action_space.sample() # action_space
+    #    next_o, _, _, _ = video_env.step(action)
 
 
