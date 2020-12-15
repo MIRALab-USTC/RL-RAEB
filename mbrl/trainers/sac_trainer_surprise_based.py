@@ -231,7 +231,6 @@ class SurpriseBasedSACTrainer(SACTrainer):
         eta = self.intrinsic_coeff / max(1, np.mean(ptu.get_numpy(rewards_int)))
         return eta
 
-
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_weight(self, states, actions):
         w = self.env.get_long_term_weight_batch(states, actions)
@@ -362,3 +361,32 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         self._n_train_steps_total += 1
             
         return diagnostics
+
+class VisionSurprisePositiveSACTrainer(VisionSurpriseSACTrainer):
+    def reward_function_novelty(self, obs, actions, next_obs):
+        # resieze to  (ensemble_size, batch size, dim_state)
+        # output: (ensemble_size, batch size, dim_state)
+        diagnostics = OrderedDict()
+
+        obs =  obs.repeat(self.model.ensemble_size, 1, 1)
+        actions = actions.repeat(self.model.ensemble_size, 1, 1)
+        next_predicted_obs_mean, var = self.model(obs, actions)
+
+        if self.model.ensemble_size == 1:
+            next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
+            var = torch.squeeze(var)
+            p = Normal(next_predicted_obs_mean, torch.sqrt(var))
+
+            # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
+            rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
+            # if reward bonus < 0 then shift reward bonus
+            if torch.min(rewards_int) < 0:
+                rewards_int -= torch.min(rewards_int)
+            diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
+            if self._need_to_update_int_reward:
+                self._need_to_update_int_reward = False
+                self.eval_statistics.update(diagnostics)
+
+            return rewards_int
+        else:
+            raise NotImplementedError

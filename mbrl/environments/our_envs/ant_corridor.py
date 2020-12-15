@@ -120,13 +120,16 @@ class AntCorridorResourceEnv(AntCorridorEnv):
     def get_long_term_weight_batch(self, states, actions):
         I_s = self.I_batch(states)
         f_s_a = self.f_batch(states, actions)
-        w = self.beta * (1 + I_s - f_s_a) / (1 + self.cargo_num)
-
+        w = self.beta * (1 + I_s.float() - f_s_a.float()) / (1 + self.cargo_num)
         return w
 
 
     def I_batch(self, states):
-        return states[:, -1]
+        state_cargo = states[:,-1]
+        state_cargo = state_cargo.reshape((state_cargo.shape[0],1))
+        if not torch.is_tensor(state_cargo):
+            state_cargo = torch.from_numpy(state_cargo)
+        return state_cargo
     
     def f_batch(self, states, actions):
         # a\in [0,1] wrapped by env
@@ -135,7 +138,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
             actions_cargo = torch.from_numpy(actions_cargo)
         actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1))
         actions_cargo = actions_cargo * 2 - 1
-
+        
         w = torch.sign(actions_cargo) 
         zero = torch.zeros_like(w)
         w = torch.where(w <= 0, zero, w)
@@ -151,13 +154,19 @@ class AntCorridorResourceEnv(AntCorridorEnv):
 if __name__=='__main__':
     # test ant maze env
     env_name = "ant_corridor_resource_env_goal_7_v0"
-    video_env = VideoEnv(env_name, "./videos")
+    video_env = AntCorridorResourceEnv(4,5,[7,8])
 
     LEN = 200
-    video_env.set_video_name("test")
-    o = video_env.reset()
-    for i in range(LEN):
-        action = video_env.action_space.sample() # action_space
-        next_o, _, _, _ = video_env.step(action)
+    state = video_env.reset()
+    action = video_env.action_space.sample()
+
+    states = np.repeat(np.expand_dims(state, axis=0), 3, axis=0)
+    actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
+
+    w = video_env.get_long_term_weight_batch(states, actions)
+
+    #for i in range(LEN):
+    #    action = video_env.action_space.sample() # action_space
+    #    next_o, _, _, _ = video_env.step(action)
 
 
