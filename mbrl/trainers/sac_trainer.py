@@ -110,11 +110,17 @@ class SACTrainer(BatchTorchTrainer):
             next_obs, reparameterize=False, return_log_prob=True,
         )
         log_prob_next_action = next_policy_info['log_prob']
+        
         target_q_next_action = self.qf.value(next_obs, 
                                         next_action, 
                                         use_target_value=True, 
                                         return_info=False) - alpha * log_prob_next_action
 
+        # target_q_next_action = self.qf.value(next_obs, 
+        #                                next_action, 
+        #                                use_target_value=True, 
+        #                                return_info=False)
+                                        
         q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_q_next_action
         qf_loss = ((q_value_ensemble - q_target.detach()) ** 2).mean()
 

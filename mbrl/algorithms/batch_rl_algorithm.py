@@ -89,7 +89,48 @@ class BatchRLAlgorithm(RLAlgorithm):
         gt.stamp('evaluation sampling')
         progress.close()
 
+class RNDRLAlgorithm(BatchRLAlgorithm):
+    def __init__(
+        self,
+        train_model_freq,
+        num_train_models_per_epoch,
+        **kwargs
+    ):
+        self.train_model_freq = train_model_freq
+        self.num_train_models_per_epoch = num_train_models_per_epoch
+        BatchRLAlgorithm.__init__(self, **kwargs)
 
+    def _train_epoch(self, epoch):
+        progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)
+        
+        for i in range(max(self.num_train_loops_per_epoch, self.num_train_models_per_epoch)):
+            # sample a transition
+            self._sample(self.num_expl_steps_per_train_loop)
+            gt.stamp('exploration sampling', unique=False)
+            self.training_mode(True)
+            for _ in range(self.num_trains_per_train_loop):
+                progress.update()
+                train_data = self.pool.random_batch(self.batch_size)
+                params = self.trainer.train(train_data)
+                # 每 train_model_freq train 一步
+                if i % self.train_model_freq == 0:
+                    # train random network
+                    # train_data: dict s,a,n_s,r,d
+                    params_model = self.trainer.train_model(train_data)
+                    for k,v in params_model.items():
+                        params[k] = v
+
+                progress.set_description(format_for_process(params))
+            gt.stamp('training', unique=False)
+            self.training_mode(False)
+        self.eval_collector.collect_new_paths(
+            self.num_eval_steps_per_epoch,
+            self.max_path_length,
+            discard_incomplete_paths=True,
+        )
+        gt.stamp('evaluation sampling')
+        progress.close()
+    
 class ModelBasedBatchRLAlgorithm(RLAlgorithm):
     def __init__(
             self,

@@ -12,28 +12,52 @@ import math
 
 from mujoco_py.generated import const
 # For test
-import sys
-sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
+#import sys
+#sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
 
 from mbrl.environments.our_envs.ant import MagellanAntEnv
 # For test
-# from ant import MagellanAntEnv
+#from ant import MagellanAntEnv
 from mbrl.environments.video_env import VideoEnv
 
 
 class AntCorridorEnv(MagellanAntEnv):
-    def __init__(self):
+    def __init__(self, reward_block):
+        self.reward_block = reward_block
         dir_path = os.path.dirname(os.path.realpath(__file__))
         mujoco_env.MujocoEnv.__init__(self, '%s/assets/ant_corridor.xml' % dir_path, 5)
         utils.EzPickle.__init__(self)
+    
+    def viewer_setup(self):
+        self.viewer.cam.type = const.CAMERA_TRACKING
+        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.distance = self.model.stat.extent * 0.5
+        self.viewer.cam.lookat[0] += 1  # x,y,z offset from the object (works if trackbodyid=-1)
+        self.viewer.cam.lookat[1] += 1
+        self.viewer.cam.lookat[2] += 1
+        self.viewer.cam.elevation = -90
+        self.viewer.cam.azimuth = 270
+
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action, self.frame_skip)
+        obs = self._get_obs()
+        done = False
+        reward = 0
+        x = obs[2].item()
+        low = self.reward_block[0]
+        if x >= low:
+            done = True
+            reward = 100
+        return obs, reward, done, {}
 
 class AntCorridorResourceEnv(AntCorridorEnv):
     def __init__(self, cargo_num, beta, reward_block):
         self.cargo_num = cargo_num # the number of resources 
         self.cur_cargo = cargo_num
         self.beta = beta
-        self.reward_block = reward_block
-        AntCorridorEnv.__init__(self)
+        AntCorridorEnv.__init__(self, reward_block)
 
     def _set_action_space(self):
         bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
@@ -107,15 +131,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         self.cur_cargo = self.cargo_num
         return obs
 
-    def viewer_setup(self):
-        self.viewer.cam.type = const.CAMERA_TRACKING
-        self.viewer.cam.trackbodyid = 0
-        self.viewer.cam.distance = self.model.stat.extent * 0.5
-        self.viewer.cam.lookat[0] += 1  # x,y,z offset from the object (works if trackbodyid=-1)
-        self.viewer.cam.lookat[1] += 1
-        self.viewer.cam.lookat[2] += 1
-        self.viewer.cam.elevation = -90
-        self.viewer.cam.azimuth = 270
+
 
     def get_long_term_weight_batch(self, states, actions):
         I_s = self.I_batch(states)
@@ -154,7 +170,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
 if __name__=='__main__':
     # test ant maze env
     env_name = "ant_corridor_resource_env_goal_7_v0"
-    video_env = AntCorridorResourceEnv(4,5,[7,8])
+    video_env = AntCorridorEnv([7,8])
 
     LEN = 200
     state = video_env.reset()
@@ -163,10 +179,10 @@ if __name__=='__main__':
     states = np.repeat(np.expand_dims(state, axis=0), 3, axis=0)
     actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
 
-    w = video_env.get_long_term_weight_batch(states, actions)
+    #w = video_env.get_long_term_weight_batch(states, actions)
 
-    #for i in range(LEN):
-    #    action = video_env.action_space.sample() # action_space
-    #    next_o, _, _, _ = video_env.step(action)
+    for i in range(LEN):
+        action = video_env.action_space.sample() # action_space
+        next_o, _, _, _ = video_env.step(action)
 
 

@@ -4,14 +4,14 @@
         "tag": "surprise_vision",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal7/our_methods/sac_surprise_vision",
-        "exp_prefix": "ant_corridor_surprise_vision_goal7"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy/goal7/our_methods/sac_surprise_vision",
+        "exp_prefix": "ant_corridor_surprise_vision_goal7_with_entropy"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 10000,
+            "num_epochs": 3000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
