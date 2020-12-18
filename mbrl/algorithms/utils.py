@@ -1,6 +1,8 @@
 import copy
 def get_subclass(base_class, class_name):
     for c in base_class.__subclasses__():
+        print(f'base_class: {base_class}')
+        print(f"subclass_name: {c.__name__}")
         if c.__name__ == class_name:
             return c
     for c in base_class.__subclasses__():

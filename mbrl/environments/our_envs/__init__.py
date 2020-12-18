@@ -216,7 +216,27 @@ register(
 )
 
 
-### ant cooridor
+### ant corridor
+register(
+    id='AntCorridorEnv-v3',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorEnv',
+    kwargs={
+        'reward_block': [3,4]
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorEnv-v4',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorEnv',
+    kwargs={
+        'reward_block': [4,5]
+    },
+    max_episode_steps=500,
+)
+
+### ant cooridor resources
+
 register(
     id='AntCorridorResourceEnv-v3',
     entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnv',
@@ -321,5 +341,7 @@ env_name_to_gym_registry_dict = {
     'ant_corridor_resource_env_goal_9_v0': 'AntCorridorResourceEnv-v2',
     'ant_corridor_resource_env_goal_6_v0': 'AntCorridorResourceEnv-v3',
     'ant_corridor_resource_env_goal_5_v0': 'AntCorridorResourceEnv-v4',
-    'ant_corridor_resource_env_goal_4_v0': 'AntCorridorResourceEnv-v5'
+    'ant_corridor_resource_env_goal_4_v0': 'AntCorridorResourceEnv-v5',
+    'ant_corridor_env_3': "AntCorridorEnv-v3",
+    'ant_corridor_env_4': "AntCorridorEnv-v4"
 }
