@@ -4,8 +4,8 @@
         "tag": "surprise_vision",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal6/our_methods/sac_surprise_vision",
-        "exp_prefix": "ant_corridor_surprise_vision_goal6_with_entropy"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/valid_experiments/with_entropy_int005/goal6/our_methods/sac_surprise_vision",
+        "exp_prefix": "ant_corridor_surprise_vision_goal6_with_entropy_int005"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",

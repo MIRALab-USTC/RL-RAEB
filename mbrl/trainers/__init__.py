@@ -11,6 +11,9 @@ import mbrl.trainers.sac_trainer_surprise_based_kde
 import mbrl.trainers.sac_trainer_surprise_based_max_state_entropy
 import mbrl.trainers.sac_trainer_surprise_based_max_state_entropy_auto_eta
 
+# surprise resource cost
+import mbrl.trainers.sac_trainer_surprise_resource_cost
+
 # rnd
 import mbrl.trainers.sac_trainer_rnd
 

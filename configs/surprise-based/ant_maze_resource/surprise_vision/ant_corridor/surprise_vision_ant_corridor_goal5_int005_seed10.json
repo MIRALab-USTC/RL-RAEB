@@ -3,9 +3,9 @@
     "experiment":{
         "tag": "surprise_vision",
         "use_gpu": true,
-        "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal6/our_methods/sac_surprise_vision",
-        "exp_prefix": "ant_corridor_surprise_vision_goal6_with_entropy"
+        "seed": 10,
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/valid_experiments/with_entropy_int005/goal5/our_methods/sac_surprise_vision",
+        "exp_prefix": "ant_corridor_surprise_vision_goal5_with_entropy_int005"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
@@ -51,7 +51,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_6_v0",
+                "env_name": "ant_corridor_resource_env_goal_5_v0",
                 "reward_scale": 1
             }
         },
@@ -59,7 +59,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_6_v0",
+                "env_name": "ant_corridor_resource_env_goal_5_v0",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -68,7 +68,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_corridor_resource_env_goal_6_v0"
+                "env_name": "ant_corridor_resource_env_goal_5_v0"
             }
         }
     ]
