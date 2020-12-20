@@ -2,7 +2,7 @@
     "base_config_file": "configs/surprise-based/ant_maze_resource/surprise_vision/surprise_vision.json",
     "experiment":{
         "tag": "surprise_vision",
-        "use_gpu": false,
+        "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal5/our_methods/sac_surprise_vision",
         "exp_prefix": "ant_corridor_surprise_vision_goal5_with_entropy"

@@ -83,7 +83,6 @@ class SurpriseBasedSACTrainer(SACTrainer):
             self.eval_statistics.update(diagnostics)
         return diagnostics
 
-
     def train_from_torch_batch(self, batch):
         # train policy / value 
         rewards = batch['rewards']
