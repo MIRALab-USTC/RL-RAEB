@@ -4,14 +4,14 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal6/sac",
+        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal6/comparsion/sac",
         "exp_prefix": "sac_goal6"
     },
     "algorithm": {
         "name": "sac",
         "class": "batch_RL_algorithm",
         "kwargs": {
-            "num_epochs": 10000,
+            "num_epochs": 3000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
