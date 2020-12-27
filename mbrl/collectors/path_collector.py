@@ -6,7 +6,6 @@ from mbrl.collectors.utils import rollout, cut_path
 from mbrl.collectors.base_collector import PathCollector
 from contextlib import contextmanager
 
-
 class SimplePathCollector(PathCollector):
     def __init__(
             self,
