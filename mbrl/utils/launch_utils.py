@@ -171,6 +171,13 @@ def parse_cmd():
     p = argparse.ArgumentParser()
     p.add_argument('config_file', type=str)
     p.add_argument('--env_name', type=str)
+
+    """
+    add by ourself
+    """
+    p.add_argument('--intrinsic_coeff', type=float)
+    p.add_argument('--max_step', type=int)
+
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -187,6 +194,11 @@ def parse_cmd():
 
     if args.env_name is not None:
         cmd_config.insert(0, ['type-environment.env_name', args.env_name])
+    
+    if args.intrinsic_coeff is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
+    if args.max_step is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
         
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config

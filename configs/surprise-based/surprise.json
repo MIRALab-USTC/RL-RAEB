@@ -10,17 +10,17 @@
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 10000,
+            "num_epochs": 3000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
             "num_train_models_per_epoch": 1000,
-            "max_path_length": 1000,
+            "max_path_length": 500,
             "train_model_freq": 25,
-            "min_num_steps_before_training": 5000,
-            "record_video_freq": 50,
+            "min_num_steps_before_training": 25000,
+            "record_video_freq": 10,
             "silent": false
         }
     },
@@ -119,7 +119,7 @@
         "class": "normalize_simple_pool",
         "kwargs": {
             "env": "$expl_env",
-            "max_size": 1e6
+            "max_size": 3e6
         }
     },
     "collector": [

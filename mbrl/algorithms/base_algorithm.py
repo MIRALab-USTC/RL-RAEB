@@ -106,13 +106,6 @@ class RLAlgorithm(object):
             )
 
         """
-        Virtual Pool
-        """
-        #if hasattr(self, 'virtual_pool'):
-        #    logger.log(
-        #        self.virtual_pool.get_diagnostics()
-        #    )
-        """
         Trainer
         """
         if hasattr(self, 'trainer'):
@@ -129,7 +122,7 @@ class RLAlgorithm(object):
                 self.expl_env.get_diagnostics(expl_paths),
                 prefix='exploration/',
             )
-        """
+        
         if hasattr(self, 'expl_collector'):
             expl_paths = self.expl_collector.get_epoch_paths()
             logger.record_dict(
@@ -140,7 +133,7 @@ class RLAlgorithm(object):
                 get_generic_path_information(expl_paths),
                 prefix="exploration/",
             )
-        """
+        
         """
         Evaluation
         """

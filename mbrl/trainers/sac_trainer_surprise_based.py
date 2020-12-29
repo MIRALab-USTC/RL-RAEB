@@ -16,6 +16,8 @@ class SurpriseBasedSACTrainer(SACTrainer):
             self,
             model,
             intrinsic_coeff,
+            int_coeff_decay,
+            max_step,
             model_lr,
             training_noise_stdev,
             grad_clip,
@@ -28,6 +30,9 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # 传入的model 是已经 normalizer设置过的
         self.model = model 
         self.intrinsic_coeff = intrinsic_coeff
+        self.int_coeff_decay = int_coeff_decay
+        self.max_step = max_step
+        
         self.model_lr = model_lr
         self.training_noise_stdev = training_noise_stdev
         self.grad_clip = grad_clip
@@ -38,6 +43,16 @@ class SurpriseBasedSACTrainer(SACTrainer):
         )        
         self._need_to_update_model = True
         self._need_to_update_int_reward = True
+
+        self.cnt = 0
+
+    def log_mean_max_min_std(self, name, log_data):
+        diagnostics = OrderedDict()
+        diagnostics[name + 'Max'] = np.max(log_data)
+        diagnostics[name + 'Mean'] = np.mean(log_data)
+        diagnostics[name + 'Min'] = np.min(log_data)
+        diagnostics[name + 'Std'] = np.std(log_data)
+        return diagnostics
 
     def reward_function_novelty(self, obs, actions, next_obs):
         # resieze to  (ensemble_size, batch size, dim_state)
@@ -95,15 +110,16 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # Todo
         # add reward_int min max log
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
-        eta = self.get_eta(rewards_int)
-        rewards = rewards + eta * rewards_int
+        eta, decay_rate = self.get_eta(rewards_int)
+        rewards = rewards + eta * rewards_int * decay_rate
+
         diagnostics['eta'] = eta
+        diagnostics['decay_rate'] = decay_rate
 
         """
         Alpha
         """
-        print(f"discount: {self.discount}")
-        
+
         new_action, policy_info = self.policy.action(
             obs, reparameterize=True, return_log_prob=True,
         )
@@ -168,8 +184,8 @@ class SurpriseBasedSACTrainer(SACTrainer):
         average_entropy = -log_prob_new_action.mean()
         policy_q_loss = 0 - q_new_action.mean()
 
-        diagnostics['Reward Intrinsic'] = np.mean(ptu.get_numpy(rewards_int))
-        diagnostics['Rewards'] = np.mean(ptu.get_numpy(rewards))
+        diagnostics.update(self.log_mean_max_min_std('Reward Intrinsic Real', ptu.get_numpy(rewards_int)))
+        diagnostics.update(self.log_mean_max_min_std('Rewards Shaping', ptu.get_numpy(rewards)))
         
         diagnostics['Policy Loss'] = np.mean(ptu.get_numpy(policy_loss))
         diagnostics['Policy Q Loss'] = np.mean(ptu.get_numpy(policy_q_loss))
@@ -227,7 +243,12 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
     def get_eta(self, rewards_int):
         eta = self.intrinsic_coeff / max(1, np.mean(ptu.get_numpy(rewards_int)))
-        return eta
+        if self.int_coeff_decay:
+            self.cnt += 1
+            decay_rate = max(0, (1 - self.cnt/self.max_step))
+        else:
+            decay_rate = 1
+        return eta, decay_rate
 
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_weight(self, states, actions):
@@ -245,7 +266,7 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         # shaping reward
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
         rewards_int_weight = self.get_weight(obs, actions)
-        eta = self.get_eta(rewards_int)
+        eta, decay_rate = self.get_eta(rewards_int)
         rewards = rewards + eta * rewards_int * rewards_int_weight
 
         diagnostics['eta'] = eta
@@ -360,31 +381,4 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
             
         return diagnostics
 
-class VisionSurprisePositiveSACTrainer(VisionSurpriseSACTrainer):
-    def reward_function_novelty(self, obs, actions, next_obs):
-        # resieze to  (ensemble_size, batch size, dim_state)
-        # output: (ensemble_size, batch size, dim_state)
-        diagnostics = OrderedDict()
 
-        obs =  obs.repeat(self.model.ensemble_size, 1, 1)
-        actions = actions.repeat(self.model.ensemble_size, 1, 1)
-        next_predicted_obs_mean, var = self.model(obs, actions)
-
-        if self.model.ensemble_size == 1:
-            next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
-            var = torch.squeeze(var)
-            p = Normal(next_predicted_obs_mean, torch.sqrt(var))
-
-            # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
-            rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
-            # if reward bonus < 0 then shift reward bonus
-            if torch.min(rewards_int) < 0:
-                rewards_int -= torch.min(rewards_int)
-            diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
-            if self._need_to_update_int_reward:
-                self._need_to_update_int_reward = False
-                self.eval_statistics.update(diagnostics)
-
-            return rewards_int
-        else:
-            raise NotImplementedError

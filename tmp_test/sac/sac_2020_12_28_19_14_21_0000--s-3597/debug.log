@@ -1,0 +1,458 @@
+2020-12-28 19:14:22.393270 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Creating monitor directory /home/zhwang/research/mbrl_exploration_with_novelty/tmp_test/sac/sac_2020_12_28_19_14_21_0000--s-3597/videos
+2020-12-28 19:14:50.337065 CST | [sac_2020_12_28_19_14_21_0000--s-3597] rollout to save video...
+2020-12-28 19:15:13.354073 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 0 finished
+--------------------------------------  --------------
+replay_pool/size                        6000
+trainer/Q1 Predictions Mean                3.86345
+trainer/Q1 Predictions Std                 1.65386
+trainer/Q1 Predictions Max                 9.71111
+trainer/Q1 Predictions Min                 0.577528
+trainer/Q2 Predictions Mean                1.37117
+trainer/Q2 Predictions Std                 1.33044
+trainer/Q2 Predictions Max                 5.5316
+trainer/Q2 Predictions Min                -2.22233
+trainer/Q Targets Mean                   -26.9697
+trainer/Q Targets Std                     16.7973
+trainer/Q Targets Max                      5.05385
+trainer/Q Targets Min                    -78.4008
+trainer/Log Pis Mean                      30.9882
+trainer/Log Pis Std                       18.5066
+trainer/Log Pis Max                       95.9724
+trainer/Log Pis Min                       -4.93262
+trainer/Policy Loss                       30.4791
+trainer/Policy Q Loss                     -0.518413
+trainer/Averaged Entropy                 -30.9882
+trainer/QF Loss                         1160.91
+trainer/Alpha                              1.0003
+trainer/Alpha Loss                        -0
+evaluation/num steps total              8000
+evaluation/num paths total                 8
+evaluation/path length Mean             1000
+evaluation/path length Std                 0
+evaluation/path length Max              1000
+evaluation/path length Min              1000
+evaluation/Rewards Mean                    0
+evaluation/Rewards Std                     0
+evaluation/Rewards Max                     0
+evaluation/Rewards Min                     0
+evaluation/Returns Mean                    0
+evaluation/Returns Std                     0
+evaluation/Returns Max                     0
+evaluation/Returns Min                     0
+evaluation/Num Paths                       8
+evaluation/Average Returns                 0
+evaluation/env_infos/action_cargo Mean     0.503883
+evaluation/env_infos/action_cargo Std      0.0335032
+evaluation/env_infos/action_cargo Max      0.668196
+evaluation/env_infos/action_cargo Min      0.284236
+time/ending epoch (s)                      0.0122096
+time/evaluation sampling (s)               3.10882
+time/exploration sampling (s)              2.19777
+time/logging (s)                           0.00808847
+time/save video (s)                       22.9801
+time/saving (s)                            0.025309
+time/starting epoch (s)                    7.33039e-05
+time/training (s)                         12.1108
+time/epoch (s)                            40.4431
+time/total (s)                            51.7586
+Epoch                                      0
+--------------------------------------  --------------
+2020-12-28 19:15:30.509836 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 1 finished
+--------------------------------------  ---------------
+replay_pool/size                         7000
+trainer/Q1 Predictions Mean                15.6096
+trainer/Q1 Predictions Std                  2.17374
+trainer/Q1 Predictions Max                 21.7315
+trainer/Q1 Predictions Min                  9.09489
+trainer/Q2 Predictions Mean                15.8599
+trainer/Q2 Predictions Std                  2.06096
+trainer/Q2 Predictions Max                 21.3765
+trainer/Q2 Predictions Min                 10.401
+trainer/Q Targets Mean                     16.0365
+trainer/Q Targets Std                       1.60862
+trainer/Q Targets Max                      20.5524
+trainer/Q Targets Min                      11.9309
+trainer/Log Pis Mean                       -5.80186
+trainer/Log Pis Std                         0.855204
+trainer/Log Pis Max                        -1.78891
+trainer/Log Pis Min                        -7.89413
+trainer/Policy Loss                       -19.7388
+trainer/Policy Q Loss                     -15.5021
+trainer/Averaged Entropy                    5.80186
+trainer/QF Loss                             2.81169
+trainer/Alpha                               0.730243
+trainer/Alpha Loss                         -4.64865
+evaluation/num steps total              16000
+evaluation/num paths total                 16
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.525777
+evaluation/env_infos/action_cargo Std       0.0174414
+evaluation/env_infos/action_cargo Max       0.56836
+evaluation/env_infos/action_cargo Min       0.283507
+time/ending epoch (s)                       0.00831633
+time/evaluation sampling (s)                3.15294
+time/exploration sampling (s)               2.12025
+time/logging (s)                            0.00777913
+time/save video (s)                         0.000401473
+time/saving (s)                             0.0192167
+time/starting epoch (s)                     0.000122571
+time/training (s)                          11.8258
+time/epoch (s)                             17.1348
+time/total (s)                             68.896
+Epoch                                       1
+--------------------------------------  ---------------
+2020-12-28 19:15:47.616490 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 2 finished
+--------------------------------------  ---------------
+replay_pool/size                         8000
+trainer/Q1 Predictions Mean                30.0725
+trainer/Q1 Predictions Std                  3.03721
+trainer/Q1 Predictions Max                 39.2669
+trainer/Q1 Predictions Min                 21.3676
+trainer/Q2 Predictions Mean                30.0979
+trainer/Q2 Predictions Std                  3.17676
+trainer/Q2 Predictions Max                 39.0218
+trainer/Q2 Predictions Min                 21.3859
+trainer/Q Targets Mean                     30.2007
+trainer/Q Targets Std                       2.49573
+trainer/Q Targets Max                      37.2685
+trainer/Q Targets Min                      22.9671
+trainer/Log Pis Mean                       -4.74482
+trainer/Log Pis Std                         1.68285
+trainer/Log Pis Max                        -0.400562
+trainer/Log Pis Min                        -9.55342
+trainer/Policy Loss                       -33.6041
+trainer/Policy Q Loss                     -31.0463
+trainer/Averaged Entropy                    4.74482
+trainer/QF Loss                             2.8983
+trainer/Alpha                               0.539071
+trainer/Alpha Loss                         -8.48903
+evaluation/num steps total              24000
+evaluation/num paths total                 24
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.477544
+evaluation/env_infos/action_cargo Std       0.0145988
+evaluation/env_infos/action_cargo Max       0.568833
+evaluation/env_infos/action_cargo Min       0.338098
+time/ending epoch (s)                       0.00851241
+time/evaluation sampling (s)                3.29098
+time/exploration sampling (s)               2.13217
+time/logging (s)                            0.00591071
+time/save video (s)                         0.000456811
+time/saving (s)                             0.018004
+time/starting epoch (s)                     9.8164e-05
+time/training (s)                          11.6292
+time/epoch (s)                             17.0854
+time/total (s)                             85.9833
+Epoch                                       2
+--------------------------------------  ---------------
+2020-12-28 19:16:05.205691 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 3 finished
+--------------------------------------  ---------------
+replay_pool/size                         9000
+trainer/Q1 Predictions Mean                42.3632
+trainer/Q1 Predictions Std                  4.03173
+trainer/Q1 Predictions Max                 54.5471
+trainer/Q1 Predictions Min                 33.0106
+trainer/Q2 Predictions Mean                42.5797
+trainer/Q2 Predictions Std                  4.05872
+trainer/Q2 Predictions Max                 54.497
+trainer/Q2 Predictions Min                 32.3029
+trainer/Q Targets Mean                     42.7195
+trainer/Q Targets Std                       3.9751
+trainer/Q Targets Max                      55.8391
+trainer/Q Targets Min                      32.7382
+trainer/Log Pis Mean                       -4.52987
+trainer/Log Pis Std                         1.90591
+trainer/Log Pis Max                         0.50282
+trainer/Log Pis Min                        -9.88555
+trainer/Policy Loss                       -45.1327
+trainer/Policy Q Loss                     -43.3062
+trainer/Averaged Entropy                    4.52987
+trainer/QF Loss                             2.59989
+trainer/Alpha                               0.403214
+trainer/Alpha Loss                        -12.285
+evaluation/num steps total              32000
+evaluation/num paths total                 32
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.527185
+evaluation/env_infos/action_cargo Std       0.067836
+evaluation/env_infos/action_cargo Max       0.776338
+evaluation/env_infos/action_cargo Min       0.211076
+time/ending epoch (s)                       0.00969449
+time/evaluation sampling (s)                3.30316
+time/exploration sampling (s)               2.16292
+time/logging (s)                            0.0064608
+time/save video (s)                         0.000684912
+time/saving (s)                             0.0212172
+time/starting epoch (s)                     7.8755e-05
+time/training (s)                          12.0619
+time/epoch (s)                             17.5661
+time/total (s)                            103.551
+Epoch                                       3
+--------------------------------------  ---------------
+2020-12-28 19:16:21.625518 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 4 finished
+--------------------------------------  ---------------
+replay_pool/size                        10000
+trainer/Q1 Predictions Mean                49.1759
+trainer/Q1 Predictions Std                  4.66208
+trainer/Q1 Predictions Max                 66.9027
+trainer/Q1 Predictions Min                 40.2769
+trainer/Q2 Predictions Mean                49.0962
+trainer/Q2 Predictions Std                  4.76607
+trainer/Q2 Predictions Max                 66.3081
+trainer/Q2 Predictions Min                 40.2585
+trainer/Q Targets Mean                     49.2864
+trainer/Q Targets Std                       4.83122
+trainer/Q Targets Max                      67.0469
+trainer/Q Targets Min                      40.7586
+trainer/Log Pis Mean                       -4.77676
+trainer/Log Pis Std                         1.65211
+trainer/Log Pis Max                         0.784864
+trainer/Log Pis Min                        -9.82445
+trainer/Policy Loss                       -50.6136
+trainer/Policy Q Loss                     -49.1896
+trainer/Averaged Entropy                    4.77676
+trainer/QF Loss                             2.23945
+trainer/Alpha                               0.298108
+trainer/Alpha Loss                        -16.6698
+evaluation/num steps total              40000
+evaluation/num paths total                 40
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.493318
+evaluation/env_infos/action_cargo Std       0.122342
+evaluation/env_infos/action_cargo Max       0.938001
+evaluation/env_infos/action_cargo Min       0.1407
+time/ending epoch (s)                       0.00839227
+time/evaluation sampling (s)                3.14716
+time/exploration sampling (s)               1.98707
+time/logging (s)                            0.00544627
+time/save video (s)                         0.000443036
+time/saving (s)                             0.0177786
+time/starting epoch (s)                     9.1373e-05
+time/training (s)                          11.2327
+time/epoch (s)                             16.3991
+time/total (s)                            119.951
+Epoch                                       4
+--------------------------------------  ---------------
+2020-12-28 19:16:39.531731 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 5 finished
+--------------------------------------  ---------------
+replay_pool/size                        11000
+trainer/Q1 Predictions Mean                52.7153
+trainer/Q1 Predictions Std                  4.77328
+trainer/Q1 Predictions Max                 68.0316
+trainer/Q1 Predictions Min                 43.0846
+trainer/Q2 Predictions Mean                52.4453
+trainer/Q2 Predictions Std                  4.75087
+trainer/Q2 Predictions Max                 67.6729
+trainer/Q2 Predictions Min                 43.8373
+trainer/Q Targets Mean                     52.4965
+trainer/Q Targets Std                       4.73498
+trainer/Q Targets Max                      69.4621
+trainer/Q Targets Min                      43.5028
+trainer/Log Pis Mean                       -4.78144
+trainer/Log Pis Std                         1.81686
+trainer/Log Pis Max                         0.623091
+trainer/Log Pis Min                       -10.3763
+trainer/Policy Loss                       -53.2887
+trainer/Policy Q Loss                     -52.2351
+trainer/Averaged Entropy                    4.78144
+trainer/QF Loss                             1.96057
+trainer/Alpha                               0.220348
+trainer/Alpha Loss                        -20.841
+evaluation/num steps total              48000
+evaluation/num paths total                 48
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.589617
+evaluation/env_infos/action_cargo Std       0.190445
+evaluation/env_infos/action_cargo Max       0.97675
+evaluation/env_infos/action_cargo Min       0.0206836
+time/ending epoch (s)                       0.0107863
+time/evaluation sampling (s)                3.28837
+time/exploration sampling (s)               2.18178
+time/logging (s)                            0.00742368
+time/save video (s)                         0.000457717
+time/saving (s)                             0.0241237
+time/starting epoch (s)                     8.2329e-05
+time/training (s)                          12.3746
+time/epoch (s)                             17.8876
+time/total (s)                            137.841
+Epoch                                       5
+--------------------------------------  ---------------
+2020-12-28 19:16:57.043397 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 6 finished
+--------------------------------------  ---------------
+replay_pool/size                        12000
+trainer/Q1 Predictions Mean                54.57
+trainer/Q1 Predictions Std                  5.10311
+trainer/Q1 Predictions Max                 70.3338
+trainer/Q1 Predictions Min                 45.2026
+trainer/Q2 Predictions Mean                54.4266
+trainer/Q2 Predictions Std                  5.14174
+trainer/Q2 Predictions Max                 70.791
+trainer/Q2 Predictions Min                 45.3294
+trainer/Q Targets Mean                     54.4135
+trainer/Q Targets Std                       5.10661
+trainer/Q Targets Max                      70.1234
+trainer/Q Targets Min                      44.7743
+trainer/Log Pis Mean                       -4.35969
+trainer/Log Pis Std                         2.24692
+trainer/Log Pis Max                         3.51256
+trainer/Log Pis Min                       -10.703
+trainer/Policy Loss                       -55.3055
+trainer/Policy Q Loss                     -54.5902
+trainer/Averaged Entropy                    4.35969
+trainer/QF Loss                             1.24003
+trainer/Alpha                               0.164076
+trainer/Alpha Loss                        -24.1428
+evaluation/num steps total              56000
+evaluation/num paths total                 56
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.633777
+evaluation/env_infos/action_cargo Std       0.214585
+evaluation/env_infos/action_cargo Max       0.995984
+evaluation/env_infos/action_cargo Min       0.0183555
+time/ending epoch (s)                       0.0108796
+time/evaluation sampling (s)                2.98011
+time/exploration sampling (s)               2.19
+time/logging (s)                            0.00545957
+time/save video (s)                         0.000534826
+time/saving (s)                             0.0245517
+time/starting epoch (s)                     8.6373e-05
+time/training (s)                          12.2774
+time/epoch (s)                             17.489
+time/total (s)                            155.331
+Epoch                                       6
+--------------------------------------  ---------------
+2020-12-28 19:17:14.423740 CST | [sac_2020_12_28_19_14_21_0000--s-3597] Epoch 7 finished
+--------------------------------------  ---------------
+replay_pool/size                        13000
+trainer/Q1 Predictions Mean                54.7371
+trainer/Q1 Predictions Std                  5.04692
+trainer/Q1 Predictions Max                 76.5688
+trainer/Q1 Predictions Min                 45.8821
+trainer/Q2 Predictions Mean                54.7857
+trainer/Q2 Predictions Std                  4.94845
+trainer/Q2 Predictions Max                 73.1201
+trainer/Q2 Predictions Min                 47.0484
+trainer/Q Targets Mean                     54.8253
+trainer/Q Targets Std                       5.00241
+trainer/Q Targets Max                      75.8187
+trainer/Q Targets Min                      46.8154
+trainer/Log Pis Mean                       -3.38995
+trainer/Log Pis Std                         2.79085
+trainer/Log Pis Max                         6.34805
+trainer/Log Pis Min                        -9.36529
+trainer/Policy Loss                       -55.3543
+trainer/Policy Q Loss                     -54.937
+trainer/Averaged Entropy                    3.38995
+trainer/QF Loss                             1.19779
+trainer/Alpha                               0.123076
+trainer/Alpha Loss                        -25.9529
+evaluation/num steps total              64000
+evaluation/num paths total                 64
+evaluation/path length Mean              1000
+evaluation/path length Std                  0
+evaluation/path length Max               1000
+evaluation/path length Min               1000
+evaluation/Rewards Mean                     0
+evaluation/Rewards Std                      0
+evaluation/Rewards Max                      0
+evaluation/Rewards Min                      0
+evaluation/Returns Mean                     0
+evaluation/Returns Std                      0
+evaluation/Returns Max                      0
+evaluation/Returns Min                      0
+evaluation/Num Paths                        8
+evaluation/Average Returns                  0
+evaluation/env_infos/action_cargo Mean      0.253944
+evaluation/env_infos/action_cargo Std       0.288753
+evaluation/env_infos/action_cargo Max       0.998143
+evaluation/env_infos/action_cargo Min       0.00523886
+time/ending epoch (s)                       0.00833537
+time/evaluation sampling (s)                3.21172
+time/exploration sampling (s)               2.12162
+time/logging (s)                            0.00542969
+time/save video (s)                         0.000409448
+time/saving (s)                             0.0190533
+time/starting epoch (s)                     0.000102955
+time/training (s)                          11.9944
+time/epoch (s)                             17.3611
+time/total (s)                            172.694
+Epoch                                       7
+--------------------------------------  ---------------

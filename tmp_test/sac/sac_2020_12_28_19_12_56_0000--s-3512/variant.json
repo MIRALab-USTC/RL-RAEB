@@ -1,0 +1,130 @@
+{
+  "algorithm": {
+    "class": "batch_RL_algorithm",
+    "kwargs": {
+      "batch_size": 256,
+      "min_num_steps_before_training": 5000,
+      "num_epochs": 10,
+      "num_eval_steps_per_epoch": 8000,
+      "num_expl_steps_per_train_loop": 1,
+      "num_train_loops_per_epoch": 1000,
+      "num_trains_per_train_loop": 1,
+      "record_video_freq": 10,
+      "silent": false
+    },
+    "name": "sac"
+  },
+  "collector": [
+    {
+      "class": "simple_step_collector",
+      "kwargs": {
+        "env": "$expl_env",
+        "policy": "$policy"
+      },
+      "name": "expl_collector"
+    },
+    {
+      "class": "simple_path_collector",
+      "kwargs": {
+        "env": "$eval_env",
+        "policy": "$eval_policy"
+      },
+      "name": "eval_collector"
+    }
+  ],
+  "environment": [
+    {
+      "class": "simple_env",
+      "kwargs": {
+        "env_name": "ant_corridor_resource_env_goal_4_v0",
+        "reward_scale": 1
+      },
+      "name": "expl_env"
+    },
+    {
+      "class": "normalized_vector_env",
+      "kwargs": {
+        "env_name": "ant_corridor_resource_env_goal_4_v0",
+        "n_env": 8,
+        "reward_scale": 1
+      },
+      "name": "eval_env"
+    },
+    {
+      "class": "video_env",
+      "kwargs": {
+        "env_name": "ant_corridor_resource_env_goal_4_v0"
+      },
+      "name": "video_env"
+    }
+  ],
+  "experiment": {
+    "base_log_dir": "/home/zhwang/research/mbrl_exploration_with_novelty/tmp_test",
+    "exp_prefix": "sac",
+    "seed": 3512,
+    "tag": "my_sac",
+    "use_gpu": true
+  },
+  "policy": [
+    {
+      "class": "uniformly_random_policy",
+      "kwargs": {
+        "env": "$expl_env"
+      },
+      "name": "init_expl_policy"
+    },
+    {
+      "class": "gaussian_policy",
+      "kwargs": {
+        "env": "$expl_env",
+        "hidden_layers": [
+          128,
+          128
+        ],
+        "nonlinearity": "relu"
+      },
+      "name": "policy"
+    },
+    {
+      "class": "MakeDeterministic",
+      "kwargs": {
+        "random_policy": "$policy"
+      },
+      "name": "eval_policy"
+    }
+  ],
+  "pool": {
+    "class": "simple_pool",
+    "kwargs": {
+      "env": "$expl_env",
+      "max_size": 1000000.0
+    },
+    "name": "pool"
+  },
+  "trainer": {
+    "class": "SAC_trainer",
+    "kwargs": {
+      "alpha_if_not_automatic": 0,
+      "env": "$expl_env",
+      "policy": "$policy",
+      "policy_lr": 0.0003,
+      "qf": "$qf",
+      "qf_lr": 0.0003,
+      "reward_scale": 1,
+      "soft_target_tau": 0.005,
+      "use_automatic_entropy_tuning": true
+    },
+    "name": "trainer"
+  },
+  "value": {
+    "class": "ensemble_q_value",
+    "kwargs": {
+      "env": "$expl_env",
+      "hidden_layers": [
+        256,
+        256
+      ]
+    },
+    "name": "qf"
+  }
+}
