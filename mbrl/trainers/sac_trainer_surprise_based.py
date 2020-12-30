@@ -17,6 +17,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
             model,
             intrinsic_coeff,
             int_coeff_decay,
+            intrinsic_normal,
             max_step,
             model_lr,
             training_noise_stdev,
@@ -45,6 +46,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
         self._need_to_update_int_reward = True
 
         self.cnt = 0
+        self.intrinsic_normal = intrinsic_normal
+        if intrinsic_normal:
+            self.intrinsic_eta = self.get_eta_normal
+        else:
+            self.intrinsic_eta = self.get_eta
 
     def log_mean_max_min_std(self, name, log_data):
         diagnostics = OrderedDict()
@@ -110,7 +116,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # Todo
         # add reward_int min max log
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
-        eta, decay_rate = self.get_eta(rewards_int)
+        eta, decay_rate = self.intrinsic_eta(rewards_int)
         rewards = rewards + eta * rewards_int * decay_rate
 
         diagnostics['eta'] = eta
@@ -250,6 +256,15 @@ class SurpriseBasedSACTrainer(SACTrainer):
             decay_rate = 1
         return eta, decay_rate
 
+    def get_eta_normal(self, rewards_int):
+        eta = self.intrinsic_coeff / np.std(ptu.get_numpy(rewards_int))
+        if self.int_coeff_decay:
+            self.cnt += 1
+            decay_rate = max(0, (1 - self.cnt/self.max_step))
+        else:
+            decay_rate = 1
+        return eta, decay_rate
+
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_weight(self, states, actions):
         w = self.env.get_long_term_weight_batch(states, actions)
@@ -266,7 +281,7 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         # shaping reward
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
         rewards_int_weight = self.get_weight(obs, actions)
-        eta, decay_rate = self.get_eta(rewards_int)
+        eta, decay_rate = self.intrinsic_eta(rewards_int)
         rewards = rewards + eta * rewards_int * rewards_int_weight
 
         diagnostics['eta'] = eta

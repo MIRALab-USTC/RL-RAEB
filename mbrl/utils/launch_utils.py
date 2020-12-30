@@ -175,8 +175,12 @@ def parse_cmd():
     """
     add by ourself
     """
+    p.add_argument('--base_log_dir', type=str, default="/tmp/txpan_zhwang_icml2021")
     p.add_argument('--intrinsic_coeff', type=float)
     p.add_argument('--max_step', type=int)
+    p.add_argument('--int_coeff_decay', action='store_true')
+    p.add_argument('--intrinsic_normal', action='store_true')
+    p.add_argument('--min_num_steps_before_training', type=float, default=5000)
 
     args, extras = p.parse_known_args()
 
@@ -195,10 +199,19 @@ def parse_cmd():
     if args.env_name is not None:
         cmd_config.insert(0, ['type-environment.env_name', args.env_name])
     
+    if args.base_log_dir is not None:
+        cmd_config.insert(0, ['experiment.base_log_dir', args.base_log_dir])
+    
     if args.intrinsic_coeff is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
     if args.max_step is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
+    if args.intrinsic_coeff is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.int_coeff_decay', args.int_coeff_decay])
+    if args.intrinsic_coeff is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
+    if args.max_step is not None:
+        cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.min_num_steps_before_training', args.min_num_steps_before_training])
         
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config

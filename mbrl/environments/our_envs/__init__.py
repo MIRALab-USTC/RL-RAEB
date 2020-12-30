@@ -303,6 +303,18 @@ register(
     max_episode_steps=500,
 )
 
+register(
+    id='RewardAntCorridorResourceEnv-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:RewardAntCorridorResourceEnv',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [4,5],
+        'goal_reward': 10
+    },
+    max_episode_steps=500,
+)
+
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
     "mbrl_cheetah": "MBRLHalfCheetah-v0",
@@ -342,6 +354,7 @@ env_name_to_gym_registry_dict = {
     'ant_corridor_resource_env_goal_6_v0': 'AntCorridorResourceEnv-v3',
     'ant_corridor_resource_env_goal_5_v0': 'AntCorridorResourceEnv-v4',
     'ant_corridor_resource_env_goal_4_v0': 'AntCorridorResourceEnv-v5',
+    'reward_ant_corridor_resource_env_v0': 'RewardAntCorridorResourceEnv-v0',
     'ant_corridor_env_3': "AntCorridorEnv-v3",
     'ant_corridor_env_4': "AntCorridorEnv-v4"
 }
