@@ -12,3 +12,6 @@ MANIFEST
 \.idea/
 o_*.txt
 *.txt
+
+/videos
+/videos_old
