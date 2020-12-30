@@ -177,6 +177,7 @@ def parse_cmd():
     """
     p.add_argument('--intrinsic_coeff', type=float)
     p.add_argument('--max_step', type=int)
+    p.add_argument('--discount', type=float)
 
     args, extras = p.parse_known_args()
 
@@ -199,6 +200,8 @@ def parse_cmd():
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
     if args.max_step is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
+    if args.max_step is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.discount', args.discount])
         
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config

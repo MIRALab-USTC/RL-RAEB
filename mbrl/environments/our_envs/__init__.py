@@ -243,7 +243,8 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [6,7]
+        'reward_block': [6,7],
+        'reward': 100
     },
     max_episode_steps=500,
 )
@@ -254,7 +255,8 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [5,6]
+        'reward_block': [5,6],
+        'reward': 100
     },
     max_episode_steps=500,
 )
@@ -265,10 +267,24 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [4,5]
+        'reward_block': [4,5],
+        'reward': 100
     },
     max_episode_steps=500,
 )
+
+register(
+    id='AntCorridorResourceEnv-v52',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnv',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [4,5],
+        'reward': 10
+    },
+    max_episode_steps=500,
+)
+
 
 register(
     id='AntCorridorResourceEnv-v0',
@@ -276,7 +292,8 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [7,8]
+        'reward_block': [7,8],
+        'reward': 100
     },
     max_episode_steps=500,
 )
@@ -287,7 +304,8 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [8,9]
+        'reward_block': [8,9],
+        'reward': 100
     },
     max_episode_steps=500,
 )
@@ -298,7 +316,8 @@ register(
     kwargs={
         'cargo_num': 4,
         'beta': 5,
-        'reward_block': [9,10]
+        'reward_block': [9,10],
+        'reward': 100
     },
     max_episode_steps=500,
 )
@@ -342,6 +361,7 @@ env_name_to_gym_registry_dict = {
     'ant_corridor_resource_env_goal_6_v0': 'AntCorridorResourceEnv-v3',
     'ant_corridor_resource_env_goal_5_v0': 'AntCorridorResourceEnv-v4',
     'ant_corridor_resource_env_goal_4_v0': 'AntCorridorResourceEnv-v5',
+    'ant_corridor_resource_env_goal_4_v1': 'AntCorridorResourceEnv-v52',
     'ant_corridor_env_3': "AntCorridorEnv-v3",
     'ant_corridor_env_4': "AntCorridorEnv-v4"
 }

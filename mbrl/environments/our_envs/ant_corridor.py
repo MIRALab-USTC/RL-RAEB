@@ -53,10 +53,11 @@ class AntCorridorEnv(MagellanAntEnv):
         return obs, reward, done, {}
 
 class AntCorridorResourceEnv(AntCorridorEnv):
-    def __init__(self, cargo_num, beta, reward_block):
+    def __init__(self, cargo_num, beta, reward_block, reward):
         self.cargo_num = cargo_num # the number of resources 
         self.cur_cargo = cargo_num
         self.beta = beta
+        self.reward = reward
         AntCorridorEnv.__init__(self, reward_block)
 
     def _set_action_space(self):
@@ -94,7 +95,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         cur_x_pos_r = self.get_state_pos(obs)
         if cur_x_pos_r and cargo_now < cargo_last:
             done = True
-            reward = 100
+            reward = self.reward
         
         return obs, reward, done, dict(action_cargo=action_cargo)
 
