@@ -13,5 +13,5 @@ MANIFEST
 o_*.txt
 *.txt
 
-/videos
-/videos_old
+videos/
+videos_old/
