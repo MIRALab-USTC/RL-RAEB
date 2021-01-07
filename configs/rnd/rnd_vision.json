@@ -1,0 +1,56 @@
+{
+    "base_config_file": "configs/rnd/rnd.json",
+    "experiment":{
+        "tag": "rnd_vision",
+        "use_gpu": true,
+        "seed": null,
+        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal4/rnd_vision2",
+        "exp_prefix": "car_resource_rnd_vision"
+    },
+    "trainer":{
+        "name": "trainer",
+        "class": "Vision_RND_SAC_Trainer",
+        "kwargs": {
+            "env": "$expl_env",
+            "policy": "$policy",
+            "qf": "$qf",
+            "random_model": "$random_net",
+            "random_target_model": "$random_tar_net",
+            "intrinsic_coeff": 0.1,
+            "model_lr": 3e-4,
+            "reward_scale":1,
+            "policy_lr": 3e-4,
+            "qf_lr": 3e-4,
+            "soft_target_tau": 5e-3,
+            "use_automatic_entropy_tuning": true,
+            "alpha_if_not_automatic": 0,
+            "discount": 0.99
+        }
+    },
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "simple_env",
+            "kwargs": {
+                "env_name": "ant_corridor_resource_env_goal_4_v0",
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "ant_corridor_resource_env_goal_4_v0",
+                "n_env":8,
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "video_env",
+            "class": "video_env",
+            "kwargs": {
+                "env_name": "ant_corridor_resource_env_goal_4_v0"
+            }
+        }
+    ]
+}

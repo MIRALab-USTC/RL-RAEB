@@ -37,8 +37,10 @@ plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
+pass_alg_name = ['vision(rnd)', 'crl']
+
 LEGEND_ORDER = {
-    "surprise_vision": 0,
+    "surprise_vision_shape_weight": 0,
     "rnd_vision": 1,
     "sac":2,
     "surprise": 3,
@@ -48,7 +50,7 @@ LEGEND_ORDER = {
 
 def get_alg_name(algo_name):
     dict_name = {
-        "surprise_vision": "vision(surprise)",
+        "surprise_vision_shape_weight": "vision(surprise)",
         "rnd_vision": "vision(rnd)",
         "sac": "sac",
         "surprise": "surprise",
@@ -77,7 +79,7 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
         return None, None
     
     dic_y = {
-        "surprise_vision": "evaluation/Average Returns",
+        "surprise_vision_shape_weight": "evaluation/Average Returns",
         "rnd_vision": "evaluation/Average Returns",
         "sac": "evaluation/Average Returns",
         "surprise": "evaluation/Average Returns",
@@ -86,7 +88,7 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
     }
 
     dic_x = {
-        "surprise_vision": "Epoch",
+        "surprise_vision_shape_weight": "Epoch",
         "rnd_vision": "Epoch",
         "sac": "Epoch",
         "surprise": "Epoch",
@@ -171,9 +173,10 @@ def compute_mean_std_max(plot_x, plot_y):
 
 def get_x_limit(env_name):
     dic = {
-        "goal4": 1000,        
-        "goal5": 1000,
-        "goal6": 1000,
+        "goal4": 500,        
+        "goal5": 500,
+        "goal6": 500,
+        "continuous_resource_mountaincar": 500
     }
     return dic[env_name] if env_name in dic else 200000
 
@@ -186,11 +189,12 @@ def data_truncate(x, y_mean, y_std, x_limit):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot training curve with progress data")
-    parser.add_argument("--log_dir", type=str, default=r"/dataset/zhihaoshi_self_play/research/results")
+    parser.add_argument("--log_dir", type=str, default=r"/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/mountain_car_test/final_result")
     parser.add_argument("--file_name", type=str, default="progress.csv")
     parser.add_argument("--column_x", type=str, default="Epochs")# Time steps
     parser.add_argument("--column_y", type=str, default="Average return")
-    parser.add_argument("--fig_name", type=str, default="comparison_plot.png")
+    parser.add_argument("--alg_config", type=str, default="xx")
+    parser.add_argument("--fig_name", type=str, default="comparison_plot.pdf")
     parser.add_argument("--w", type=float, default=18)
     parser.add_argument("--h", type=float, default=10)
 
@@ -198,15 +202,19 @@ if __name__ == "__main__":
     options = parser.parse_args()
 
     fig = plt.figure(figsize=(options.w,options.h))
-    gs = GridSpec(2, 2)
-    ax1 = plt.subplot(gs[0, 0:2])
-    ax2 = plt.subplot(gs[1, 0:2])
-    axs = [ax1, ax2]
+    gs = GridSpec(1, 1)
+    ax1 = plt.subplot(gs[0, 0:1])
+    #ax2 = plt.subplot(gs[0, 2:4])
+    #ax3 = plt.subplot(gs[1, 0:2])
+    #ax4 = plt.subplot(gs[1, 2:4])
+
+    axs = [ax1]
 
     i = 0
     legend_line = ()
     legend_alg = ()
     log_dir = options.log_dir
+    alg_config = options.alg_config
     for env_name in os.listdir(log_dir):
         env_dir = os.path.join(log_dir, env_name)
         ax = axs[i]
@@ -230,7 +238,8 @@ if __name__ == "__main__":
 
         for _, algo_name, x, y_mean, y_std, max_y in sorted(plot_data, key=lambda x: x[0]):
             #print("\nName of Algorithm: %s"%algo_name)
-
+            if algo_name in pass_alg_name:
+                continue
             if type(x) != type(None):
                 x, y_mean, y_std = data_truncate(x, y_mean, y_std, x_limit)
                 line, = ax.plot(x, y_mean, label=algo_name, linewidth=LINEWIDTH, color=get_color(algo_name))

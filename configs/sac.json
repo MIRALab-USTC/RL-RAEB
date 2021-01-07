@@ -3,6 +3,7 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
+        "repeat": 2,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/test",
         "exp_prefix": "my_sac_cheetah"
     },

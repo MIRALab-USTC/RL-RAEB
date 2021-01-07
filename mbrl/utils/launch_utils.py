@@ -178,6 +178,11 @@ def parse_cmd():
     p.add_argument('--intrinsic_coeff', type=float)
     p.add_argument('--max_step', type=int)
 
+    p.add_argument('--layers_num', type=int)
+    p.add_argument('--hidden_size', nargs='+', default=[128,128])
+
+    p.add_argument('--max_path_length', type=int)
+    p.add_argument('--base_log_dir', type=str)
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -192,6 +197,9 @@ def parse_cmd():
 
     cmd_config = [[foo(k),v] for k,v in zip(extras[::2],extras[1::2])]
 
+    if args.base_log_dir is not None:
+        cmd_config.insert(0, ['experiment.base_log_dir', args.base_log_dir])
+
     if args.env_name is not None:
         cmd_config.insert(0, ['type-environment.env_name', args.env_name])
     
@@ -199,7 +207,14 @@ def parse_cmd():
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
     if args.max_step is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
-        
+    
+    if args.max_path_length is not None:
+        cmd_config.insert(0, ['class-batch_RL_algorithm.max_path_length', args.max_path_length])
+
+    if args.layers_num is not None:
+        cmd_config.insert(0, ['class-model_no_reward.layers_num', args.layers_num])
+        cmd_config.insert(0, ['class-model_no_reward.hidden_size', args.hidden_size])
+
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config
 
