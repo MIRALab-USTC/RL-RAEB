@@ -16,6 +16,8 @@ import torch
 
 import math
 
+
+
 class Racing(BaseEnv, ABC):
 
     @classmethod
@@ -172,6 +174,36 @@ class Racing(BaseEnv, ABC):
         indexes_invalid = torch.where(states_cargo==0)
         w[indexes_invalid] = 0
         return w
+
+
+class RacingSparseReward(Racing):
+    
+    def step(self, action):
+        self._steps += 1
+        if action >= 0:
+            self._finished_distance += (self._speed + 0.5 * self._a)
+            self._speed += self._a
+            self._oil -= self._F
+        elif action <= 0:
+            self._oil -= self._f
+            self._finished_distance += self._speed
+        else:
+            raise Exception("Wrong Action: {}".format(action))
+        
+        if self._oil <= 0:   
+            reward = 0
+            done = True
+            msg = "Oil exhausted before destination"
+        elif self._finished_distance >= self._total_distance:
+            reward = 200 - self._steps
+            done = True
+            msg = "Successful finished the task in {} steps".format(self._steps)    
+        else:
+            reward = 0
+            done = False
+            msg = "Still racing"
+        next_state = self.state()
+        return next_state, reward, done, dict(action_oil=action)
 
 
 if __name__ == '__main__':

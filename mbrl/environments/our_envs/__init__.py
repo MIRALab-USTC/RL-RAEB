@@ -485,6 +485,26 @@ register(
     max_episode_steps=500,
 )
 
+register(
+    id='RacingCarSparse-v0',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:RacingSparseReward',
+    kwargs={
+        "seed": None,
+        "oil": 19,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCarSparse-v1',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:RacingSparseReward',
+    kwargs={
+        "seed": None,
+        "oil": 18,
+    },
+    max_episode_steps=500,
+)
+
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
     "mbrl_cheetah": "MBRLHalfCheetah-v0",
@@ -515,6 +535,8 @@ env_name_to_gym_registry_dict = {
     "racing_car_v3": "RacingCar-v3",
     "racing_car_v4": "RacingCar-v4",
     "racing_car_v5": "RacingCar-v5",
+    "racing_car_sparse_v0": "RacingCarSparse-v0",
+    "racing_car_sparse_v1": "RacingCarSparse-v1",
     "discrete_resource_mountaincar_v0": "DiscreteResourceMountainCar-v0",
     "ant_maze": "MagellanAnt-v2",
     "cheetah_sparse": "MagellanHalfCheetah-v2",
