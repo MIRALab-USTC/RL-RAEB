@@ -17,6 +17,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
             model,
             intrinsic_coeff,
             int_coeff_decay,
+            intrinsic_normal,
             max_step,
             model_lr,
             training_noise_stdev,
@@ -47,6 +48,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
         self.shape_env_weight = shape_env_weight
         self.cnt = 0
+        self.intrinsic_normal = intrinsic_normal
+        if intrinsic_normal:
+            self.intrinsic_eta = self.get_eta_normal
+        else:
+            self.intrinsic_eta = self.get_eta
 
     def log_mean_max_min_std(self, name, log_data):
         diagnostics = OrderedDict()
@@ -112,7 +118,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # Todo
         # add reward_int min max log
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
-        eta, decay_rate = self.get_eta(rewards_int)
+        eta, decay_rate = self.intrinsic_eta(rewards_int)
         rewards = rewards + eta * rewards_int * decay_rate
 
         diagnostics['eta'] = eta
@@ -252,6 +258,15 @@ class SurpriseBasedSACTrainer(SACTrainer):
             decay_rate = 1
         return eta, decay_rate
 
+    def get_eta_normal(self, rewards_int):
+        eta = self.intrinsic_coeff / np.std(ptu.get_numpy(rewards_int))
+        if self.int_coeff_decay:
+            self.cnt += 1
+            decay_rate = max(0, (1 - self.cnt/self.max_step))
+        else:
+            decay_rate = 1
+        return eta, decay_rate
+
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_weight(self, states, actions, rewards_int):
         w = self.env.get_long_term_weight_batch(states, actions)
@@ -276,7 +291,6 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         rewards = rewards + eta * rewards_int * rewards_int_weight
 
         diagnostics['eta'] = eta
-        diagnostics['rewards_int_weight'] = np.mean(ptu.get_numpy(rewards_int_weight))
 
         """
         Alpha
@@ -347,9 +361,11 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         average_entropy = -log_prob_new_action.mean()
         policy_q_loss = 0 - q_new_action.mean()
 
-        diagnostics['Reward Intrinsic'] = np.mean(ptu.get_numpy(rewards_int))
-        diagnostics['Rewards'] = np.mean(ptu.get_numpy(rewards))
-        
+
+        diagnostics.update(self.log_mean_max_min_std('Reward Intrinsic Real', ptu.get_numpy(rewards_int)))
+        diagnostics.update(self.log_mean_max_min_std('Rewards Shaping', ptu.get_numpy(rewards)))
+        diagnostics.update(self.log_mean_max_min_std('Rewards int weight', ptu.get_numpy(rewards_int_weight)))
+
         diagnostics['Policy Loss'] = np.mean(ptu.get_numpy(policy_loss))
         diagnostics['Policy Q Loss'] = np.mean(ptu.get_numpy(policy_q_loss))
         diagnostics['Averaged Entropy'] = np.mean(ptu.get_numpy(average_entropy))
