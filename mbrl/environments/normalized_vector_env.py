@@ -68,8 +68,8 @@ class NormalizedVectorEnv(MbrlEnv):
             action = np.stack([action] * self.n_env)
         o,r,d,infos=self.env.step(action)
         if self.should_normalize_obs:
-            self.obs_mean_std.update(obs)
-            obs = self._normalize_observation(obs)
+            self.obs_mean_std.update(o)
+            o = self._normalize_observation(o)
         r = r.reshape(self.n_env,1)
         d = d.reshape(self.n_env,1).astype(np.float)
         if self.cur_step_id >= self.max_length:

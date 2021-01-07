@@ -22,6 +22,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
             model_lr,
             training_noise_stdev,
             grad_clip,
+            shape_env_weight,
             **sac_kwargs
     ):
         SACTrainer.__init__(self, **sac_kwargs)
@@ -45,6 +46,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
         self._need_to_update_model = True
         self._need_to_update_int_reward = True
 
+        self.shape_env_weight = shape_env_weight
         self.cnt = 0
         self.intrinsic_normal = intrinsic_normal
         if intrinsic_normal:
@@ -266,8 +268,12 @@ class SurpriseBasedSACTrainer(SACTrainer):
         return eta, decay_rate
 
 class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
-    def get_weight(self, states, actions):
+    def get_weight(self, states, actions, rewards_int):
         w = self.env.get_long_term_weight_batch(states, actions)
+        w_shape = 1.0 / w
+        if self.shape_env_weight:
+            indexes_need_shape = torch.where(rewards_int.float() < 0)
+            w[indexes_need_shape] = w_shape[indexes_need_shape]
         return w
 
     def train_from_torch_batch(self, batch):
@@ -280,8 +286,8 @@ class VisionSurpriseSACTrainer(SurpriseBasedSACTrainer):
         diagnostics = OrderedDict()
         # shaping reward
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
-        rewards_int_weight = self.get_weight(obs, actions)
-        eta, decay_rate = self.intrinsic_eta(rewards_int)
+        rewards_int_weight = self.get_weight(obs, actions, rewards_int)
+        eta, decay_rate = self.get_eta(rewards_int)
         rewards = rewards + eta * rewards_int * rewards_int_weight
 
         diagnostics['eta'] = eta

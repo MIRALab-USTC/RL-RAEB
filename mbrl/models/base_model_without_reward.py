@@ -117,7 +117,7 @@ class ModelNoReward(nn.Module, Model):
         Model.__init__(self, env, hidden_size, layers_num, ensemble_size, non_linearity)
         self.dim_action = env.action_space.shape[0]
         self.dim_state = env.observation_space.shape[0]
-        assert layers_num >= 2 
+        #assert layers_num >= 1 
         layers = []
         for lyr_idx in range(layers_num + 1):
             if lyr_idx == 0:

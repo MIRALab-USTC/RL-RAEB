@@ -141,67 +141,19 @@ class RNDRLAlgorithm(BatchRLAlgorithm):
         gt.stamp('evaluation sampling')
         progress.close()
     
-class ModelBasedBatchRLAlgorithm(RLAlgorithm):
+class ModelBasedBatchRLAlgorithm(BatchRLAlgorithm):
     def __init__(
             self,
-            num_epochs,
-            batch_size,
-            num_eval_steps_per_epoch,
-            num_expl_steps_per_train_loop,
-            num_train_loops_per_epoch,
-            num_trains_per_train_loop,
-            num_train_models_per_epoch,
             train_model_freq,
-            model_normalize=False,
-            max_path_length=1000,
-            min_num_steps_before_training=0,
-            silent = False,
-            record_video_freq=50,
-            item_dict_config={},
+            num_train_models_per_epoch,
+            model_normalize,
+            **kwargs
         ):
-        super().__init__(num_epochs, item_dict_config)
-        self._need_snapshot.append('trainer')
-        self.batch_size = batch_size
-        self.num_eval_steps_per_epoch = num_eval_steps_per_epoch
-        self.num_expl_steps_per_train_loop = num_expl_steps_per_train_loop
-        self.num_train_loops_per_epoch = num_train_loops_per_epoch
-        self.num_trains_per_train_loop = num_trains_per_train_loop
-        self.min_num_steps_before_training = min_num_steps_before_training
-        self.max_path_length = max_path_length
-        self.record_video_freq = record_video_freq
+        BatchRLAlgorithm.__init__(self, **kwargs)
 
         self.train_model_freq = train_model_freq
         self.model_normalize = model_normalize
         self.num_train_models_per_epoch = num_train_models_per_epoch
-        
-        self.process_class = Silent if silent else Progress
-        self.collected_samples = 0
-    
-    def _sample(self, num_steps):
-        if num_steps > 0:
-            if hasattr(self.expl_collector, 'collect_new_paths'):
-                paths = self.expl_collector.collect_new_paths(num_steps, self.max_path_length, True)
-                self.pool.add_paths(paths)
-            elif hasattr(self.expl_collector, 'collect_new_steps'):
-                samples = self.expl_collector.collect_new_steps(num_steps, self.max_path_length, True)
-                self.pool.add_samples(samples)
-
-    def _before_train(self):
-        self.start_epoch(-1)
-        if hasattr(self, 'init_expl_policy'):
-            with self.expl_collector.with_policy(self.init_expl_policy):
-                self._sample(self.min_num_steps_before_training)
-        else:
-            self._sample(self.min_num_steps_before_training)
-        self.end_epoch(-1)
-    
-    def _end_epoch(self, epoch):
-        from mbrl.collectors.utils import rollout
-        if epoch % self.record_video_freq == 0 and hasattr(self, 'video_env'):
-            self.video_env.set_video_name("epoch{}".format(epoch))
-            logger.log("rollout to save video...")
-            rollout(self.video_env, self.eval_policy, max_path_length=self.max_path_length, use_tqdm=True)
-        gt.stamp('save video', unique=False)
 
     def _train_epoch(self, epoch):
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)

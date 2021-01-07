@@ -84,17 +84,102 @@ register(
 )
 
 register(
-    id='MagellanSparseMountainCar-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car:MagellanSparseContinuousMountainCarEnv',
-    max_episode_steps=500
+    id='ResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
 )
-
 
 register(
-    id='ContinuousMountaincarResource-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car_resources:ResourceMountainCarEnv',
-    max_episode_steps=1000
+    id='ResourceMountainCar-v4',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 5
+    },
 )
+
+register(
+    id='ResourceMountainCar-v5',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 2
+    },
+)
+
+register(
+    id='ResourceMountainCar-v6',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 200
+    },
+)
+
+register(
+    id='ResourceMountainCar-v7',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 100
+    },
+)
+
+register(
+    id='ResourceMountainCar-v1',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 50
+    },
+)
+
+register(
+    id='ResourceMountainCar-v3',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 25
+    },
+)
+
+register(
+    id='ResourceMountainCar-v2',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 100
+    },
+)
+
+register(
+    id='DiscreteResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:DiscreteResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
+)
+
+register(
+    id='ContinuousMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.continuous_mountain_car:Continuous_MountainCarEnv',
+    max_episode_steps=500,
+)
+
+
 register(
     id='AntMaze-v0',
     entry_point='mbrl.environments.our_envs.ant:AntMazeEnv',
@@ -334,6 +419,72 @@ register(
     max_episode_steps=500,
 )
 
+
+
+
+"""
+racing car
+"""
+register(
+    id='RacingCar-v0',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 19,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCar-v1',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 15,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCar-v2',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 10,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCar-v3',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 5,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCar-v4',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 18,
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='RacingCar-v5',
+    entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
+    kwargs={
+        "seed": None,
+        "oil": 17.5,
+    },
+    max_episode_steps=500,
+)
+
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
     "mbrl_cheetah": "MBRLHalfCheetah-v0",
@@ -348,13 +499,27 @@ env_name_to_gym_registry_dict = {
     "hopper": "Hopper-v2",
     "walker2d": "Walker2d-v2",
     "humanoid": "Humanoid-v2",
-    "mountaincar": "MountainCarContinuous-v0",
+    "mountain_car": "MountainCarContinuous-v0",
+    "resource_mountaincar_v0": "ResourceMountainCar-v0",
+    "resource_mountaincar_v1": "ResourceMountainCar-v1",
+    "resource_mountaincar_v2": "ResourceMountainCar-v2",
+    "resource_mountaincar_v3": "ResourceMountainCar-v3",
+    "resource_mountaincar_v4": "ResourceMountainCar-v4",
+    "resource_mountaincar_v5": "ResourceMountainCar-v5",
+    "resource_mountaincar_v6": "ResourceMountainCar-v6",
+    "resource_mountaincar_v7": "ResourceMountainCar-v7",
+    "mountain_car_v1": "ContinuousMountainCar-v0",
+    "racing_car_v0": "RacingCar-v0",
+    "racing_car_v1": "RacingCar-v1",
+    "racing_car_v2": "RacingCar-v2",
+    "racing_car_v3": "RacingCar-v3",
+    "racing_car_v4": "RacingCar-v4",
+    "racing_car_v5": "RacingCar-v5",
+    "discrete_resource_mountaincar_v0": "DiscreteResourceMountainCar-v0",
     "ant_maze": "MagellanAnt-v2",
-    "mountaincar_sparse": "MagellanSparseMountainCar-v0",
     "cheetah_sparse": "MagellanHalfCheetah-v2",
     "n_chain":"NChainOur-v0",
     "ant_maze_resource": "AntMazeResource-v0",
-    "continuous_car_resource": "ContinuousMountaincarResource-v0",
     "ant_maze_v0": "AntMaze-v0",
     "ant_maze_dense_reward_v0": "AntMazeDenseReward-v0",
     'ant_maze_forward_reward': "AntMazeEnvForwardReward-v0",
