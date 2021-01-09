@@ -2,7 +2,7 @@
     "experiment":{
         "tag": "surprise",
         "use_gpu": true,
-        "seed": 3819,
+        "seed": null,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
         "exp_prefix": "surprise_based"
     },
@@ -48,7 +48,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_maze"
+                "env_name": "ant_maze_resource_block2_4"
             }
         }
     ],

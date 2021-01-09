@@ -2,7 +2,7 @@
     "experiment":{
         "tag": "surprise",
         "use_gpu": true,
-        "seed": null,
+        "seed": 968,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
         "exp_prefix": "surprise_based"
     },
@@ -10,7 +10,7 @@
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 1000,
+            "num_epochs": 500,
             "batch_size": 256,
             "num_eval_steps_per_epoch":4000,
             "num_train_loops_per_epoch": 1000,

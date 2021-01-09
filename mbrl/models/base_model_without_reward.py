@@ -236,7 +236,7 @@ class ModelNoReward(nn.Module, Model):
         mu, var = self._propagate_network(states, actions)      # delta and variance
 
         # negative log likelihood
-        loss = (mu - targets) ** 2 / (var) + torch.log(var)
+        loss = (mu - targets) ** 2 / (var + 1e-6) + torch.log(var+1e-6)
         loss = torch.mean(loss)
         return loss
         
