@@ -74,11 +74,12 @@ class SurpriseBasedSACTrainer(SACTrainer):
         if self.model.ensemble_size == 1:
             next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
             var = torch.squeeze(var)
-            p = Normal(next_predicted_obs_mean, torch.sqrt(var))
+            p = Normal(next_predicted_obs_mean, torch.sqrt(var+1e-6))
 
             # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
             rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
             diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
+            diagnostics['var'] = np.mean(ptu.get_numpy(var))
             if self._need_to_update_int_reward:
                 self._need_to_update_int_reward = False
                 self.eval_statistics.update(diagnostics)

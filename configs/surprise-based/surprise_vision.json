@@ -3,7 +3,6 @@
         "tag": "surprise_vision",
         "use_gpu": true,
         "seed": null,
-        "repeat": 3,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/mountain_car_normalize_discrete_resource/surprise_vision",
         "exp_prefix": "mountain_car_surprise_vision"
     },
@@ -127,7 +126,7 @@
         "class": "normalize_simple_pool",
         "kwargs": {
             "env": "$expl_env",
-            "max_size": 1e6
+            "max_size": 3e6
         }
     },
     "collector": [

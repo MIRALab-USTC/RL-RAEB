@@ -2,8 +2,7 @@
     "experiment":{
         "tag": "surprise",
         "use_gpu": true,
-        "seed": null,
-        "repeat": 3,
+        "seed": 3819,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
         "exp_prefix": "surprise_based"
     },

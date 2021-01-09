@@ -186,6 +186,7 @@ def parse_cmd():
 
     p.add_argument('--max_path_length', type=int)
     p.add_argument('--base_log_dir', type=str)
+    p.add_argument('--repeat', type=int)
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -202,6 +203,9 @@ def parse_cmd():
 
     if args.base_log_dir is not None:
         cmd_config.insert(0, ['experiment.base_log_dir', args.base_log_dir])
+
+    if args.repeat is not None:
+        cmd_config.insert(0, ['experiment.repeat', args.repeat])
 
     if args.env_name is not None:
         cmd_config.insert(0, ['type-environment.env_name', args.env_name])

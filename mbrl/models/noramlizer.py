@@ -24,11 +24,7 @@ class TransitionNormalizer:
     
     def _normalize(self, x, mean, stdev):
         mean, stdev = self.setup_vars(x, mean, stdev)
-        print(f"x_shape: {x.shape}")
-        print(f"mean_shape: {mean.shape}")
-        print(f"stdev_shape: {stdev.shape}")
         n = x - mean
-        print(f"n_shpae: {n.shape}")
         n = n / stdev
         return n
 
