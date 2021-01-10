@@ -10,15 +10,15 @@
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 1000,
+            "num_epochs": 500,
             "batch_size": 256,
             "num_eval_steps_per_epoch":4000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
             "num_train_models_per_epoch": 1000,
-            "max_path_length": 500,
-            "train_model_freq": 25,
+            "max_path_length": 200,
+            "train_model_freq": 500,
             "model_normalize": true,
             "save_model_freq": 1,
             "min_num_steps_before_training": 5000,
@@ -31,8 +31,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "racing_car_v0",
-                "should_normalize_obs": true,
+                "env_name": "ant_maze_resource_block2_4",
                 "reward_scale": 1
             }
         },
@@ -40,10 +39,16 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "racing_car_v0",
+                "env_name": "ant_maze_resource_block2_4",
                 "n_env":8,
-                "should_normalize_obs": true,
                 "reward_scale": 1
+            }
+        },
+        {
+            "name": "video_env",
+            "class": "video_env",
+            "kwargs": {
+                "env_name": "ant_maze"
             }
         }
     ],
@@ -60,7 +65,7 @@
             "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
-                "hidden_layers":  [128,128],
+                "hidden_layers":  [32],
                 "nonlinearity": "relu"
             }
         },
@@ -77,7 +82,7 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [256,256]
+            "hidden_layers": [32]
         } 
     },
     "model": {
@@ -85,8 +90,8 @@
         "class": "model_no_reward",
         "kwargs": {
             "env": "$expl_env",
-            "layers_num": 1, 
-            "hidden_size": [512,512,512,512,512],
+            "layers_num": 0, 
+            "hidden_size": [32],
             "ensemble_size": 1, 
             "non_linearity": "swish"   
         }
@@ -121,7 +126,7 @@
         "class": "normalize_simple_pool",
         "kwargs": {
             "env": "$expl_env",
-            "max_size": 1e6
+            "max_size": 3e6
         }
     },
     "collector": [

@@ -94,6 +94,16 @@ register(
 )
 
 register(
+    id='ResourceMountainCar-v8',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 15
+    },
+)
+
+register(
     id='ResourceMountainCar-v4',
     entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
     max_episode_steps=500,
@@ -172,6 +182,8 @@ register(
         'cargo_num': 10
     },
 )
+
+
 
 register(
     id='ContinuousMountainCar-v0',
@@ -528,6 +540,7 @@ env_name_to_gym_registry_dict = {
     "resource_mountaincar_v5": "ResourceMountainCar-v5",
     "resource_mountaincar_v6": "ResourceMountainCar-v6",
     "resource_mountaincar_v7": "ResourceMountainCar-v7",
+    "resource_mountaincar_v8": "ResourceMountainCar-v8",
     "mountain_car_v1": "ContinuousMountainCar-v0",
     "racing_car_v0": "RacingCar-v0",
     "racing_car_v1": "RacingCar-v1",

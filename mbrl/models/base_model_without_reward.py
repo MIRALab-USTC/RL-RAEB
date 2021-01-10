@@ -124,11 +124,13 @@ class ModelNoReward(nn.Module, Model):
         for lyr_idx in range(layers_num + 1):
             if lyr_idx == 0:
                 lyr = EnsembleDenseLayer(self.dim_action + self.dim_state , self.hidden_size[0], self.ensemble_size, non_linearity=self.non_linearity)
-            elif 0 < lyr_idx < self.layers_num:
+                layers.append(lyr)
+            if 0 < lyr_idx < self.layers_num:
                 lyr = EnsembleDenseLayer(self.hidden_size[lyr_idx - 1], self.hidden_size[lyr_idx], self.ensemble_size, non_linearity=self.non_linearity)
-            elif lyr_idx == self.layers_num:
+                layers.append(lyr)
+            if lyr_idx == self.layers_num:
                 lyr = EnsembleDenseLayer(self.hidden_size[lyr_idx], self.dim_state + self.dim_state, self.ensemble_size, non_linearity='linear')
-            layers.append(lyr)
+                layers.append(lyr)
 
         self.layers = nn.Sequential(*layers)
         self.min_log_var = -5
