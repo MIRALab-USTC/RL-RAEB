@@ -43,13 +43,6 @@
                 "n_env":8,
                 "reward_scale": 1
             }
-        },
-        {
-            "name": "video_env",
-            "class": "video_env",
-            "kwargs": {
-                "env_name": "ant_maze_resource_block2_4"
-            }
         }
     ],
     "policy": [

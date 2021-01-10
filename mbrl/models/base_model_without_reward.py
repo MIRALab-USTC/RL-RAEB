@@ -6,6 +6,8 @@ import torch.nn.functional as F
 
 from torch.distributions import Normal
 
+#from ipdb import set_trace
+
 # from normalizer import TransitionNormalizer
 
 # code from Model-Based Active Exploration https://github.com/nnaisense/max
@@ -165,9 +167,9 @@ class ModelNoReward(nn.Module, Model):
     def forward(self, states, actions):
         # predict with raw datas
         normalized_states, normalized_actions = self._preprocess_inputs(states, actions)
-
+        #set_trace()
         normalized_delta_mean, normalized_var = self._propagate_network(normalized_states, normalized_actions)
-        
+        #set_trace()
         #print(f"model_normalized_delta_mean: {normalized_delta_mean}")
         #print(f"model_normalized_var: {normalized_var}")
 
@@ -233,10 +235,13 @@ class ModelNoReward(nn.Module, Model):
             actions += torch.randn_like(actions) * training_noise_stdev
             targets += torch.randn_like(targets) * training_noise_stdev
 
+        #set_trace()
         mu, var = self._propagate_network(states, actions)      # delta and variance
-
+        #set_trace()
         # negative log likelihood
         loss = (mu - targets) ** 2 / (var + 1e-6) + torch.log(var+1e-6)
+        #set_trace()
+
         loss = torch.mean(loss)
         return loss
         

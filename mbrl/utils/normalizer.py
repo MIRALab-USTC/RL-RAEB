@@ -1,5 +1,7 @@
 import torch
 
+#from ipdb import set_trace
+
 class TransitionNormalizer:
     def __init__(self, mean_std_dict):
         self.state_mean = mean_std_dict['obs_mean']
@@ -29,7 +31,9 @@ class TransitionNormalizer:
     def _normalize(self, x, mean, stdev):
         mean, stdev = self.setup_vars(x, mean, stdev)
         n = x - mean
-        n = n / stdev
+        #set_trace()
+        n = n / (stdev + 1e-6)
+        #set_trace()
         return n
 
     def normalize_states(self, states):

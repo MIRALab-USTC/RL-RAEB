@@ -11,6 +11,8 @@ from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.trainers.base_trainer import BatchTorchTrainer
 from mbrl.trainers.sac_trainer import SACTrainer
 
+#from ipdb import set_trace
+
 class SurpriseBasedSACTrainer(SACTrainer):
     def __init__(
             self,
@@ -69,8 +71,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
         obs =  obs.repeat(self.model.ensemble_size, 1, 1)
         actions = actions.repeat(self.model.ensemble_size, 1, 1)
-        next_predicted_obs_mean, var = self.model(obs, actions)
+        
+        #set_trace()
 
+        next_predicted_obs_mean, var = self.model(obs, actions)
+        print(f"var： {np.mean(ptu.get_numpy(var))}")
         if self.model.ensemble_size == 1:
             next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
             var = torch.squeeze(var)
@@ -100,7 +105,10 @@ class SurpriseBasedSACTrainer(SACTrainer):
         """
         model
         """
+        #set_trace()
+
         model_loss = self.train_model_from_batch(obs, actions, next_obs - obs)
+        print(f"model_loss: {ptu.get_numpy(model_loss)}")
         diagnostics['Model Loss'] = np.mean(ptu.get_numpy(model_loss))
         if self._need_to_update_model:
             self._need_to_update_model = False
