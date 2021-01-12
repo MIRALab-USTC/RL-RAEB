@@ -10,7 +10,7 @@
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 500,
+            "num_epochs": 1000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":4000,
             "num_train_loops_per_epoch": 1000,

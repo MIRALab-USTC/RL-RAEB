@@ -17,7 +17,7 @@
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
             "num_train_models_per_epoch": 1000,
-            "max_path_length": 200,
+            "max_path_length": 500,
             "train_model_freq": 25,
             "model_normalize": true,
             "save_model_freq": 1,
@@ -90,7 +90,7 @@
         "class": "model_no_reward",
         "kwargs": {
             "env": "$expl_env",
-            "layers_num": 1, 
+            "layers_num": 4, 
             "hidden_size": [512,512,512,512,512],
             "ensemble_size": 1, 
             "non_linearity": "swish"   
