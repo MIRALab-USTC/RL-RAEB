@@ -12,16 +12,19 @@ import math
 from mujoco_py.generated import const
 from ipdb import set_trace
 # For test
-#import sys
-#sys.path.insert(0, '/home/rl_shared/zhihaiwang/research/mbrl_sparse_reward')
+import sys
+sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
 
 
-#from mbrl.environments.video_env import VideoEnv
+from mbrl.environments.video_env import VideoEnv
 
 class CheetahCorridor(HalfCheetahEnv):
     def __init__(self, reward_block):
         self.reward_block = reward_block
         HalfCheetahEnv.__init__(self)
+        #dir_path = os.path.dirname(os.path.realpath(__file__))
+        #mujoco_env.MujocoEnv.__init__(self, '%s/half_cheetah_corridor.xml' % dir_path, 5)
+        #utils.EzPickle.__init__(self)
 
     def step(self, action):
         xposbefore = self.sim.data.qpos[0]
@@ -33,7 +36,7 @@ class CheetahCorridor(HalfCheetahEnv):
         #reward = reward_ctrl + reward_run
         reward = 0
         done = False
-        x = ob[0].item()
+        x = xposafter
         if x > self.reward_block[0]:
             reward = 100
             done = True
@@ -56,8 +59,7 @@ class ResourceCheetahCorridor(CheetahCorridor):
         self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
         return self.action_space
 
-    def get_state_pos(self, state):
-        x = state[0].item()
+    def get_state_pos(self, x):
         r_x_low = self.reward_block[0]
         r_x_high = self.reward_block[1]
         if x >= r_x_low and x <= r_x_high:
@@ -85,7 +87,7 @@ class ResourceCheetahCorridor(CheetahCorridor):
         cargo_now = self.cur_cargo
         done = False
         reward = 0
-        cur_x_pos_r = self.get_state_pos(obs)
+        cur_x_pos_r = self.get_state_pos(xposafter)
         if cur_x_pos_r and cargo_now < cargo_last:
             done = True
             reward = self.reward
@@ -149,15 +151,17 @@ class ResourceCheetahCorridor(CheetahCorridor):
 if __name__=='__main__':
     # test ant maze env
     env = ResourceCheetahCorridor(cargo_num=4, beta=5, reward_block=[4,5], reward=100)
+    #video_env = VideoEnv(env)
     state = env.reset()
+    q_pos = np.zeros(9)
+    q_vel = np.zeros(9)
+    q_pos[0] = 4.5
+    env.set_state(q_pos, q_vel)
     action = env.action_space.sample()
-    print(state)
-    print(len(state))
-    print(action)
-    print(len(action))
 
-    o, r, _, _ = env.step(action)
-    print(r)
+    o, r, done ,_ = env.step(action)
+    print(o[0])
+    print(done)
     # env_name = "ant_corridor_resource_env_goal_7_v0"
     # video_env = AntCorridorEnv([7,8])
 

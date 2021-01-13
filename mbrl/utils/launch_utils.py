@@ -187,6 +187,7 @@ def parse_cmd():
     p.add_argument('--max_path_length', type=int)
     p.add_argument('--base_log_dir', type=str)
     p.add_argument('--repeat', type=int)
+    p.add_argument('--model_normalize', action='store_true')
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -221,6 +222,10 @@ def parse_cmd():
     if args.layers_num is not None:
         cmd_config.insert(0, ['class-model_no_reward.layers_num', args.layers_num])
         cmd_config.insert(0, ['class-model_no_reward.hidden_size', args.hidden_size])
+    
+    if args.model_normalize is not None:
+        cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.model_normalize', args.model_normalize])
+
 
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config
