@@ -215,9 +215,16 @@ def parse_cmd():
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
     if args.max_step is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
+
+    if args.intrinsic_normal is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
+        cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
     
     if args.max_path_length is not None:
         cmd_config.insert(0, ['class-batch_RL_algorithm.max_path_length', args.max_path_length])
+
+    if args.min_num_steps_before_training is not None:
+        cmd_config.insert(0, ['class-batch_RL_algorithm.min_num_steps_before_training', args.min_num_steps_before_training])
 
     if args.layers_num is not None:
         cmd_config.insert(0, ['class-model_no_reward.layers_num', args.layers_num])

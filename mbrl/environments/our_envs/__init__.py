@@ -540,6 +540,29 @@ register(
     max_episode_steps=500,
 )
 
+register(
+    id='ResourceCheetahCorridor-v1',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [3,4],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='ResourceCheetahCorridor-v2',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [2,3],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -601,5 +624,7 @@ env_name_to_gym_registry_dict = {
     'ant_corridor_env_3': "AntCorridorEnv-v3",
     'ant_corridor_env_4': "AntCorridorEnv-v4",
     "cheetah_corridor_v0": "CheetahCorridor-v0",
-    "resource_cheetah_corridor_v0": "ResourceCheetahCorridor-v0"
+    "resource_cheetah_corridor_v0": "ResourceCheetahCorridor-v0",
+    "resource_cheetah_corridor_v1": "ResourceCheetahCorridor-v1",
+    "resource_cheetah_corridor_v2": "ResourceCheetahCorridor-v2"
 }

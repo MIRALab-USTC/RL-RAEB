@@ -8,6 +8,7 @@ import numpy as np
 
 from mbrl.environments.base_env import MbrlEnv, SimpleEnv
 
+#from ipdb import set_trace
 FILE_PREFIX = 'mbrl-mujoco-video'
 
 monitor_closer = closer.Closer()
@@ -15,6 +16,7 @@ monitor_closer = closer.Closer()
 class VideoEnv(MbrlEnv):
     def __init__(self, env_name, directory=None, force=False):
         if directory is None: 
+            #set_trace()
             directory = os.path.join(logger._snapshot_dir, 'videos')
         inner_env = SimpleEnv(env_name)
         Wrapper.__init__(self, inner_env)
@@ -25,6 +27,8 @@ class VideoEnv(MbrlEnv):
         self.enabled = False
         self.episode_id = 0
         self._monitor_id = None
+
+        self.cur_video_name = None
 
         self._start(directory, force)
 
@@ -101,6 +105,7 @@ class VideoEnv(MbrlEnv):
             self._close_video_recorder()
 
         # Start recording the next video.
+        # set_trace()
         if self.cur_video_name is not None:
             video_name = self.cur_video_name 
             self.cur_video_name = None

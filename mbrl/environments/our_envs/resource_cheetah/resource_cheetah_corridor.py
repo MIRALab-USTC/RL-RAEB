@@ -10,7 +10,7 @@ import os
 import math 
 
 from mujoco_py.generated import const
-from ipdb import set_trace
+#from ipdb import set_trace
 # For test
 import sys
 sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
@@ -21,10 +21,10 @@ from mbrl.environments.video_env import VideoEnv
 class CheetahCorridor(HalfCheetahEnv):
     def __init__(self, reward_block):
         self.reward_block = reward_block
-        HalfCheetahEnv.__init__(self)
-        #dir_path = os.path.dirname(os.path.realpath(__file__))
-        #mujoco_env.MujocoEnv.__init__(self, '%s/half_cheetah_corridor.xml' % dir_path, 5)
-        #utils.EzPickle.__init__(self)
+        #HalfCheetahEnv.__init__(self)
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        mujoco_env.MujocoEnv.__init__(self, '%s/half_cheetah_corridor.xml' % dir_path, 5)
+        utils.EzPickle.__init__(self)
 
     def step(self, action):
         xposbefore = self.sim.data.qpos[0]
@@ -40,9 +40,18 @@ class CheetahCorridor(HalfCheetahEnv):
         if x > self.reward_block[0]:
             reward = 100
             done = True
-
         return ob, reward, done, {}
-    
+
+    def viewer_setup(self):
+        self.viewer.cam.type = const.CAMERA_TRACKING
+        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.distance = self.model.stat.extent * 0.35
+        self.viewer.cam.lookat[0] += 1  # x,y,z offset from the object (works if trackbodyid=-1)
+        self.viewer.cam.lookat[1] += 1
+        self.viewer.cam.lookat[2] += 1
+        self.viewer.cam.elevation = -90
+        self.viewer.cam.azimuth = 270
+
 class ResourceCheetahCorridor(CheetahCorridor):
     def __init__(self, cargo_num, beta, reward_block, reward):
         self.cargo_num = cargo_num # the number of resources 
@@ -98,8 +107,9 @@ class ResourceCheetahCorridor(CheetahCorridor):
         return obs, reward, done, dict(action_cargo=action_cargo)
 
     def _get_obs(self):
+        # add s[0] x position 
         return np.concatenate([
-            self.sim.data.qpos.flat[1:],
+            self.sim.data.qpos.flat,
             self.sim.data.qvel.flat,
             [self.cur_cargo],
         ])
@@ -150,32 +160,38 @@ class ResourceCheetahCorridor(CheetahCorridor):
 
 if __name__=='__main__':
     # test ant maze env
-    env = ResourceCheetahCorridor(cargo_num=4, beta=5, reward_block=[4,5], reward=100)
+    #env = ResourceCheetahCorridor(cargo_num=4, beta=5, reward_block=[4,5], reward=100)
     #video_env = VideoEnv(env)
-    state = env.reset()
-    q_pos = np.zeros(9)
-    q_vel = np.zeros(9)
-    q_pos[0] = 4.5
-    env.set_state(q_pos, q_vel)
-    action = env.action_space.sample()
+    #state = env.reset()
+    #q_pos = np.zeros(9)
+    #q_pos[0] = 4.5
+    #env.set_state(q_pos, q_vel)
+    #action = env.action_space.sample()
 
-    o, r, done ,_ = env.step(action)
-    print(o[0])
-    print(done)
+    #o, r, done ,_ = env.step(action)
+    #print(o[0])
+    #print(done)
     # env_name = "ant_corridor_resource_env_goal_7_v0"
     # video_env = AntCorridorEnv([7,8])
 
-    # LEN = 200
-    # state = video_env.reset()
-    # action = video_env.action_space.sample()
+    LEN = 1000
+    dire = os.path.join(os.getcwd(),"videos")
+    print(dire)
+    video_env = VideoEnv("resource_cheetah_corridor_v0", directory=dire)
 
-    # states = np.repeat(np.expand_dims(state, axis=0), 3, axis=0)
-    # actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
+    state = video_env.reset()
+    action = video_env.action_space.sample()
+    print(state.shape)
+    print(action.shape)
+    #set_trace()
+    states = np.repeat(state, 3, axis=0)
+    actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
+    print(states.shape)
+    print(actions.shape)
+    w = video_env.get_long_term_weight_batch(states, actions)
 
-    # #w = video_env.get_long_term_weight_batch(states, actions)
-
-    # for i in range(LEN):
-    #     action = video_env.action_space.sample() # action_space
-    #     next_o, _, _, _ = video_env.step(action)
+    for i in range(LEN):
+         action = video_env.action_space.sample() # action_space
+         next_o, _, _, _ = video_env.step(action)
 
 
