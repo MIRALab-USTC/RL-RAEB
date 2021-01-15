@@ -541,6 +541,30 @@ register(
 )
 
 register(
+    id='ResourceCheetahCorridor-v01',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 8,
+        'beta': 5,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='ResourceCheetahCorridor-v02',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 10,
+        'beta': 5,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='ResourceCheetahCorridor-v1',
     entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',
     kwargs={
@@ -563,6 +587,21 @@ register(
     },
     max_episode_steps=500,
 )
+
+
+# swimmer
+
+register(
+    id='SwimmerCorridor-v0',
+    entry_point='mbrl.environments.our_envs.resource_swimmer.resource_swimmer_corridor:SwimmerCorridor',
+    kwargs={
+        'reward_block': [3,4]
+    },
+    max_episode_steps=500,
+)
+
+
+
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -625,6 +664,9 @@ env_name_to_gym_registry_dict = {
     'ant_corridor_env_4': "AntCorridorEnv-v4",
     "cheetah_corridor_v0": "CheetahCorridor-v0",
     "resource_cheetah_corridor_v0": "ResourceCheetahCorridor-v0",
+    "resource_cheetah_corridor_v01": "ResourceCheetahCorridor-v01",
+    "resource_cheetah_corridor_v02": "ResourceCheetahCorridor-v02",
     "resource_cheetah_corridor_v1": "ResourceCheetahCorridor-v1",
-    "resource_cheetah_corridor_v2": "ResourceCheetahCorridor-v2"
+    "resource_cheetah_corridor_v2": "ResourceCheetahCorridor-v2",
+    "swimmer_corridor_v0": "SwimmerCorridor-v0"
 }
