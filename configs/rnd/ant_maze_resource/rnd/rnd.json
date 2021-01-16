@@ -3,8 +3,8 @@
         "tag": "rnd_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/valid_exp_maze_resource_maze_block2_4_fixed_cargo_reset/sac_surprise",
-        "exp_prefix": "ant_maze_resource_rnd"
+        "base_log_dir": "/home/txpan/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/",
+        "exp_prefix": "ant_corridor_rnd"
     },
     "algorithm": {
         "name": "sac_rnd",
