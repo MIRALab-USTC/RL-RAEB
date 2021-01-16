@@ -53,10 +53,11 @@ class AntCorridorEnv(MagellanAntEnv):
         return obs, reward, done, {}
 
 class AntCorridorResourceEnv(AntCorridorEnv):
-    def __init__(self, cargo_num, beta, reward_block):
+    def __init__(self, cargo_num, beta, reward_block, reward):
         self.cargo_num = cargo_num # the number of resources 
         self.cur_cargo = cargo_num
         self.beta = beta
+        self.reward = reward
         AntCorridorEnv.__init__(self, reward_block)
 
     def _set_action_space(self):
@@ -94,7 +95,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         cur_x_pos_r = self.get_state_pos(obs)
         if cur_x_pos_r and cargo_now < cargo_last:
             done = True
-            reward = 100
+            reward = self.reward
         
         return obs, reward, done, dict(action_cargo=action_cargo)
 
@@ -166,6 +167,36 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         indexes_invalid = torch.where(states_cargo==0)
         w[indexes_invalid] = 0
         return w
+
+
+class RewardAntCorridorResourceEnv(AntCorridorResourceEnv):
+    def __init__(self, cargo_num, beta, reward_block, goal_reward):
+        self.goal_reward = goal_reward
+        super(RewardAntCorridorResourceEnv, self).__init__(cargo_num, beta, reward_block)
+
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action[:-1], self.frame_skip)
+        action_cargo = action[-1]
+
+        # the cargo of last state
+        cargo_last = self.cur_cargo
+        
+        # update cargo 
+        obs = self._get_obs(action_cargo)
+
+        cargo_now = self.cur_cargo
+        done = False
+        reward = 0
+        cur_x_pos_r = self.get_state_pos(obs)
+        if cur_x_pos_r and cargo_now < cargo_last:
+            done = True
+            reward = self.goal_reward
+        
+        return obs, reward, done, dict(action_cargo=action_cargo)
+
+
 
 if __name__=='__main__':
     # test ant maze env

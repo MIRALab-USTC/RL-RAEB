@@ -6,6 +6,8 @@ import torch.nn.functional as F
 
 from torch.distributions import Normal
 
+#from ipdb import set_trace
+
 # from normalizer import TransitionNormalizer
 
 # code from Model-Based Active Exploration https://github.com/nnaisense/max
@@ -117,16 +119,18 @@ class ModelNoReward(nn.Module, Model):
         Model.__init__(self, env, hidden_size, layers_num, ensemble_size, non_linearity)
         self.dim_action = env.action_space.shape[0]
         self.dim_state = env.observation_space.shape[0]
-        assert layers_num >= 2 
+        #assert layers_num >= 1 
         layers = []
         for lyr_idx in range(layers_num + 1):
             if lyr_idx == 0:
                 lyr = EnsembleDenseLayer(self.dim_action + self.dim_state , self.hidden_size[0], self.ensemble_size, non_linearity=self.non_linearity)
-            elif 0 < lyr_idx < self.layers_num:
+                layers.append(lyr)
+            if 0 < lyr_idx < self.layers_num:
                 lyr = EnsembleDenseLayer(self.hidden_size[lyr_idx - 1], self.hidden_size[lyr_idx], self.ensemble_size, non_linearity=self.non_linearity)
-            elif lyr_idx == self.layers_num:
+                layers.append(lyr)
+            if lyr_idx == self.layers_num:
                 lyr = EnsembleDenseLayer(self.hidden_size[lyr_idx], self.dim_state + self.dim_state, self.ensemble_size, non_linearity='linear')
-            layers.append(lyr)
+                layers.append(lyr)
 
         self.layers = nn.Sequential(*layers)
         self.min_log_var = -5
@@ -165,9 +169,9 @@ class ModelNoReward(nn.Module, Model):
     def forward(self, states, actions):
         # predict with raw datas
         normalized_states, normalized_actions = self._preprocess_inputs(states, actions)
-
+        #set_trace()
         normalized_delta_mean, normalized_var = self._propagate_network(normalized_states, normalized_actions)
-        
+        #set_trace()
         #print(f"model_normalized_delta_mean: {normalized_delta_mean}")
         #print(f"model_normalized_var: {normalized_var}")
 
@@ -233,10 +237,13 @@ class ModelNoReward(nn.Module, Model):
             actions += torch.randn_like(actions) * training_noise_stdev
             targets += torch.randn_like(targets) * training_noise_stdev
 
+        #set_trace()
         mu, var = self._propagate_network(states, actions)      # delta and variance
-
+        #set_trace()
         # negative log likelihood
-        loss = (mu - targets) ** 2 / (var) + torch.log(var)
+        loss = (mu - targets) ** 2 / (var + 1e-6) + torch.log(var+1e-6)
+        #set_trace()
+
         loss = torch.mean(loss)
         return loss
         

@@ -1,4 +1,5 @@
 import torch
+from ipdb import set_trace
 
 class TransitionNormalizer:
     def __init__(self, mean_std_dict):
@@ -20,16 +21,15 @@ class TransitionNormalizer:
         while len(x.size()) < len(mean.size()):
             mean, stdev = mean.unsqueeze(0), stdev.unsueeze(0)
 
-        return mean, stdev
+        return mean, stdev  
     
     def _normalize(self, x, mean, stdev):
         mean, stdev = self.setup_vars(x, mean, stdev)
-        print(f"x_shape: {x.shape}")
-        print(f"mean_shape: {mean.shape}")
-        print(f"stdev_shape: {stdev.shape}")
         n = x - mean
-        print(f"n_shpae: {n.shape}")
-        n = n / stdev
+        set_trace()
+        n = n / (stdev + 1e-6)
+        set_trace()
+
         return n
 
     def normalize_states(self, states):

@@ -3,6 +3,7 @@
         "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
+        "repeat": 2,
         "base_log_dir": "/home/rl_shared/zhihaiwang/research/data/test",
         "exp_prefix": "my_sac_cheetah"
     },
@@ -10,13 +11,13 @@
         "name": "sac",
         "class": "batch_RL_algorithm",
         "kwargs": {
-            "num_epochs": 1000,
+            "num_epochs": 3000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "min_num_steps_before_training": 5000,
+            "min_num_steps_before_training": 25000,
             "record_video_freq": 10,
             "silent": false
         }

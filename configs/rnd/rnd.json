@@ -1,0 +1,147 @@
+{
+    "experiment":{
+        "tag": "rnd_sac",
+        "use_gpu": true,
+        "seed": null,
+        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/rnd",
+        "exp_prefix": "car_rnd"
+    },
+    "algorithm": {
+        "name": "sac_rnd",
+        "class": "RNDRLAlgorithm",
+        "kwargs": {
+            "num_epochs": 1000,
+            "batch_size": 256,
+            "num_eval_steps_per_epoch":4000,
+            "num_train_loops_per_epoch": 1000,
+            "num_expl_steps_per_train_loop": 1,
+            "num_trains_per_train_loop": 1,
+            "num_train_models_per_epoch": 1000,
+            "max_path_length": 500,
+            "train_model_freq": 25,
+            "min_num_steps_before_training": 5000,
+            "record_video_freq": 10,
+            "silent": false
+        }
+    },
+    "environment": [
+        {
+            "name": "expl_env",
+            "class": "simple_env",
+            "kwargs": {
+                "env_name": "ant_maze_resource_v1",
+                "reward_scale": 1
+            }
+        },
+        {
+            "name": "eval_env",
+            "class": "normalized_vector_env",
+            "kwargs": {
+                "env_name": "ant_maze_resource_v1",
+                "n_env":8,
+                "reward_scale": 1
+            }
+        }
+    ],
+    "policy": [
+        {
+            "name": "init_expl_policy",
+            "class": "uniformly_random_policy",
+            "kwargs":{
+                "env": "$expl_env"
+            }
+        },
+        {
+            "name": "policy",
+            "class": "gaussian_policy",
+            "kwargs": {
+                "env": "$expl_env",
+                "hidden_layers": [128,128],
+                "nonlinearity": "relu"
+            }
+        },
+        {
+            "name": "eval_policy",
+            "class": "MakeDeterministic",
+            "kwargs":{
+                "random_policy": "$policy"
+            }
+        }
+    ],
+    "value": {
+        "name": "qf",
+        "class": "ensemble_q_value",
+        "kwargs": {
+            "env": "$expl_env",
+            "hidden_layers": [256,256]
+        } 
+    },
+    "model": [
+        {
+            "name": "random_net",
+            "class": "random_net",
+            "kwargs": {
+                "env": "$expl_env",
+                "input_mode": "state_action", 
+                "init_mode": "kaiming_uniform_",
+                "hidden_layers": [128,128]
+            }
+        },
+        {
+            "name": "random_tar_net",
+            "class": "random_net",
+            "kwargs": {
+                "env": "$expl_env",
+                "input_mode": "state_action", 
+                "init_mode": "kaiming_normal_",
+                "hidden_layers": [256,256]
+            }
+        }
+    ],
+    "trainer":{
+        "name": "trainer",
+        "class": "RND_SAC_Trainer",
+        "kwargs": {
+            "env": "$expl_env",
+            "policy": "$policy",
+            "qf": "$qf",
+            "random_model": "$random_net",
+            "random_target_model": "$random_tar_net",
+            "intrinsic_coeff": 0.05,
+            "model_lr": 3e-4,
+            "reward_scale":1,
+            "policy_lr": 3e-4,
+            "qf_lr": 3e-4,
+            "soft_target_tau": 5e-3,
+            "use_automatic_entropy_tuning": true,
+            "alpha_if_not_automatic": 0,
+            "discount": 0.99
+        }
+    },
+    "pool": {
+        "name": "pool",
+        "class": "normalize_simple_pool",
+        "kwargs": {
+            "env": "$expl_env",
+            "max_size": 1e6
+        }
+    },
+    "collector": [
+        {
+            "name": "expl_collector",
+            "class": "simple_step_collector",
+            "kwargs": {
+                "env": "$expl_env",
+                "policy": "$policy"
+            }
+        },
+        {
+            "name": "eval_collector",
+            "class": "simple_path_collector",
+            "kwargs": {
+                "env": "$eval_env",
+                "policy": "$eval_policy"
+            }
+        }
+    ]
+}

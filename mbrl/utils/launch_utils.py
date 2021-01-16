@@ -171,6 +171,23 @@ def parse_cmd():
     p = argparse.ArgumentParser()
     p.add_argument('config_file', type=str)
     p.add_argument('--env_name', type=str)
+
+    """
+    add by ourself
+    """
+    p.add_argument('--intrinsic_coeff', type=float)
+    p.add_argument('--max_step', type=int)
+    p.add_argument('--int_coeff_decay', action='store_true')
+    p.add_argument('--intrinsic_normal', action='store_true')
+    p.add_argument('--min_num_steps_before_training', type=float, default=5000)
+
+    p.add_argument('--layers_num', type=int)
+    p.add_argument('--hidden_size', nargs='+', default=[128,128])
+
+    p.add_argument('--max_path_length', type=int)
+    p.add_argument('--base_log_dir', type=str)
+    p.add_argument('--repeat', type=int)
+    p.add_argument('--model_normalize', action='store_true')
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -185,9 +202,38 @@ def parse_cmd():
 
     cmd_config = [[foo(k),v] for k,v in zip(extras[::2],extras[1::2])]
 
+    if args.base_log_dir is not None:
+        cmd_config.insert(0, ['experiment.base_log_dir', args.base_log_dir])
+
+    if args.repeat is not None:
+        cmd_config.insert(0, ['experiment.repeat', args.repeat])
+
     if args.env_name is not None:
         cmd_config.insert(0, ['type-environment.env_name', args.env_name])
-        
+    
+    if args.intrinsic_coeff is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
+    if args.max_step is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
+
+    if args.intrinsic_normal is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
+        cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
+    
+    if args.max_path_length is not None:
+        cmd_config.insert(0, ['class-batch_RL_algorithm.max_path_length', args.max_path_length])
+
+    if args.min_num_steps_before_training is not None:
+        cmd_config.insert(0, ['class-batch_RL_algorithm.min_num_steps_before_training', args.min_num_steps_before_training])
+
+    if args.layers_num is not None:
+        cmd_config.insert(0, ['class-model_no_reward.layers_num', args.layers_num])
+        cmd_config.insert(0, ['class-model_no_reward.hidden_size', args.hidden_size])
+    
+    if args.model_normalize is not None:
+        cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.model_normalize', args.model_normalize])
+
+
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config
 

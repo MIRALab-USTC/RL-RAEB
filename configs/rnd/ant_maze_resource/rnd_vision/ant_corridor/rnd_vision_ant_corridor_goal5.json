@@ -4,6 +4,7 @@
         "tag": "rnd_vision",
         "use_gpu": true,
         "seed": null,
+        "repeat": 2,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal5/valid/rnd_vision",
         "exp_prefix": "ant_corridor_rnd_vision_goal5_with_entropy"
     },
@@ -21,7 +22,7 @@
             "max_path_length": 500,
             "train_model_freq": 25,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
+            "record_video_freq": 100,
             "silent": false
         }
     },
