@@ -15,9 +15,6 @@ o_*.txt
 
 videos/
 videos_old/
-nohup_log/
 *.png
 *.jpeg
 *.pdf
-
-

@@ -11,12 +11,12 @@ from gym.utils import seeding
 from gym.envs.classic_control import rendering
 
 # For test
-#import sys
-#sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
+import sys
+sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
 
 from mbrl.environments.our_envs.mountain_car.continuous_mountain_car import ContinuousMountainCarEnv
 
-
+from ipdb import set_trace
 
 class ResourceMountainCarEnv(ContinuousMountainCarEnv):
 
@@ -115,16 +115,16 @@ class ResourceMountainCarEnv(ContinuousMountainCarEnv):
         return cargo_action
 
     def render(self, mode='human'):
-        screen_width = 600
-        screen_height = 400
+        screen_width = 6000
+        screen_height = 4000
 
         world_width = self.max_position - self.min_position
         scale = screen_width/world_width
-        carwidth = 40
-        carheight = 20
-        cargo_width = 30
-        cargo_height = 15
-        clearance = 10
+        carwidth = 400
+        carheight = 200
+        cargo_width = 300
+        cargo_height = 150
+        clearance = 100
 
         if self.viewer is None:
             self.viewer = rendering.Viewer(screen_width, screen_height)
@@ -284,16 +284,30 @@ class DiscreteResourceMountainCarEnv(ResourceMountainCarEnv):
         return self.state, reward, done, dict(action_cargo=action[1], action_cargo_real=cargo_action)
 if __name__=='__main__':
     # test ant maze env
-    env = ResourceMountainCarEnv(seed=None)
+    
+    import cv2
+    #set_trace()
+    #env = ResourceMountainCarEnv(seed=None)
+    env = gym.make("HalfCheetah-v2")
+    
+    #set_trace()
+    #state = env.reset()
+    #action = env.action_space.sample()
 
-    LEN = 200
-    state = env.reset()
-    action = env.action_space.sample()
-    state[-1] = 0
-    states = np.repeat(np.expand_dims(state, axis=0), 3, axis=0)
+    
 
-    actions = np.repeat(np.expand_dims(action, axis=0), 3, axis=0)
-    print(states)
-    print(actions)
-    w = env.get_long_term_weight_batch(states, actions)
-    print(w)
+    env_image = env.render(mode="rgb_array")
+    
+    print(env_image.shape)
+    #cv2.imwrite("ResourceMountainCar3.png", env_image)
+
+    #b = np.ones((10,10), dtype=np.uint8)
+
+    #scale_image = np.kron(env_image, b)
+    #print(scale_image.shape)
+    #cv2.imwrite("ResourceMountainCar7.jpeg", env_image)
+
+    from PIL import Image
+    #RGBimage = cv2.cvtColor(env_image, cv2.COLOR_BGR2RGB)
+    PILimage = Image.fromarray(env_image)
+    PILimage.save('ant.jpeg', quality=100)
