@@ -1,11 +1,12 @@
 {
     "base_config_file": "configs/sac/sac.json",
     "experiment":{
-        "tag": "my_sac",
+        "tag": "tx_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/with_entropy_int005/goal6/comparsion/sac",
-        "exp_prefix": "sac_goal6"
+        "repeat": 2,
+        "base_log_dir": "/home/txpan/research/ICML_data/exploration_env_exps_fix_env/ant_corridor/goal6/comparsion/sac",
+        "exp_prefix": "ant_corridor_sac_goal6"
     },
     "algorithm": {
         "name": "sac",
@@ -13,13 +14,13 @@
         "kwargs": {
             "num_epochs": 3000,
             "batch_size": 256,
-            "num_eval_steps_per_epoch":8000,
+            "num_eval_steps_per_epoch": 8000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
-            "max_path_length": 500,
+            "record_video_freq": 300,
+            "max_path_length": 1000,
             "silent": false
         }
     },

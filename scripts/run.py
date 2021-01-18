@@ -1,5 +1,6 @@
 import sys 
-sys.path.insert(0, '/home/zhwang/mbrl_exploration_with_novelty')
+import os 
+sys.path.insert(0, os.getcwd())
 
 from mbrl.utils.launch_utils import parse_cmd, run_experiments
 
