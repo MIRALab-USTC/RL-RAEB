@@ -184,10 +184,18 @@ def parse_cmd():
     p.add_argument('--layers_num', type=int)
     p.add_argument('--hidden_size', nargs='+', default=[128,128])
 
-    p.add_argument('--max_path_length', type=int)
+    
     p.add_argument('--base_log_dir', type=str)
     p.add_argument('--repeat', type=int)
     p.add_argument('--model_normalize', action='store_true')
+
+    # alg args 
+    p.add_argument('--max_path_length', type=int)
+    p.add_argument('--num_eval_steps_per_epoch', type=int, default=8000)
+
+    # simple hash pool
+    p.add_argument('--hash_k', type=int, default=16)
+
     args, extras = p.parse_known_args()
 
     def foo(astr):
@@ -222,6 +230,11 @@ def parse_cmd():
     
     if args.max_path_length is not None:
         cmd_config.insert(0, ['class-batch_RL_algorithm.max_path_length', args.max_path_length])
+    if args.num_eval_steps_per_epoch is not None:
+        cmd_config.insert(0, ['class-batch_RL_algorithm.num_eval_steps_per_epoch', args.num_eval_steps_per_epoch])
+    
+    if args.hash_k is not None:
+        cmd_config.insert(0, ['class-simple_pool_with_hash_state_action.hash_k', args.hash_k])
 
     if args.min_num_steps_before_training is not None:
         cmd_config.insert(0, ['class-batch_RL_algorithm.min_num_steps_before_training', args.min_num_steps_before_training])

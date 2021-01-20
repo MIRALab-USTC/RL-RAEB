@@ -16,6 +16,7 @@ class HashCntSACTrainer(SACTrainer):
             self,
             pool_with_hash,
             cnt_with_sqrt,
+            int_coeff,
             **sac_kwargs
     ):
         SACTrainer.__init__(self,**sac_kwargs)
@@ -25,6 +26,7 @@ class HashCntSACTrainer(SACTrainer):
         self.hash_table = self.pool_with_hash.hash_table
         self.beta = self.pool_with_hash.beta
         self.cnt_with_sqrt = cnt_with_sqrt
+        self.int_coeff = int_coeff
         
     def get_rewards_plus_bonus(self, states, rewards):
         # states shape (batch_size, dim_state)
@@ -41,7 +43,7 @@ class HashCntSACTrainer(SACTrainer):
             rewards_bonus = self.beta/torch.sqrt(reward_bonus_count+1).to(self.device)
         else:
             rewards_bonus = self.beta/(reward_bonus_count+1).to(self.device)
-        return rewards + rewards_bonus
+        return rewards + self.int_coeff * rewards_bonus
 
     def _compute_batch_count(self, encode_batch_phi):
         bonus_cnt = torch.zeros(encode_batch_phi.shape[0])

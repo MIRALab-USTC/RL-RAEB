@@ -15,6 +15,14 @@ class StateActionHashCntSACTrainer(HashCntSACTrainer):
     def __init__(self, **kwargs):
         HashCntSACTrainer.__init__(self, **kwargs)
 
+    def log_mean_max_min_std(self, name, log_data):
+        diagnostics = OrderedDict()
+        diagnostics[name + 'Max'] = np.max(log_data)
+        diagnostics[name + 'Mean'] = np.mean(log_data)
+        diagnostics[name + 'Min'] = np.min(log_data)
+        diagnostics[name + 'Std'] = np.std(log_data)
+        return diagnostics
+
     def train_from_torch_batch(self, batch):
         rewards = batch['rewards']
         terminals = batch['terminals']
@@ -50,15 +58,15 @@ class StateActionHashCntSACTrainer(HashCntSACTrainer):
             next_obs, reparameterize=False, return_log_prob=True,
         )
         log_prob_next_action = next_policy_info['log_prob']
-        #target_q_next_action = self.qf.value(next_obs, 
-        #                                next_action, 
-        #                                use_target_value=True, 
-        #                                return_info=False) - alpha * log_prob_next_action
-    
         target_q_next_action = self.qf.value(next_obs, 
-                                        next_action, 
-                                        use_target_value=True, 
-                                        return_info=False)
+                                       next_action, 
+                                       use_target_value=True, 
+                                       return_info=False) - alpha * log_prob_next_action
+    
+        # target_q_next_action = self.qf.value(next_obs, 
+        #                                 next_action, 
+        #                                 use_target_value=True, 
+        #                                 return_info=False)
 
         q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_q_next_action
         qf_loss = ((q_value_ensemble - q_target.detach()) ** 2).mean()
@@ -130,8 +138,8 @@ class StateActionHashCntSACTrainer(HashCntSACTrainer):
 
 class VisionHashSACTrainer(StateActionHashCntSACTrainer):
     def get_weight(self, states, actions):
-        w = self.env.f_batch(states, actions)
-        return 1.0/w
+        w = self.env.get_long_term_weight_batch(states, actions)
+        return w
 
     def get_rewards_bonus(self, states, rewards):
         # states shape (batch_size, dim_state)
@@ -157,14 +165,17 @@ class VisionHashSACTrainer(StateActionHashCntSACTrainer):
         actions = batch['actions']
         next_obs = batch['next_observations']
 
+        diagnostics = OrderedDict()
+        diagnostics.update(self.log_mean_max_min_std('Reward Before', ptu.get_numpy(rewards)))
+
         # shaping rewards
         rewards_bonus = self.get_rewards_bonus(torch.cat((obs,actions),1), rewards)
         bonus_weight = self.get_weight(obs, actions)
-        rewards = rewards + rewards_bonus * bonus_weight
 
-        diagnostics = OrderedDict()
-        diagnostics["rewards_bonus"] = np.mean(ptu.get_numpy(rewards_bonus))
-        diagnostics["bonus_weight"] = np.mean(ptu.get_numpy(bonus_weight))
+        rewards = rewards + self.int_coeff * rewards_bonus * bonus_weight
+
+
+
 
         """
         Alpha
@@ -193,15 +204,15 @@ class VisionHashSACTrainer(StateActionHashCntSACTrainer):
             next_obs, reparameterize=False, return_log_prob=True,
         )
         log_prob_next_action = next_policy_info['log_prob']
-        #target_q_next_action = self.qf.value(next_obs, 
-        #                                next_action, 
-        #                                use_target_value=True, 
-        #                                return_info=False) - alpha * log_prob_next_action
-
         target_q_next_action = self.qf.value(next_obs, 
-                                        next_action, 
-                                        use_target_value=True, 
-                                        return_info=False)
+                                       next_action, 
+                                       use_target_value=True, 
+                                       return_info=False) - alpha * log_prob_next_action
+
+        # target_q_next_action = self.qf.value(next_obs, 
+        #                                 next_action, 
+        #                                 use_target_value=True, 
+        #                                 return_info=False)
 
         q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_q_next_action
         qf_loss = ((q_value_ensemble - q_target.detach()) ** 2).mean()
@@ -233,7 +244,11 @@ class VisionHashSACTrainer(StateActionHashCntSACTrainer):
         average_entropy = -log_prob_new_action.mean()
         policy_q_loss = 0 - q_new_action.mean()
 
-        
+        diagnostics.update(self.log_mean_max_min_std('Reward Bonus Real', ptu.get_numpy(rewards_bonus)))
+        diagnostics.update(self.log_mean_max_min_std('Reward Weight', ptu.get_numpy(bonus_weight)))
+
+        diagnostics.update(self.log_mean_max_min_std('Reward After', ptu.get_numpy(rewards)))
+
         diagnostics['Policy Loss'] = np.mean(ptu.get_numpy(policy_loss))
         diagnostics['Policy Q Loss'] = np.mean(ptu.get_numpy(policy_q_loss))
         diagnostics['Averaged Entropy'] = np.mean(ptu.get_numpy(average_entropy))

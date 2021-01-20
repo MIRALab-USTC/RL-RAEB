@@ -1,11 +1,31 @@
 #!/bin/bash
-CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name no_reward_resource_ant_corridor --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/analysis_with_pool/ant_corridor_no_reward/sac > sac_pool.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name mountain_car_v1 --repeat 2 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/mountiancar/sac > sac2.txt 2>&1 &
+# sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name resource_mountaincar_v0 --repeat 2 --num_eval_steps_per_epoch 4000 --max_path_length 200 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_mountaincar_10/simhash > simhash1.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name no_reward_resource_ant_corridor --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/analysis_with_pool/ant_corridor_no_reward/surprise > surprise_pool.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name resource_mountaincar_v0 --repeat 3 --num_eval_steps_per_epoch 4000 --max_path_length 200 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_mountaincar_10/simhash > simhash2.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name no_reward_resource_ant_corridor --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/analysis_with_pool/ant_corridor_no_reward/surprise_vision > surprise_vision_pool.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name resource_mountaincar_v0 --repeat 2 --num_eval_steps_per_epoch 4000 --max_path_length 200 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_mountaincar_10/simhash_vision > simhash_vision1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name resource_mountaincar_v0 --repeat 3 --num_eval_steps_per_epoch 4000 --max_path_length 200 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_mountaincar_10/simhash_vision > simhash_vision2.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 32 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 32 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor2.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 32 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 32 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor2.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision_k16 > simhash_vision_ant_corridor3.txt 2>&1 &
 
 :<<!
+CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name ant_corridor_env_4 --repeat 2 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/ant_corridor_goal4/sac > sac3.txt 2>&1 &
+
+CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name no_reward_resource_ant_corridor --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/analysis_with_pool/ant_corridor_no_reward/surprise > surprise_pool.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name no_reward_resource_ant_corridor --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/analysis_with_pool/ant_corridor_no_reward/surprise_vision > surprise_vision_pool.txt 2>&1 &
+
 CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name resource_cheetah_corridor_v0 --repeat 2 --base_log_dir /home/zhwang/research/ICML_data/resource_cheetah_corridor_real_addx/goal4/sac > sac1.txt 2>&1 &
 sleep 15s
 CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name resource_cheetah_corridor_v0 --repeat 3 --base_log_dir /home/zhwang/research/ICML_data/resource_cheetah_corridor_real_addx/goal4/sac > sac2.txt 2>&1 &
