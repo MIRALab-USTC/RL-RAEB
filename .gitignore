@@ -18,3 +18,5 @@ videos_old/
 *.png
 *.jpeg
 *.pdf
+
+nohup_log/
