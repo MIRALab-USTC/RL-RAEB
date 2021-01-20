@@ -300,6 +300,13 @@ class Logger(object):
                 pass
             else:
                 raise NotImplementedError
-
+    
+    def save_replay_pool(self, dataset):
+        """
+        dataset from simple pool
+        is a dict 
+        """
+        dataset_path = osp.join(self._snapshot_dir, "replay_pool.npy")
+        np.save(dataset_path, dataset)
 
 logger = Logger()

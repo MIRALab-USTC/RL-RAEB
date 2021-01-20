@@ -20,6 +20,7 @@ class BatchRLAlgorithm(RLAlgorithm):
             num_expl_steps_per_train_loop,
             num_train_loops_per_epoch,
             num_trains_per_train_loop,
+            save_pool=True,
             max_path_length=1000,
             min_num_steps_before_training=0,
             silent = False,
@@ -38,6 +39,7 @@ class BatchRLAlgorithm(RLAlgorithm):
         self.max_path_length = max_path_length
         self.record_video_freq = record_video_freq
         self.save_model_freq = save_model_freq
+        self.save_pool = save_pool
         self.log_models_dir = os.path.join(logger._snapshot_dir, "models")
         if not os.path.exists(self.log_models_dir):
             os.mkdir(self.log_models_dir)
@@ -73,7 +75,6 @@ class BatchRLAlgorithm(RLAlgorithm):
 
         if epoch % self.save_model_freq == 0:
             save_filename = os.path.join(self.log_models_dir, f'epoch_{epoch}.pkl')
-            print(save_filename)
             torch.save(self.eval_policy, save_filename)
 
     def _train_epoch(self, epoch):
@@ -98,6 +99,11 @@ class BatchRLAlgorithm(RLAlgorithm):
         )
         gt.stamp('evaluation sampling')
         progress.close()
+
+    def _after_train(self):
+        if self.save_pool:
+            dataset = self.pool.dataset
+            logger.save_replay_pool(dataset)
 
 class RNDRLAlgorithm(BatchRLAlgorithm):
     def __init__(

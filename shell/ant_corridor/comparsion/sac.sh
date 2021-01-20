@@ -1,5 +1,5 @@
 #!/bin/bash
-CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json  --env_name swimmer  --min_num_steps_before_training 25000 --base_log_dir /home/zhwang/research/ICML_data/swimmer/sac > sac1.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json  --env_name no_reward_resource_ant_corridor  --base_log_dir /home/zhwang/research/ICML_data/test_replay_pool/sac > sactest.txt 2>&1 &
 sleep 15s
 CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json  --env_name swimmer  --base_log_dir /home/zhwang/research/ICML_data/swimmer/sac > sac2.txt 2>&1 &
 

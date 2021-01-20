@@ -52,6 +52,8 @@ class AntCorridorEnv(MagellanAntEnv):
             reward = 100
         return obs, reward, done, {}
 
+
+
 class AntCorridorResourceEnv(AntCorridorEnv):
     def __init__(self, cargo_num, beta, reward_block, reward):
         self.cargo_num = cargo_num # the number of resources 
@@ -168,7 +170,24 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         w[indexes_invalid] = 0
         return w
 
+class NoRewardAntCorridorResourceEnv(AntCorridorResourceEnv):
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action[:-1], self.frame_skip)
+        action_cargo = action[-1]
 
+        # the cargo of last state
+        cargo_last = self.cur_cargo
+        
+        # update cargo 
+        obs = self._get_obs(action_cargo)
+
+        cargo_now = self.cur_cargo
+        done = False
+        reward = 0
+        
+        return obs, reward, done, dict(action_cargo=action_cargo)
 class RewardAntCorridorResourceEnv(AntCorridorResourceEnv):
     def __init__(self, cargo_num, beta, reward_block, goal_reward):
         self.goal_reward = goal_reward

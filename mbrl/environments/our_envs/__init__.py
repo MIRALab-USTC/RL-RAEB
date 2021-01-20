@@ -431,7 +431,17 @@ register(
     max_episode_steps=500,
 )
 
-
+register(
+    id='NoRewardAntCorridorResourceEnv-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:NoRewardAntCorridorResourceEnv',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
 
 
 """
@@ -668,5 +678,6 @@ env_name_to_gym_registry_dict = {
     "resource_cheetah_corridor_v02": "ResourceCheetahCorridor-v02",
     "resource_cheetah_corridor_v1": "ResourceCheetahCorridor-v1",
     "resource_cheetah_corridor_v2": "ResourceCheetahCorridor-v2",
-    "swimmer_corridor_v0": "SwimmerCorridor-v0"
+    "swimmer_corridor_v0": "SwimmerCorridor-v0",
+    "no_reward_resource_ant_corridor": "NoRewardAntCorridorResourceEnv-v0"
 }
