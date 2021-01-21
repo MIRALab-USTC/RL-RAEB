@@ -67,6 +67,7 @@
             "env": "$expl_env",
             "policy": "$policy",
             "qf": "$qf",
+            "int_coeff": 0.25,
             "cnt_with_sqrt": "True",
             "reward_scale":1,
             "policy_lr": 3e-4,

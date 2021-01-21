@@ -214,6 +214,8 @@ class VisionHashSACTrainer(StateActionHashCntSACTrainer):
         #                                 use_target_value=True, 
         #                                 return_info=False)
 
+        diagnostics.update(self.log_mean_max_min_std('alpha_log_pi', ptu.get_numpy(alpha * log_prob_next_action)))
+
         q_target = self.reward_scale * rewards + (1. - terminals) * self.discount * target_q_next_action
         qf_loss = ((q_value_ensemble - q_target.detach()) ** 2).mean()
 

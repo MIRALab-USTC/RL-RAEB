@@ -176,6 +176,8 @@ def parse_cmd():
     add by ourself
     """
     p.add_argument('--intrinsic_coeff', type=float)
+    p.add_argument('--int_coeff', type=float)
+
     p.add_argument('--max_step', type=int)
     p.add_argument('--int_coeff_decay', action='store_true')
     p.add_argument('--intrinsic_normal', action='store_true')
@@ -221,6 +223,11 @@ def parse_cmd():
     
     if args.intrinsic_coeff is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
+    if args.int_coeff is not None:
+        cmd_config.insert(0, ['class-vision_hash_SAC_trainer.int_coeff', args.int_coeff])
+        cmd_config.insert(0, ['class-state_action_hash_cnt_SAC_trainer.int_coeff', args.int_coeff])
+
+
     if args.max_step is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.max_step', args.max_step])
 
