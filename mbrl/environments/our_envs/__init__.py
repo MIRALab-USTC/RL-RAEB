@@ -550,6 +550,8 @@ register(
     max_episode_steps=500,
 )
 
+
+
 register(
     id='ResourceCheetahCorridor-v01',
     entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridor',

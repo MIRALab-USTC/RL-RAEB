@@ -169,7 +169,6 @@ class ResourceCheetahCorridor(CheetahCorridor):
 
 
 
-
 if __name__=='__main__':
     # test ant maze env
     #env = ResourceCheetahCorridor(cargo_num=4, beta=5, reward_block=[4,5], reward=100)

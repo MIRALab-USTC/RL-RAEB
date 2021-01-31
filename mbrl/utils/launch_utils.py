@@ -234,6 +234,8 @@ def parse_cmd():
     if args.int_coeff is not None:
         cmd_config.insert(0, ['class-vision_hash_SAC_trainer.int_coeff', args.int_coeff])
         cmd_config.insert(0, ['class-state_action_hash_cnt_SAC_trainer.int_coeff', args.int_coeff])
+        cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.intrinsic_coeff', args.int_coeff])
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.int_coeff])
 
 
     if args.max_step is not None:
