@@ -195,8 +195,14 @@ def parse_cmd():
     p.add_argument('--max_path_length', type=int)
     p.add_argument('--num_eval_steps_per_epoch', type=int, default=8000)
 
+    p.add_argument('--alg_type', type=str)
+
     # simple hash pool
     p.add_argument('--hash_k', type=int, default=16)
+
+    # model
+    p.add_argument('--ensemble_size', type=int)
+    p.add_argument('--train_model_freq', type=int)
 
     args, extras = p.parse_known_args()
 
@@ -223,6 +229,8 @@ def parse_cmd():
     
     if args.intrinsic_coeff is not None:
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
+        cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.intrinsic_coeff', args.intrinsic_coeff])
+
     if args.int_coeff is not None:
         cmd_config.insert(0, ['class-vision_hash_SAC_trainer.int_coeff', args.int_coeff])
         cmd_config.insert(0, ['class-state_action_hash_cnt_SAC_trainer.int_coeff', args.int_coeff])
@@ -235,10 +243,16 @@ def parse_cmd():
         cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
         cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.intrinsic_normal', args.intrinsic_normal])
     
+    if args.alg_type is not None:
+        cmd_config.insert(0, ['class-Surprise_Based_SAC_Trainer.alg_type', args.alg_type])
+        cmd_config.insert(0, ['class-Vision_Surprise_SAC_Trainer.alg_type', args.alg_type])
+
     if args.max_path_length is not None:
         cmd_config.insert(0, ['class-batch_RL_algorithm.max_path_length', args.max_path_length])
     if args.num_eval_steps_per_epoch is not None:
         cmd_config.insert(0, ['class-batch_RL_algorithm.num_eval_steps_per_epoch', args.num_eval_steps_per_epoch])
+        cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.num_eval_steps_per_epoch', args.num_eval_steps_per_epoch])
+        cmd_config.insert(0, ['class-RNDRLAlgorithm.num_eval_steps_per_epoch', args.num_eval_steps_per_epoch])
     
     if args.hash_k is not None:
         cmd_config.insert(0, ['class-simple_pool_with_hash_state_action.hash_k', args.hash_k])
@@ -250,9 +264,14 @@ def parse_cmd():
         cmd_config.insert(0, ['class-model_no_reward.layers_num', args.layers_num])
         cmd_config.insert(0, ['class-model_no_reward.hidden_size', args.hidden_size])
     
+    # model 
     if args.model_normalize is not None:
         cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.model_normalize', args.model_normalize])
+    if args.ensemble_size is not None:
+        cmd_config.insert(0, ['class-model_no_reward.ensemble_size', args.ensemble_size])
 
+    if args.train_model_freq is not None:
+        cmd_config.insert(0, ['class-ModelBasedBatchRLAlgorithm.train_model_freq', args.train_model_freq])
 
     cmd_config = OrderedDict(cmd_config)
     return args.config_file, cmd_config

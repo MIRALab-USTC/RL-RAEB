@@ -42,6 +42,18 @@ class CheetahCorridor(HalfCheetahEnv):
             done = True
         return ob, reward, done, {}
 
+    def _get_obs(self):
+        return np.concatenate([
+            self.sim.data.qpos.flat,
+            self.sim.data.qvel.flat,
+        ])
+
+    def reset_model(self):
+        qpos = self.init_qpos + self.np_random.uniform(size=self.model.nq, low=-.1, high=.1)
+        qvel = self.init_qvel + self.np_random.randn(self.model.nv) * .1
+        self.set_state(qpos, qvel)
+        return self._get_obs()
+
     def viewer_setup(self):
         self.viewer.cam.type = const.CAMERA_TRACKING
         self.viewer.cam.trackbodyid = 0

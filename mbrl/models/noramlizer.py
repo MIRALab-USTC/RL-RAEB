@@ -26,9 +26,9 @@ class TransitionNormalizer:
     def _normalize(self, x, mean, stdev):
         mean, stdev = self.setup_vars(x, mean, stdev)
         n = x - mean
-        set_trace()
+        #set_trace()
         n = n / (stdev + 1e-6)
-        set_trace()
+        #set_trace()
 
         return n
 

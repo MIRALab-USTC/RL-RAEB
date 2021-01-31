@@ -5,13 +5,15 @@ import torch
 import torch.optim as optim
 from torch import nn
 from torch.distributions.normal import Normal
+import torch.nn.functional as F
 
 import mbrl.torch_modules.utils as ptu
 from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.trainers.base_trainer import BatchTorchTrainer
 from mbrl.trainers.sac_trainer import SACTrainer
 
-#from ipdb import set_trace
+from mbrl.trainers.utilities import JensenRenyiDivergenceUtilityMeasure
+from ipdb import set_trace
 
 class SurpriseBasedSACTrainer(SACTrainer):
     def __init__(
@@ -25,6 +27,8 @@ class SurpriseBasedSACTrainer(SACTrainer):
             training_noise_stdev,
             grad_clip,
             shape_env_weight,
+            alg_type,
+            measure_decay,
             **sac_kwargs
     ):
         SACTrainer.__init__(self, **sac_kwargs)
@@ -51,6 +55,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
         self.shape_env_weight = shape_env_weight
         self.cnt = 0
         self.intrinsic_normal = intrinsic_normal
+
+        self.alg_type = alg_type
+        if self.alg_type == "information_gain":
+            self.measure = JensenRenyiDivergenceUtilityMeasure(decay=measure_decay)
+
         if intrinsic_normal:
             self.intrinsic_eta = self.get_eta_normal
         else:
@@ -68,32 +77,58 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # resieze to  (ensemble_size, batch size, dim_state)
         # output: (ensemble_size, batch size, dim_state)
         diagnostics = OrderedDict()
-
-        obs =  obs.repeat(self.model.ensemble_size, 1, 1)
-        actions = actions.repeat(self.model.ensemble_size, 1, 1)
-        
-        #set_trace()
-
-        next_predicted_obs_mean, var = self.model(obs, actions)
-        print(f"var： {np.mean(ptu.get_numpy(var))}")
         if self.model.ensemble_size == 1:
+            obs =  obs.repeat(self.model.ensemble_size, 1, 1)
+            actions = actions.repeat(self.model.ensemble_size, 1, 1)
+            # set_trace()
+            next_predicted_obs_mean, var = self.model(obs, actions)
+            print(f"var： {np.mean(ptu.get_numpy(var))}")
+        
             next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
             var = torch.squeeze(var)
             p = Normal(next_predicted_obs_mean, torch.sqrt(var+1e-6))
+            
 
-            # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
-            rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
+            if self.alg_type == "surprise":
+                # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
+                rewards_int = - torch.sum(p.log_prob(next_obs), axis=1, keepdim=True)
+
+            elif self.alg_type == "prediction_error":
+                # p(s^{\prime}|s,a) = \PI_{i=1}^{n} p(s^{\prime}_i)
+                prediction_obs = p.sample()
+                rewards_int = F.pairwise_distance(prediction_obs, next_obs, p=2)
+            
             diagnostics['reward_int_model'] = np.mean(ptu.get_numpy(rewards_int))
             diagnostics['var'] = np.mean(ptu.get_numpy(var))
             if self._need_to_update_int_reward:
                 self._need_to_update_int_reward = False
                 self.eval_statistics.update(diagnostics)
 
-            return rewards_int
+            
         else:
-            raise NotImplementedError
+            
+            if self.alg_type == "information_gain":
+                with torch.no_grad():
+                    # input (batch_size, dim_state) 
+                    # output (batch_size, ensemble, dim_state)
+                    next_state_means, next_state_vars = self.model.forward_all(obs, actions)
+                next_states = self.model.sample(next_state_means, next_state_vars)
+                # set_trace()
 
+                rewards_int = self.measure(
+                    obs,
+                    actions,
+                    next_states,
+                    next_state_means,
+                    next_state_vars,
+                    self.model
+                )
+                diagnostics.update(self.log_mean_max_min_std('Reward Intrinsic Real', ptu.get_numpy(rewards_int)))
+                if self._need_to_update_int_reward:
+                    self._need_to_update_int_reward = False
+                    self.eval_statistics.update(diagnostics)
 
+        return rewards_int
     def train_model_from_torch_batch(self, batch):
         rewards = batch['rewards']
         terminals = batch['terminals']
@@ -243,10 +278,11 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
     def train_model_from_batch(self, states, actions, state_deltas):
         self.model_optimizer.zero_grad()
-        states = states.repeat(self.model.ensemble_size,1,1)
-        actions = actions.repeat(self.model.ensemble_size,1,1)
-        state_deltas = state_deltas.repeat(self.model.ensemble_size,1,1)
-
+        if self.model.ensemble_size == 1:
+            states = states.repeat(self.model.ensemble_size,1,1)
+            actions = actions.repeat(self.model.ensemble_size,1,1)
+            state_deltas = state_deltas.repeat(self.model.ensemble_size,1,1)
+        #set_trace()
         model_loss = self.model.loss(states, actions, state_deltas, training_noise_stdev=self.training_noise_stdev)
         model_loss.backward()
         torch.nn.utils.clip_grad_value_(self.model.parameters(), self.grad_clip)

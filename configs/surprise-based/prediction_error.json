@@ -1,18 +1,18 @@
 {
     "experiment":{
-        "tag": "surprise",
+        "tag": "pe",
         "use_gpu": true,
         "seed": null,
         "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
-        "exp_prefix": "surprise_based"
+        "exp_prefix": "prediction_error"
     },
     "algorithm": {
-        "name": "model_based_sac_surprise",
+        "name": "pe",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
             "num_epochs": 1000,
             "batch_size": 256,
-            "num_eval_steps_per_epoch":8000,
+            "num_eval_steps_per_epoch":4000,
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
@@ -114,8 +114,7 @@
             "grad_clip": 1,
             "reward_scale":1,
             "policy_lr": 3e-4,
-            "alg_type": "surprise",
-            "measure_decay": 0.1, 
+            "alg_type": "prediction_error",
             "shape_env_weight": false,
             "qf_lr": 3e-4,
             "soft_target_tau": 5e-3,

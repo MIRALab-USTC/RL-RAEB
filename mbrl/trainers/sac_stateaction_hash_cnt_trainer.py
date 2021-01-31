@@ -15,6 +15,7 @@ class StateActionHashCntSACTrainer(HashCntSACTrainer):
     def __init__(self, **kwargs):
         HashCntSACTrainer.__init__(self, **kwargs)
 
+
     def log_mean_max_min_std(self, name, log_data):
         diagnostics = OrderedDict()
         diagnostics[name + 'Max'] = np.max(log_data)
@@ -137,6 +138,10 @@ class StateActionHashCntSACTrainer(HashCntSACTrainer):
         return diagnostics
 
 class VisionHashSACTrainer(StateActionHashCntSACTrainer):
+    def __init__(self, **kwargs):
+        StateActionHashCntSACTrainer.__init__(self, **kwargs)
+        
+    
     def get_weight(self, states, actions):
         w = self.env.get_long_term_weight_batch(states, actions)
         return w

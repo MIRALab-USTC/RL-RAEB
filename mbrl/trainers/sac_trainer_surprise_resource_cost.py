@@ -11,6 +11,8 @@ from mbrl.utils.eval_util import create_stats_ordered_dict
 from mbrl.trainers.base_trainer import BatchTorchTrainer
 from mbrl.trainers.sac_trainer_surprise_based import SurpriseBasedSACTrainer
 
+from ipdb import set_trace
+
 class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_costs(self, states, actions):
         # - beta * costs(s,a)
@@ -28,10 +30,11 @@ class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
         # shaping reward
         # Todo
         # add reward_int min max log
+        
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
-        eta = self.get_eta(rewards_int)
+        eta, decay_rate = self.get_eta(rewards_int)
         costs = self.get_costs(obs, actions)
-        rewards = rewards + eta * rewards_int - self.intrinsic_coeff * costs
+        rewards = rewards + eta * rewards_int - self.intrinsic_coeff * costs * 10
 
         diagnostics['eta'] = eta
 

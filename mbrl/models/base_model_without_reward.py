@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 from torch.distributions import Normal
 
-#from ipdb import set_trace
+from ipdb import set_trace
 
 # from normalizer import TransitionNormalizer
 
@@ -67,6 +67,7 @@ class EnsembleDenseLayer(nn.Module):
     def forward(self, inp):
         # torch.baddbmm 矩阵乘法
         #op = torch.baddbmm(self.biases, inp, self.weights)
+        # set_trace()
         op = torch.matmul(inp, self.weights) + self.biases
         return self.non_linearity(op)
 
@@ -172,8 +173,6 @@ class ModelNoReward(nn.Module, Model):
         #set_trace()
         normalized_delta_mean, normalized_var = self._propagate_network(normalized_states, normalized_actions)
         #set_trace()
-        #print(f"model_normalized_delta_mean: {normalized_delta_mean}")
-        #print(f"model_normalized_var: {normalized_var}")
 
 
         delta_mean, var = self._post_process_outputs(normalized_delta_mean, normalized_var)
@@ -198,6 +197,7 @@ class ModelNoReward(nn.Module, Model):
         actions = actions.unsqueeze(0).repeat(self.ensemble_size, 1, 1)
         next_state_means, next_state_vars = self(states, actions)
         return next_state_means.transpose(0, 1), next_state_vars.transpose(0, 1)
+        
     def _propagate_network(self, normalized_states, normalized_actions):
         inp = torch.cat((normalized_states, normalized_actions), dim=2)
         op = self.layers(inp)

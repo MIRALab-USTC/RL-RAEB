@@ -99,7 +99,7 @@
     },
     "trainer":{
         "name": "trainer",
-        "class": "Surprise_Based_SAC_Trainer",
+        "class": "Resource_Costs_Surprise_SACTrainer",
         "kwargs": {
             "env": "$expl_env",
             "policy": "$policy",

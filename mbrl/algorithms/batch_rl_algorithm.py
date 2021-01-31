@@ -10,7 +10,7 @@ from mbrl.utils.misc_untils import format_for_process
 
 from mbrl.utils.logger import logger
 from mbrl.utils.normalizer import TransitionNormalizer
-
+from ipdb import set_trace
 class BatchRLAlgorithm(RLAlgorithm):
     def __init__(
             self,
@@ -178,7 +178,8 @@ class ModelBasedBatchRLAlgorithm(BatchRLAlgorithm):
                 train_data = self.pool.random_batch(self.batch_size)
                 params = self.trainer.train(train_data)
                 # 每 train_model_freq train 一步
-                if i % self.train_model_freq == 0:
+                if (i+1) % self.train_model_freq == 0:
+                    # set_trace()
                     train_model_data = self.pool.sample_ensemble_batch(self.batch_size, self.trainer.model.ensemble_size)
                     params_model = self.trainer.train_model(train_model_data)
                     for k,v in params_model.items():

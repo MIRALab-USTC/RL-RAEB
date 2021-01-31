@@ -1,23 +1,117 @@
 #!/bin/bash
 # CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac/sac.json --env_name mountain_car_v1 --repeat 2 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/mountiancar/sac > sac2.txt 2>&1 &
 # sleep 15s
+CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.02 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v01.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v02.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.15 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v03.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.002 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v04.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.02 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v05.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v06.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.15 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v07.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.002 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v08.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.02 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v09.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v010.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.15 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v011.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 1 --alg_type surprise --int_coeff 0.002 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v012.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --alg_type surprise --int_coeff 0.02 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v013.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --alg_type surprise --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v014.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --alg_type surprise --int_coeff 0.15 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v015.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --alg_type surprise --int_coeff 0.002 --base_log_dir /home/zhwang/research/ICML_data/ablation/resource_cheetah_corridor_v0/surprise_vision > resource_cheetah_corridor_v016.txt 2>&1 &
 
-# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor1.txt 2>&1 &
+
+
+
+# CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_long_steps/resource_cheetah_corridor_v0/simhash_vision > simhash_vision_ant_corridor1.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor2.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name resource_cheetah_corridor_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_long_steps/resource_cheetah_corridor_v0/simhash_vision > simhash_vision_ant_corridor2.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor1.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name resource_cheetah_corridor_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_long_steps/resource_cheetah_corridor_v0/simhash > simhash_ant_corridor1.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor2.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name resource_cheetah_corridor_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_long_steps/resource_cheetah_corridor_v0/simhash > simhash_ant_corridor2.txt 2>&1 &
 # sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain > ant_corridor_env_42.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain > ant_corridor_env_41.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain_vision > ant_corridor_env_43.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain_vision > ant_corridor_env_44.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/valid_src/goal4/src > src1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/valid_src/goal4/src > src2.txt 2>&1 &
+# sleep 15s
+
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/valid_src/resource_cheetah_corridor_v0/src > src3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/valid_src/resource_cheetah_corridor_v0/src > src4.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=5 xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/valid_src/goal4/src
+
+
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/rnd/rnd.json --env_name ant_corridor_resource_env_goal_6_v0 --repeat 5 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/continuous_resource_25/information_gain > continuous_resource_251.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/rnd/rnd.json --env_name ant_corridor_resource_env_goal_6_v0 --repeat 5   --base_log_dir /home/zhwang/research/ICML_data/valid_rnd/goal6/rnd > goal6_rnd1.txt 2>&1 &
+# sleep 15s
+
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/rnd/rnd.json --env_name ant_corridor_resource_env_goal_5_v0 --repeat 2  --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/research/ICML_data/valid_rnd/goal5/rnd > goal5_rnd2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/rnd/rnd.json --env_name ant_corridor_resource_env_goal_5_v0 --repeat 3  --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/research/ICML_data/valid_rnd/goal5/rnd > goal5_rnd3.txt 2>&1 &
+
+
+# CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain_vision > ant_corridor_env_47.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0 --repeat 3 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain_vision > ant_corridor_env_48.txt 2>&1 &
+
+
+
+
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name mountain_car_v1 --repeat 2 --train_model_freq 999 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/research/ICML_data/test_pe/mountaincar/information_gain_small_model > pe_low_freq1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name mountain_car_v1 --repeat 2 --train_model_freq 999 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/research/ICML_data/test_pe/mountaincar/information_gain_small_model > pe_low_freq2.txt 2>&1 &
 
 # CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.25 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor3.txt 2>&1 &
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.25 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_ant_corridor4.txt 2>&1 &
 # sleep 15s
-CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.01 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor_0011.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.01 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4/simhash > simhash_ant_corridor_0012.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 18 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision_k18 > simhash_vision_k18_15541.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 18 --int_coeff 0.05 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision_k18 > simhash_vision_k182.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 18 --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision_k18 > simhash_vision_k183.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 18 --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision_k18 > simhash_vision_k184.txt 2>&1 &
+# # sleep 15s
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_15545.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.1 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash_adjust_intcoeff/resource_ant_corridor_goal_4/simhash_vision > simhash_vision_15546.txt 2>&1 &
+#sleep 15s
+#CUDA_VISIBLE_DEVICES=5 xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 3 --num_eval_steps_per_epoch 8000 --max_path_length 500 --hash_k 20 --int_coeff 0.01 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_ant_corridor_goal_4_test/simhash_vision
+
+
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_env_4 --repeat 2 --alg_type prediction_error --base_log_dir /home/zhwang/research/ICML_data/test_pe/ant_corridor_goal4/pe > pe1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_env_4 --repeat 2 --alg_type prediction_error --base_log_dir /home/zhwang/research/ICML_data/test_pe/ant_corridor_goal4/pe > pe2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name mountain_car_v1 --repeat 2 --alg_type prediction_error --base_log_dir /home/zhwang/research/ICML_data/test_pe/mountaincar/pe > pe3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name mountain_car_v1 --repeat 2 --alg_type prediction_error --base_log_dir /home/zhwang/research/ICML_data/test_pe/mountaincar/pe > pe4.txt 2>&1 &
 
 :<<!
 CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/sac_hash/simhash.json --env_name resource_mountaincar_v0 --repeat 2 --num_eval_steps_per_epoch 4000 --max_path_length 200 --hash_k 16 --base_log_dir /home/zhwang/research/ICML_data/valid_simhash/resource_mountaincar_10/simhash > simhash1.txt 2>&1 &

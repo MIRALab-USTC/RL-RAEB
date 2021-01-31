@@ -113,6 +113,8 @@
             "grad_clip": 1,
             "reward_scale":1,
             "policy_lr": 3e-4,
+            "alg_type": "surprise",
+            "measure_decay": 0.1,
             "shape_env_weight": false,
             "qf_lr": 3e-4,
             "soft_target_tau": 5e-3,
