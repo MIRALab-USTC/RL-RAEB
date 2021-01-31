@@ -167,7 +167,39 @@ class ResourceCheetahCorridor(CheetahCorridor):
         w[indexes_invalid] = 0
         return w
 
+class DoneResourceCheetahCorridor(ResourceCheetahCorridor):
+    def step(self, action):
+        xposbefore = self.sim.data.qpos[0]
+        self.do_simulation(action[:-1], self.frame_skip)
+        xposafter = self.sim.data.qpos[0]
 
+        # update cargp
+        action_cargo = action[-1]
+        # the cargo of last state
+        cargo_last = self.cur_cargo
+
+        if action_cargo > 0.5:
+            # consume resource
+            self.cur_cargo = max(0, self.cur_cargo - 1)
+            # cargo_num = max(0, self.cargo_num - 1)
+
+        obs = self._get_obs()
+
+        cargo_now = self.cur_cargo
+        done = False
+        reward = 0
+        cur_x_pos_r = self.get_state_pos(xposafter)
+        if cur_x_pos_r and cargo_now < cargo_last:
+            done = True
+            reward = self.reward
+        #reward_ctrl = - 0.1 * np.square(action).sum()
+        #reward_run = (xposafter - xposbefore)/self.dt
+        #reward = reward_ctrl + reward_run
+
+        if self.cur_cargo <= 0:
+            done = True
+
+        return obs, reward, done, dict(action_cargo=action_cargo)
 
 
 if __name__=='__main__':
