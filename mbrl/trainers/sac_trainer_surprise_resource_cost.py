@@ -13,6 +13,8 @@ from mbrl.trainers.sac_trainer_surprise_based import SurpriseBasedSACTrainer
 
 from ipdb import set_trace
 
+# class ResourceBonusSurpriseSACTrainer(ResourceCostsSurpriseSACTrainer):
+
 class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def get_costs(self, states, actions):
         # - beta * costs(s,a)

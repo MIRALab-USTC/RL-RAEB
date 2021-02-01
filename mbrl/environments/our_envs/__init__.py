@@ -664,6 +664,30 @@ register(
 )
 
 register(
+    id='DoneResourceCheetahCorridor-v3',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:DoneResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [7,8],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='DoneResourceCheetahCorridor-v4',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:DoneResourceCheetahCorridor',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 5,
+        'reward_block': [6,7],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='DoneAntCorridorResourceEnv-v0',
     entry_point='mbrl.environments.our_envs.ant_corridor:DoneAntCorridorResourceEnv',
     kwargs={
@@ -747,5 +771,7 @@ env_name_to_gym_registry_dict = {
     "done_resource_cheetah_corridor_v0": "DoneResourceCheetahCorridor-v0",
     "done_ant_corridor_resource_env_goal_4_v0": "DoneAntCorridorResourceEnv-v0",
     "done_resource_cheetah_corridor_v1": "DoneResourceCheetahCorridor-v1",
-    "done_resource_cheetah_corridor_v2": "DoneResourceCheetahCorridor-v2"
+    "done_resource_cheetah_corridor_v2": "DoneResourceCheetahCorridor-v2",
+    "done_resource_cheetah_corridor_v3": "DoneResourceCheetahCorridor-v3",
+    "done_resource_cheetah_corridor_v4": "DoneResourceCheetahCorridor-v4"
 }

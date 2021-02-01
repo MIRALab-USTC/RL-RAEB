@@ -77,6 +77,10 @@ class SurpriseBasedSACTrainer(SACTrainer):
         # resieze to  (ensemble_size, batch size, dim_state)
         # output: (ensemble_size, batch size, dim_state)
         diagnostics = OrderedDict()
+
+        if self.alg_type == "only_resource_bonus":
+            return torch.ones((obs.shape[0], 1)).to(obs.device)
+
         if self.model.ensemble_size == 1:
             obs =  obs.repeat(self.model.ensemble_size, 1, 1)
             actions = actions.repeat(self.model.ensemble_size, 1, 1)
@@ -106,7 +110,6 @@ class SurpriseBasedSACTrainer(SACTrainer):
 
             
         else:
-            
             if self.alg_type == "information_gain":
                 with torch.no_grad():
                     # input (batch_size, dim_state) 
@@ -129,6 +132,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
                     self.eval_statistics.update(diagnostics)
 
         return rewards_int
+        
     def train_model_from_torch_batch(self, batch):
         rewards = batch['rewards']
         terminals = batch['terminals']
