@@ -94,6 +94,17 @@ register(
 )
 
 register(
+    id='ResourceMountainCarV2-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnvV2',
+    max_episode_steps=200,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10,
+        "beta": 1
+    },
+)
+
+register(
     id='NoRewardResourceMountainCar-v0',
     entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:NoRewardResourceMountainCarEnv',
     max_episode_steps=500,
@@ -381,6 +392,18 @@ register(
 )
 
 register(
+    id='AntCorridorResourceEnvV2-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='AntCorridorResourceEnv-v52',
     entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnv',
     kwargs={
@@ -560,7 +583,17 @@ register(
     max_episode_steps=500,
 )
 
-
+register(
+    id='ResourceCheetahCorridorV2-v0',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:ResourceCheetahCorridorV2',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
 
 register(
     id='ResourceCheetahCorridor-v01',
@@ -784,5 +817,8 @@ env_name_to_gym_registry_dict = {
     "done_resource_cheetah_corridor_v2": "DoneResourceCheetahCorridor-v2",
     "done_resource_cheetah_corridor_v3": "DoneResourceCheetahCorridor-v3",
     "done_resource_cheetah_corridor_v4": "DoneResourceCheetahCorridor-v4",
-    "no_reward_resource_mountaincar": "NoRewardResourceMountainCar-v0"
+    "no_reward_resource_mountaincar": "NoRewardResourceMountainCar-v0",
+    "ant_corridor_resource_env_goal_4_v0_v2": "AntCorridorResourceEnvV2-v0",
+    "resource_cheetah_corridor_v0_v2": "ResourceCheetahCorridorV2-v0",
+    "resource_mountaincar_v0_v2": "ResourceMountainCarV2-v0"
 }

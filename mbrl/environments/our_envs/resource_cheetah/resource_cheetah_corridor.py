@@ -167,6 +167,13 @@ class ResourceCheetahCorridor(CheetahCorridor):
         w[indexes_invalid] = 0
         return w
 
+class ResourceCheetahCorridorV2(ResourceCheetahCorridor):
+    def get_long_term_weight_batch(self, states, actions):
+        I_s = self.I_batch(states)
+        # f_s_a = self.f_batch(states, actions)
+        w = self.beta * (1 + I_s.float()) / (1 + self.cargo_num)
+        return w
+
 class DoneResourceCheetahCorridor(ResourceCheetahCorridor):
     def step(self, action):
         xposbefore = self.sim.data.qpos[0]

@@ -24,7 +24,7 @@ class ResourceMountainCarEnv(ContinuousMountainCarEnv):
     def name(cls):
         return "ResourceMountainCarEnv"
 
-    def __init__(self, seed, beta=5, goal_velocity=0, cargo_num=2.0):
+    def __init__(self, seed, beta=1, goal_velocity=0, cargo_num=2.0):
         self.min_action = -1.0
         self.max_action = 1.0
         self.min_position = -1.2
@@ -371,6 +371,13 @@ class NoRewardResourceMountainCarEnv(ResourceMountainCarEnv):
         self.cargo_recorder[0] = {'cargo': self.cargo, 'position': self.state[0]}
 
         return self.state, reward, done, dict(action_cargo=cargo_action)
+
+class ResourceMountainCarEnvV2(ResourceMountainCarEnv):
+    def get_long_term_weight_batch(self, states, actions):
+        I_s = self.I_batch(states)
+        # f_s_a = self.f_batch(states, actions)
+        w = self.beta * (1 + I_s.float()) / (1 + self.cargo_num)
+        return w
 
 if __name__=='__main__':
     # test ant maze env

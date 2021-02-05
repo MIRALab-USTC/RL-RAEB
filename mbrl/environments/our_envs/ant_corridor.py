@@ -54,6 +54,7 @@ class AntCorridorEnv(MagellanAntEnv):
 
 
 
+
 class AntCorridorResourceEnv(AntCorridorEnv):
     def __init__(self, cargo_num, beta, reward_block, reward):
         self.cargo_num = cargo_num # the number of resources 
@@ -169,6 +170,14 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         indexes_invalid = torch.where(states_cargo==0)
         w[indexes_invalid] = 0
         return w
+
+class AntCorridorResourceEnvV2(AntCorridorResourceEnv):
+    def get_long_term_weight_batch(self, states, actions):
+        I_s = self.I_batch(states)
+        # f_s_a = self.f_batch(states, actions)
+        w = self.beta * (1 + I_s.float()) / (1 + self.cargo_num)
+        return w
+
 
 class DoneAntCorridorResourceEnv(AntCorridorResourceEnv):
     def step(self, action):
