@@ -74,8 +74,10 @@ class BatchRLAlgorithm(RLAlgorithm):
         gt.stamp('save video', unique=False)
 
         if epoch % self.save_model_freq == 0:
-            save_filename = os.path.join(self.log_models_dir, f'epoch_{epoch}.pkl')
-            torch.save(self.eval_policy, save_filename)
+            save_filename_policy = os.path.join(self.log_models_dir, f'epoch_{epoch}_policy.pkl')
+            torch.save(self.eval_policy, save_filename_policy)
+            save_filename_qf = os.path.join(self.log_models_dir, f'epoch_{epoch}_q.pkl')
+            torch.save(self.trainer.qf, save_filename_qf)
 
     def _train_epoch(self, epoch):
         progress = self.process_class(self.num_train_loops_per_epoch * self.num_trains_per_train_loop)

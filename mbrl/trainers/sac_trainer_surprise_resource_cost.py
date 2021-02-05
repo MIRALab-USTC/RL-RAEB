@@ -36,7 +36,7 @@ class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
         eta, decay_rate = self.get_eta(rewards_int)
         costs = self.get_costs(obs, actions)
-        rewards = rewards + eta * rewards_int - self.intrinsic_coeff * costs * 10
+        rewards = rewards + eta * rewards_int - costs * 10
 
         diagnostics['eta'] = eta
 

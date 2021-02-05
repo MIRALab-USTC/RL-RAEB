@@ -8,6 +8,7 @@ import matplotlib.collections as mcol
 from matplotlib.legend_handler import HandlerLineCollection, HandlerTuple
 from matplotlib.lines import Line2D
 
+from ipdb import set_trace
 """
 log_dir: base_log/env/alg/xxx/seed_i/process.csv
 """
@@ -38,7 +39,8 @@ plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-pass_alg_name = ['vision(rnd)', 'crl']
+pass_alg_name = ["SACFP", "SACRB"]
+# pass_alg_name = ["SFP", "SRB"]
 
 LEGEND_ORDER = {
     "surprise_vision": 0,
@@ -46,22 +48,65 @@ LEGEND_ORDER = {
     "surprise": 2,
     "rnd": 3,
     "src": 4,
-    "emi":5
+    "emi":5,
+    "information_gain": 6,
+    "src": 7, 
+    "surprise_add_resource": 8,
+    "sac_minus_cost": 9,
+    "sac_add_resource": 10,
+    "ppo": 11
 }
 
-envs_name = ["resource_ant_corridor_goal4", "resource_ant_corridor_goal5", "resource_ant_corridor_goal6"]
+# LEGEND_ORDER = {
+#     "surprise_vison_int01": 0,
+#     "surprise_vison_int005":1,
+#     "surprise_vison_int002": 2
+# }
 
+# LEGEND_ORDER = {
+#     "RAEB": 0,
+#     "only_resource_bonus":1,
+#     "surprise": 2
+# }
+
+# envs_name = ["resource_ant_corridor_goal4", "resource_ant_corridor_goal5", "resource_ant_corridor_goal6"]
+envs_name = ["goal4", "resource_cheetah_goal4", "resource_mountaincar_10"]
+# envs_name = ["sensitivity"]
+# envs_name = ["resource_ant_goal4_cost100"]
+
+# envs_name = ["continuous_resource_5", "continuous_resource_10", "continuous_resource_25"]
+# envs_name = ["ant_corridor_resource_env_goal_4_v0"]
+
+legend = [r"$n=5$", r"$n=10$", r"$n=25$"]
 
 def get_alg_name(algo_name):
     
     dict_name = {
-        "surprise_vision": "Vision",
+        "surprise_vision": "RAEB",
         "sac": "SAC",
         "surprise": "Surprise",
-        "rnd": "RND",
-        #"src": "crl",
-        "emi": "EMI"
+        "information_gain": "JDRX",
+        #"rnd": "RND",
+        "src": "SFP",
+        "surprise_add_resource": "SRB",
+        "sac_minus_cost": "SACFP",
+        "sac_add_resource": "SACRB",
+        "ppo": "PPO"
+        #"emi": "EMI"
     }
+
+    # dict_name = {
+    #     "surprise_vison_int01": r"$\eta=0.1$",
+    #     "surprise_vison_int005":r"$\eta=0.05$",
+    #     "surprise_vison_int002": r"$\eta=0.02$"
+    # }
+
+    # dict_name = {
+    #     "RAEB": "RAEB",
+    #     "only_resource_bonus": "without surprise",
+    #     "surprise": "without resource"
+    # }
+
     if algo_name not in dict_name.keys():
         # for key in dict_name.keys():
         #     if key in algo_name:
@@ -77,11 +122,18 @@ def get_color(label):
     return COLORS[label]
 
 def env_name_to_figure_name(env_name):
-    # dic = {
-    #     "resource_ant_corridor_goal4": "ResourceAntCorridor",
-    #     "resource_cheetah_corridor_goal4": "ResourceHalfCheetahCorridor",
-    #     "continuous_resource_10": "ResourceContinuousMountainCar"
-    # }
+    dic = {
+        "goal4": "Cargo Delivery Ant",
+        "resource_cheetah_goal4": "Cargo Delivery HalfCheetah",
+        "resource_mountaincar_10": "Cargo Delivery Mountain Car",
+        "sensitivity": "none",
+        "component": "none",
+        "resource_ant_goal4_cost100": "none",
+        "continuous_resource_5": "continuous_resource_5",
+        "continuous_resource_10": "continuous_resource_10",
+        "continuous_resource_25": "continuous_resource_25",
+        "ant_corridor_resource_env_goal_4_v0": "none"
+    }
 
     # dic = {
     #      "continuous_resource_5": "InitialCargo 5",
@@ -89,11 +141,11 @@ def env_name_to_figure_name(env_name):
     #      "continuous_resource_15": "InitialCargo 15",
     #      "continuous_resource_25": "InitialCargo 25"
     # }
-    dic = {
-         "resource_ant_corridor_goal4": "Destination_[4,5]",
-         "resource_ant_corridor_goal5": "Destination_[5,6]",
-         "resource_ant_corridor_goal6": "Destination_[6,7]"
-    }
+    # dic = {
+    #      "resource_ant_corridor_goal4": "Destination_[4,5]",
+    #      "resource_ant_corridor_goal5": "Destination_[5,6]",
+    #      "resource_ant_corridor_goal6": "Destination_[6,7]"
+    # }
     
     if env_name not in dic.keys():
         return "NotThisEnv"
@@ -104,9 +156,23 @@ def steps_to_epoch(data_x):
     data_x = data_x / 1000
     return data_x
 
+def epoch_to_steps(data_x, algo_name):
+    if algo_name == "ppo":
+        for i in range(len(data_x)):
+            steps = 4000 * (data_x[i] + 1)
+            data_x[i] = steps
+    else:
+        for i in range(len(data_x)):
+            steps = 5000 + 1000 * (data_x[i] + 1)
+            data_x[i] = steps
+    return data_x
+
 def get_plot_data_from_single_experiment(file_name, algo_name):
     try:
-        data = pd.read_csv(file_name, error_bad_lines=False)
+        if algo_name == "ppo":
+            data = pd.read_csv(file_name, sep='\s+', error_bad_lines=False)
+        else:
+            data = pd.read_csv(file_name, error_bad_lines=False)
     except pd.errors.EmptyDataError:
         return None, None
     
@@ -117,17 +183,39 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
         "surprise": "evaluation/Average Returns",
         "rnd": "evaluation/Average Returns",
         "src": "evaluation/Average Returns",
-        "emi": "AverageRawReturn"
+        "emi": "AverageRawReturn",
+        "information_gain": "evaluation/Average Returns",
+        "surprise_vison_int002": "evaluation/Average Returns",
+        "surprise_vison_int005": "evaluation/Average Returns",
+        "surprise_vison_int01": "evaluation/Average Returns",
+        "RAEB": "evaluation/Average Returns",
+        "only_resource_bonus": "evaluation/Average Returns",
+        "add_resource_bonus": "evaluation/Average Returns",
+        "sac_add_resource": "evaluation/Average Returns",
+        "sac_minus_cost": "evaluation/Average Returns",
+        "surprise_add_resource": "evaluation/Average Returns",
+        "ppo": "AverageEpRet"
     }
 
     dic_x = {
-        "surprise_vision": "Epoch",
+        "surprise_vision": "exploration/num steps total",
         "rnd_vision": "Epoch",
         "sac": "Epoch",
         "surprise": "Epoch",
         "rnd": "Epoch",
         "src": "Epoch",
-        "emi": "TotalTimesteps"
+        "emi": "TotalTimesteps",
+        "information_gain": "exploration/num steps total",
+        "surprise_vison_int002": "exploration/num steps total",
+        "surprise_vison_int005": "Epoch",
+        "surprise_vison_int01": "exploration/num steps total",
+        "RAEB": "exploration/num steps total",
+        "only_resource_bonus": "exploration/num steps total",
+        "add_resource_bonus": "exploration/num steps total",
+        "sac_add_resource": "exploration/num steps total",
+        "sac_minus_cost": "exploration/num steps total",
+        "surprise_add_resource": "exploration/num steps total",
+        "ppo": "Epoch"
     }
 
     # if algo_name not in dic_y.keys():
@@ -143,10 +231,14 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
     data_y = data[column_y]
     data_x = data[column_x]
 
-    if "steps" in dic_x[algo_name]:
-        data_x = steps_to_epoch(data_x)
+    # if "steps" in dic_x[algo_name]:
+    #     data_x = steps_to_epoch(data_x)
 
-    return np.array(data_x).astype(np.int), np.array(data_y).astype(np.float) # astype将array的数据类型投影到一个指定type
+    data_x = np.array(data_x).astype(np.int)
+    if "Epoch" in dic_x[algo_name]:
+        data_x = epoch_to_steps(data_x, algo_name)
+
+    return data_x, np.array(data_y).astype(np.float) # astype将array的数据类型投影到一个指定type
 
 def get_data_from_algo_dir(algo_dir, algo_name, x_limit, alg_config):
     """
@@ -218,12 +310,12 @@ def compute_mean_std_max(plot_x, plot_y):
 
 def get_x_limit(env_name):
     dic = {
-        "resource_ant_corridor_goal4": 998,        
-        "resource_ant_corridor_goal5": 998,
-        "resource_ant_corridor_goal6": 890,
-        "continuous_resource_10": 998 
+        "resource_ant_corridor_goal4": 990000,        
+        "resource_ant_corridor_goal5": 990000,
+        "resource_ant_corridor_goal6": 990000,
+        "continuous_resource_10": 990000 
     }
-    return dic[env_name] if env_name in dic else 998 # default 1000
+    return dic[env_name] if env_name in dic else 990000 # default 1000
 
 def data_truncate(x, y_mean, y_std, x_limit):
     # x[x<=limit] 返回所有满足条件的元素构成数组，只有数组才能这么操作
@@ -234,39 +326,50 @@ def data_truncate(x, y_mean, y_std, x_limit):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot training curve with progress data")
-    parser.add_argument("--log_dir", type=str, default=r"/home/zhwang/research/ICML_data/plot_data_all_20210117")
+    parser.add_argument("--log_dir", type=str, default=r"/home/zhwang/research/ICML2021_Finaldata/evaluation")
     parser.add_argument("--file_name", type=str, default="progress.csv")
-    parser.add_argument("--column_x", type=str, default="Epochs")# Time steps
+    parser.add_argument("--column_x", type=str, default="Steps")# Time steps
     parser.add_argument("--column_y", type=str, default="Average return")
     parser.add_argument("--alg_config", type=str, default="xx")
-    parser.add_argument("--fig_name", type=str, default="comparison_plot.pdf")
-    parser.add_argument("--w", type=float, default=24)
+    parser.add_argument("--fig_name", type=str, default="evaluation_add_ppo.pdf")
+    parser.add_argument("--w", type=float, default=20)
     parser.add_argument("--h", type=float, default=6)
-    parser.add_argument("--std_coeff", type=float, default=0.5)
-
+    parser.add_argument("--std_coeff", type=float, default=1)
+    parser.add_argument("--mode", type=str, default="subplots")
 
     options = parser.parse_args()
 
     fig = plt.figure(figsize=(options.w,options.h))
     axs = []
-    if len(envs_name) == 3:
-        gs = GridSpec(1, 3)
-        ax1 = plt.subplot(gs[0, 0])
-        ax2 = plt.subplot(gs[0, 1])
-        ax3 = plt.subplot(gs[0, 2])
-        axs = [ax1, ax2, ax3]
+    if options.mode == "subplots":
+        if len(envs_name) == 3:
+            gs = GridSpec(1, 3)
+            ax1 = plt.subplot(gs[0, 0])
+            ax2 = plt.subplot(gs[0, 1])
+            ax3 = plt.subplot(gs[0, 2])
+            axs = [ax1, ax2, ax3]
 
-    elif len(envs_name) == 4:
-        gs = GridSpec(2, 2)
-        ax1 = plt.subplot(gs[0, 0])
-        ax2 = plt.subplot(gs[0, 1])
-        ax3 = plt.subplot(gs[1, 0])
-        ax4 = plt.subplot(gs[1, 1])
-        axs = [ax1, ax2, ax3, ax4]
+        elif len(envs_name) == 4:
+            gs = GridSpec(2, 2)
+            ax1 = plt.subplot(gs[0, 0])
+            ax2 = plt.subplot(gs[0, 1])
+            ax3 = plt.subplot(gs[1, 0])
+            ax4 = plt.subplot(gs[1, 1])
+            axs = [ax1, ax2, ax3, ax4]
 
-    else: 
-        raise NotImplementedError
+        elif len(envs_name) == 1:
+            gs = GridSpec(1,1)
+            axs = [plt.subplot(gs[0, 0])]
+
+        else:
+            raise NotImplementedError
+    
+    else:
+        gs = GridSpec(1,1)
+        axs = [plt.subplot(gs[0, 0])]
+
     i = 0
+    j = 0
     legend_line = ()
     legend_alg = ()
     log_dir = options.log_dir
@@ -282,7 +385,8 @@ if __name__ == "__main__":
             continue
         #print("plot: %s" % sub_figure_name)
         x_limit = get_x_limit(env_name)
-        ax.set_title(sub_figure_name)
+        if sub_figure_name != "none":
+            ax.set_title(sub_figure_name, fontsize=20)
         # ax.set_title("(a) initial cargo 5", y=-1)
         plot_data = []
         #spec_algo = ("surprise_vision","rnd_vision","sac","surprise","rnd","src")
@@ -292,6 +396,7 @@ if __name__ == "__main__":
             #algo_dir = env_dir
             #print(algo_dir)
             alg = get_alg_name(algo_name)
+            print(algo_name)
             if alg == "NotThisAlg":
                 continue
             x, y_mean, y_std, max_y = get_data_from_algo_dir(algo_dir, algo_name, x_limit, alg_config)
@@ -306,11 +411,13 @@ if __name__ == "__main__":
             if type(x) != type(None):
                 x, y_mean, y_std = data_truncate(x, y_mean, y_std, x_limit)
                 line, = ax.plot(x, y_mean, label=algo_name, linewidth=LINEWIDTH, color=get_color(algo_name))
+                # line, = ax.plot(x, y_mean, label=algo_name, linewidth=LINEWIDTH, color=colors[j])
                 if i == 0:
                     legend_line = legend_line + (line,)
                     legend_alg = legend_alg + (algo_name,)
                     #ax.legend(legend_line, legend_alg, loc='upper left')
                 ax.fill_between(x, y_mean + options.std_coeff * y_std, y_mean - options.std_coeff * y_std, alpha=0.2, color=get_color(algo_name))
+                # ax.fill_between(x, y_mean + options.std_coeff * y_std, y_mean - options.std_coeff * y_std, alpha=0.2, color=colors[j])
                 ax.set_xlim(0, x_limit)
                 
                 #print(ax.get_xlim())
@@ -324,6 +431,7 @@ if __name__ == "__main__":
         ax.xaxis.grid(True, which = 'major')
         ax.yaxis.grid(True, which = 'major')
         i += 1
+        # j += 1
     
     
     plt.tight_layout(pad=4, w_pad=1.5, h_pad=3)

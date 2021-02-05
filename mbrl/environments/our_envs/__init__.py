@@ -86,6 +86,16 @@ register(
 register(
     id='ResourceMountainCar-v0',
     entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=200,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
+)
+
+register(
+    id='NoRewardResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:NoRewardResourceMountainCarEnv',
     max_episode_steps=500,
     kwargs={
         'seed': None,
@@ -773,5 +783,6 @@ env_name_to_gym_registry_dict = {
     "done_resource_cheetah_corridor_v1": "DoneResourceCheetahCorridor-v1",
     "done_resource_cheetah_corridor_v2": "DoneResourceCheetahCorridor-v2",
     "done_resource_cheetah_corridor_v3": "DoneResourceCheetahCorridor-v3",
-    "done_resource_cheetah_corridor_v4": "DoneResourceCheetahCorridor-v4"
+    "done_resource_cheetah_corridor_v4": "DoneResourceCheetahCorridor-v4",
+    "no_reward_resource_mountaincar": "NoRewardResourceMountainCar-v0"
 }

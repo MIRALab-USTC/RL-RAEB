@@ -327,6 +327,50 @@ class DoneResourceMountainCarEnv(ResourceMountainCarEnv):
 
         return self.state, reward, done, dict(action_cargo=cargo_action)
 
+class NoRewardResourceMountainCarEnv(ResourceMountainCarEnv):
+
+    def step(self, action):
+
+        position = self.state[0]
+        velocity = self.state[1]
+        # the change of the cargo num
+        cargo_action = min(max(action[1], 0), self.cargo)
+        self.cargo = min(max(self.cargo - cargo_action, 0), self.cargo_num)
+        
+        force = min(max(action[0], self.min_action), self.max_action)
+
+        velocity += force * self.power - 0.0025 * math.cos(3 * position)
+        if (velocity > self.max_speed): velocity = self.max_speed
+        if (velocity < -self.max_speed): velocity = -self.max_speed
+        position += velocity
+        if (position > self.max_position): position = self.max_position
+        if (position < self.min_position): position = self.min_position
+        if (position == self.min_position and velocity < 0): velocity = 0
+
+
+        # if and only if the car reach the peak with positive velocity and the cargo is exhausting.
+        # done = bool(
+        #    position >= self.goal_position and velocity >= self.goal_velocity and self.cargo == 0
+        # )
+        done = False
+        reach_peak = bool(position >= self.goal_position and velocity >= self.goal_velocity)
+
+        reward = 0
+        # if reach_peak:
+        #     reward = 100 * cargo_action
+        # #reward -= math.pow(action[0], 2) * 0.1
+        # if reach_peak and self.cargo == 0:
+        #     done = True
+        
+        # if self.cargo <= 0:
+        #     done = True
+
+        self.state = np.array([position, velocity, self.cargo])
+        if cargo_action > 0:
+            self.cargo_recorder.append({'cargo': cargo_action, 'position': self.state[0]})
+        self.cargo_recorder[0] = {'cargo': self.cargo, 'position': self.state[0]}
+
+        return self.state, reward, done, dict(action_cargo=cargo_action)
 
 if __name__=='__main__':
     # test ant maze env
