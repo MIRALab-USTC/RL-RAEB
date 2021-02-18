@@ -178,7 +178,6 @@ class AntCorridorResourceEnvV2(AntCorridorResourceEnv):
         w = self.beta * (1 + I_s.float()) / (1 + self.cargo_num)
         return w
 
-
 class DoneAntCorridorResourceEnv(AntCorridorResourceEnv):
     def step(self, action):
         self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])

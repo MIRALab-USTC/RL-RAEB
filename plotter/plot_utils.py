@@ -39,23 +39,24 @@ plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-pass_alg_name = ["SACFP", "SACRB"]
-# pass_alg_name = ["SFP", "SRB"]
+pass_alg_name = []
+# pass_alg_name = ["SFP", "SRB", "EMI", "RND"]
 
-LEGEND_ORDER = {
-    "surprise_vision": 0,
-    "sac":1,
-    "surprise": 2,
-    "rnd": 3,
-    "src": 4,
-    "emi":5,
-    "information_gain": 6,
-    "src": 7, 
-    "surprise_add_resource": 8,
-    "sac_minus_cost": 9,
-    "sac_add_resource": 10,
-    "ppo": 11
-}
+# LEGEND_ORDER = {
+#     "surprise_vision": 0,
+#     "sac":1,
+#     "surprise": 2,
+#     "rnd": 3,
+#     "src": 4,
+#     "emi":5,
+#     "information_gain": 6,
+#     "src": 7, 
+#     "surprise_add_resource": 8,
+#     "sac_minus_cost": 9,
+#     "sac_add_resource": 10,
+#     "ppo": 11,
+#     "JDRX": 12
+# }
 
 # LEGEND_ORDER = {
 #     "surprise_vison_int01": 0,
@@ -63,49 +64,74 @@ LEGEND_ORDER = {
 #     "surprise_vison_int002": 2
 # }
 
-# LEGEND_ORDER = {
-#     "RAEB": 0,
-#     "only_resource_bonus":1,
-#     "surprise": 2
-# }
+LEGEND_ORDER = {
+    "surprise_vision": 0,
+    "only_resource_bonus":1,
+    "surprise": 2
+}
 
 # envs_name = ["resource_ant_corridor_goal4", "resource_ant_corridor_goal5", "resource_ant_corridor_goal6"]
-envs_name = ["goal4", "resource_cheetah_goal4", "resource_mountaincar_10"]
+# envs_name = ["goal4", "resource_cheetah_goal4", "resource_mountaincar_10"]
+# envs_name = ["goal4"]
+# envs_name = ["resource_cheetah_goal4"]
+# envs_name = ["resource_mountaincar_10"]
+# envs_name = ["resource_ant_corridor_goal4"]
+
 # envs_name = ["sensitivity"]
+# envs_name = ["component"]
 # envs_name = ["resource_ant_goal4_cost100"]
 
 # envs_name = ["continuous_resource_5", "continuous_resource_10", "continuous_resource_25"]
 # envs_name = ["ant_corridor_resource_env_goal_4_v0"]
+# envs_name = ["ant_corridor_env_4"]
+# envs_name = ["resource_cheetah_corridor_v0"]
+envs_name = ["resource_mountaincar_v0"]
 
-legend = [r"$n=5$", r"$n=10$", r"$n=25$"]
+env_to_num = {
+    "continuous_resource_5": 5,
+    "continuous_resource_10": 10,
+    "continuous_resource_25": 25
+}
+
+alg_to_num = {
+    "RAEB": 200000,
+    "Surprise": 2000000,
+    "JDRX": 1790000,
+    "SAC": 2000000,
+    "PPO": 2000000
+}
+# legend = [r"$n=5$", r"$n=10$", r"$n=25$"]
+
+legend = [r"$I(s_0)=5$", r"$I(s_0)=10$", r"$I(s_0)=25$"]
 
 def get_alg_name(algo_name):
     
+    # dict_name = {
+    #     "surprise_vision": "RAEB",
+    #     "sac": "SAC",
+    #     "surprise": "Surprise",
+    #     "information_gain": "JDRX",
+    #     #"rnd": "RND",
+    #     "JDRX": "JDRX",
+    #     "src": "SFP",
+    #     "surprise_add_resource": "SRB",
+    #     "sac_minus_cost": "SACFP",
+    #     "sac_add_resource": "SACRB",
+    #     "ppo": "PPO"
+    #     #"emi": "EMI"
+    # }
+
+    # dict_name = {
+    #     "surprise_vison_int01": r"$\beta=0.5$",
+    #     "surprise_vison_int005":r"$\beta=0.25$",
+    #     "surprise_vison_int002": r"$\beta=0.1$"
+    # }
+
     dict_name = {
         "surprise_vision": "RAEB",
-        "sac": "SAC",
-        "surprise": "Surprise",
-        "information_gain": "JDRX",
-        #"rnd": "RND",
-        "src": "SFP",
-        "surprise_add_resource": "SRB",
-        "sac_minus_cost": "SACFP",
-        "sac_add_resource": "SACRB",
-        "ppo": "PPO"
-        #"emi": "EMI"
+        "only_resource_bonus": "without surprise",
+        "surprise": "without resource"
     }
-
-    # dict_name = {
-    #     "surprise_vison_int01": r"$\eta=0.1$",
-    #     "surprise_vison_int005":r"$\eta=0.05$",
-    #     "surprise_vison_int002": r"$\eta=0.02$"
-    # }
-
-    # dict_name = {
-    #     "RAEB": "RAEB",
-    #     "only_resource_bonus": "without surprise",
-    #     "surprise": "without resource"
-    # }
 
     if algo_name not in dict_name.keys():
         # for key in dict_name.keys():
@@ -132,7 +158,11 @@ def env_name_to_figure_name(env_name):
         "continuous_resource_5": "continuous_resource_5",
         "continuous_resource_10": "continuous_resource_10",
         "continuous_resource_25": "continuous_resource_25",
-        "ant_corridor_resource_env_goal_4_v0": "none"
+        "ant_corridor_resource_env_goal_4_v0": "none",
+        "resource_ant_corridor_goal4": "none",
+        "ant_corridor_env_4": "none",
+        "resource_cheetah_corridor_v0": "none",
+        "resource_mountaincar_v0": "none"
     }
 
     # dic = {
@@ -194,7 +224,8 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
         "sac_add_resource": "evaluation/Average Returns",
         "sac_minus_cost": "evaluation/Average Returns",
         "surprise_add_resource": "evaluation/Average Returns",
-        "ppo": "AverageEpRet"
+        "ppo": "AverageEpRet",
+        "JDRX": "evaluation/Average Returns"
     }
 
     dic_x = {
@@ -215,7 +246,8 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
         "sac_add_resource": "exploration/num steps total",
         "sac_minus_cost": "exploration/num steps total",
         "surprise_add_resource": "exploration/num steps total",
-        "ppo": "Epoch"
+        "ppo": "Epoch",
+        "JDRX": "exploration/num steps total"
     }
 
     # if algo_name not in dic_y.keys():
@@ -239,6 +271,47 @@ def get_plot_data_from_single_experiment(file_name, algo_name):
         data_x = epoch_to_steps(data_x, algo_name)
 
     return data_x, np.array(data_y).astype(np.float) # astype将array的数据类型投影到一个指定type
+
+def get_data_from_algo_dir_env_name(algo_dir, algo_name, x_limit, alg_config, env_name):
+    """
+    log_dir: base_log/env/alg/xxx/seed_i/process.csv
+    """
+    plot_y = []
+    plot_x = []
+    for sub_name in os.listdir(algo_dir):
+        if ".csv" in sub_name:
+            # 适用于只有一个随机种子的
+            file_name = os.path.join(algo_dir, sub_name)
+        else:
+            # 一级子目录
+            sub_dir = os.path.join(algo_dir, sub_name)
+            # 二级子目录
+            for sub_sub_name in os.listdir(sub_dir):
+                if ".csv" in sub_sub_name:
+                    file_name = os.path.join(sub_dir, sub_sub_name)
+                else:
+                    sub_sub_dir = os.path.join(sub_dir, sub_sub_name)
+                    file_name = os.path.join(sub_sub_dir, options.file_name)
+                    
+                if os.path.exists(file_name):
+                    x, y = get_plot_data_from_single_experiment(file_name, algo_name)
+                    if type(x) != type(None):
+                        max_step = x[-1]
+                        print("max step:%d"%max_step)
+                        if max_step >= x_limit:
+                            plot_x.append(x)
+                            num_resources = env_to_num[env_name]
+                            y = y / (100 * num_resources)
+                            plot_y.append(y)
+
+
+    if plot_x == []:
+        return None, None, None, None
+    plot_y = smooth(plot_y)
+    # x, y_mean, y_std, max_y = compute_mean_std_max(plot_x, plot_y)
+    x, y_mean, y_std, max_y = compute_mean_std_max_process(plot_x, plot_y)
+    return x, y_mean, y_std, max_y
+
 
 def get_data_from_algo_dir(algo_dir, algo_name, x_limit, alg_config):
     """
@@ -274,6 +347,7 @@ def get_data_from_algo_dir(algo_dir, algo_name, x_limit, alg_config):
     if plot_x == []:
         return None, None, None, None
     plot_y = smooth(plot_y)
+    # x, y_mean, y_std, max_y = compute_mean_std_max(plot_x, plot_y)
     x, y_mean, y_std, max_y = compute_mean_std_max(plot_x, plot_y)
     return x, y_mean, y_std, max_y
 
@@ -308,9 +382,30 @@ def compute_mean_std_max(plot_x, plot_y):
     y_std = np.array(y_std)
     return x, y_mean, y_std, np.max(y_mean)
 
+def compute_mean_std_max_process(plot_x, plot_y):
+    max_len = len(plot_y[0])
+    x = plot_x[0]
+    for i in range(1, len(plot_y)):
+        if len(plot_y[i]) > max_len:
+            max_len = len(plot_y[i])
+            x = plot_x[i]
+    y_mean = []                            # should assign memory first
+    y_std = []
+    for itr in range(max_len):
+        itr_values = []
+        for curve_i in range(len(plot_y)):
+            if itr < len(plot_y[curve_i]):
+                itr_values.append(plot_y[curve_i][itr])
+        y_mean.append(np.mean(itr_values))
+        y_std.append(np.std(itr_values))
+
+    y_mean = np.array(y_mean)
+    y_std = np.array(y_std)
+    return x, y_mean, y_std, np.max(y_mean)
+
 def get_x_limit(env_name):
     dic = {
-        "resource_ant_corridor_goal4": 990000,        
+        "resource_ant_corridor_goal4": 2000000,        
         "resource_ant_corridor_goal5": 990000,
         "resource_ant_corridor_goal6": 990000,
         "continuous_resource_10": 990000 
@@ -326,16 +421,16 @@ def data_truncate(x, y_mean, y_std, x_limit):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot training curve with progress data")
-    parser.add_argument("--log_dir", type=str, default=r"/home/zhwang/research/ICML2021_Finaldata/evaluation")
+    parser.add_argument("--log_dir", type=str, default=r"/home/zhwang/research/ICML2021_Finaldata/ablation/sensitivity")
     parser.add_argument("--file_name", type=str, default="progress.csv")
     parser.add_argument("--column_x", type=str, default="Steps")# Time steps
-    parser.add_argument("--column_y", type=str, default="Average return")
+    parser.add_argument("--column_y", type=str, default=r"Average return")
     parser.add_argument("--alg_config", type=str, default="xx")
-    parser.add_argument("--fig_name", type=str, default="evaluation_add_ppo.pdf")
-    parser.add_argument("--w", type=float, default=20)
+    parser.add_argument("--fig_name", type=str, default="component_mountaincar.pdf")
+    parser.add_argument("--w", type=float, default=8)
     parser.add_argument("--h", type=float, default=6)
     parser.add_argument("--std_coeff", type=float, default=1)
-    parser.add_argument("--mode", type=str, default="subplots")
+    parser.add_argument("--mode", type=str, default="one_plot")
 
     options = parser.parse_args()
 
@@ -385,8 +480,8 @@ if __name__ == "__main__":
             continue
         #print("plot: %s" % sub_figure_name)
         x_limit = get_x_limit(env_name)
-        if sub_figure_name != "none":
-            ax.set_title(sub_figure_name, fontsize=20)
+        # if sub_figure_name != "none":
+        #     ax.set_title(sub_figure_name, fontsize=20)
         # ax.set_title("(a) initial cargo 5", y=-1)
         plot_data = []
         #spec_algo = ("surprise_vision","rnd_vision","sac","surprise","rnd","src")
@@ -400,6 +495,18 @@ if __name__ == "__main__":
             if alg == "NotThisAlg":
                 continue
             x, y_mean, y_std, max_y = get_data_from_algo_dir(algo_dir, algo_name, x_limit, alg_config)
+            # x, y_mean, y_std, max_y = get_data_from_algo_dir_env_name(algo_dir, algo_name, x_limit, alg_config, env_name)
+            
+            # num = alg_to_num[alg]
+            # index = np.where(x==num)
+            # # set_trace()
+            # print(x[-1])
+            # print(index)
+            # print(alg)
+            # index = int(index[0])
+            # index += 1
+            # print(np.mean(y_mean[:index]))
+            # print(np.max(y_mean[:index]))
 
 
             plot_data.append((LEGEND_ORDER[algo_name], alg, x, y_mean, y_std, max_y))
@@ -414,8 +521,9 @@ if __name__ == "__main__":
                 # line, = ax.plot(x, y_mean, label=algo_name, linewidth=LINEWIDTH, color=colors[j])
                 if i == 0:
                     legend_line = legend_line + (line,)
+                    # legend_alg = legend_alg + (legend[j],)
                     legend_alg = legend_alg + (algo_name,)
-                    #ax.legend(legend_line, legend_alg, loc='upper left')
+                    # ax.legend(legend_line, legend_alg, loc='upper left')
                 ax.fill_between(x, y_mean + options.std_coeff * y_std, y_mean - options.std_coeff * y_std, alpha=0.2, color=get_color(algo_name))
                 # ax.fill_between(x, y_mean + options.std_coeff * y_std, y_mean - options.std_coeff * y_std, alpha=0.2, color=colors[j])
                 ax.set_xlim(0, x_limit)
@@ -426,12 +534,13 @@ if __name__ == "__main__":
                 print("FAILED:%s"%algo_name) # better change the string
         if i == 0:
             ax.legend(legend_line, legend_alg, loc='upper left')
+            # pass
         ax.set_xlabel(options.column_x)
         ax.set_ylabel(options.column_y)
         ax.xaxis.grid(True, which = 'major')
         ax.yaxis.grid(True, which = 'major')
-        i += 1
-        # j += 1
+        # i += 1
+        j += 1
     
     
     plt.tight_layout(pad=4, w_pad=1.5, h_pad=3)
