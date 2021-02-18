@@ -1,5 +1,20 @@
 
 from gym.envs.registration import register
+
+"""
+Organization
+    MultiGoal
+    NChain
+    Ant
+    Mountain Car
+    Racing Car
+    Cheetah
+    Swimmer
+    Done
+"""
+
+# MultiGoal
+######################################
 register(
     id='MultiGoal2DRandomReset-v0',
     entry_point='mbrl.environments.our_envs.multi_goal:MultiGoal2DEnv',
@@ -58,6 +73,10 @@ register(
     },
     max_episode_steps=30,
 )
+######################################
+
+# NChain (resource)
+######################################
 
 register(
     id='NChainOur-v0',
@@ -69,6 +88,10 @@ register(
     },
     max_episode_steps=59,
 )
+######################################
+
+# Ant (resource)
+######################################
 
 register(
     id='MagellanAnt-v2',
@@ -76,143 +99,7 @@ register(
     max_episode_steps=300
 )
 
-
-register(
-    id='MagellanHalfCheetah-v2',
-    entry_point='mbrl.environments.our_envs.half_cheetah:MagellanHalfCheetahEnv',
-    max_episode_steps=100
-)
-
-register(
-    id='ResourceMountainCar-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=200,
-    kwargs={
-        'seed': None,
-        'cargo_num': 10
-    },
-)
-
-register(
-    id='ResourceMountainCarV2-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnvV2',
-    max_episode_steps=200,
-    kwargs={
-        'seed': None,
-        'cargo_num': 10,
-        "beta": 1
-    },
-)
-
-register(
-    id='NoRewardResourceMountainCar-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:NoRewardResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 10
-    },
-)
-
-register(
-    id='ResourceMountainCar-v8',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 15
-    },
-)
-
-register(
-    id='ResourceMountainCar-v4',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 5
-    },
-)
-
-register(
-    id='ResourceMountainCar-v5',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 2
-    },
-)
-
-register(
-    id='ResourceMountainCar-v6',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 200
-    },
-)
-
-register(
-    id='ResourceMountainCar-v7',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 100
-    },
-)
-
-register(
-    id='ResourceMountainCar-v1',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 50
-    },
-)
-
-register(
-    id='ResourceMountainCar-v3',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 25
-    },
-)
-
-register(
-    id='ResourceMountainCar-v2',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 100
-    },
-)
-
-register(
-    id='DiscreteResourceMountainCar-v0',
-    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:DiscreteResourceMountainCarEnv',
-    max_episode_steps=500,
-    kwargs={
-        'seed': None,
-        'cargo_num': 10
-    },
-)
-
-
-
-register(
-    id='ContinuousMountainCar-v0',
-    entry_point='mbrl.environments.our_envs.continuous_mountain_car:Continuous_MountainCarEnv',
-    max_episode_steps=500,
-)
-
-
+## ant maze
 register(
     id='AntMaze-v0',
     entry_point='mbrl.environments.our_envs.ant:AntMazeEnv',
@@ -493,11 +380,140 @@ register(
     },
     max_episode_steps=500,
 )
+######################################
 
+# Mountain Car (resource)
+######################################
+register(
+    id='ResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=200,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
+)
 
-"""
-racing car
-"""
+register(
+    id='ResourceMountainCarV2-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnvV2',
+    max_episode_steps=200,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10,
+        "beta": 1
+    },
+)
+
+register(
+    id='NoRewardResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:NoRewardResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
+)
+
+register(
+    id='ResourceMountainCar-v8',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 15
+    },
+)
+
+register(
+    id='ResourceMountainCar-v4',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 5
+    },
+)
+
+register(
+    id='ResourceMountainCar-v5',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 2
+    },
+)
+
+register(
+    id='ResourceMountainCar-v6',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 200
+    },
+)
+
+register(
+    id='ResourceMountainCar-v7',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 100
+    },
+)
+
+register(
+    id='ResourceMountainCar-v1',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 50
+    },
+)
+
+register(
+    id='ResourceMountainCar-v3',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 25
+    },
+)
+
+register(
+    id='ResourceMountainCar-v2',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:ResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 100
+    },
+)
+
+register(
+    id='DiscreteResourceMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:DiscreteResourceMountainCarEnv',
+    max_episode_steps=500,
+    kwargs={
+        'seed': None,
+        'cargo_num': 10
+    },
+)
+
+register(
+    id='ContinuousMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.continuous_mountain_car:Continuous_MountainCarEnv',
+    max_episode_steps=500,
+)
+######################################
+
+# Racing Car
+######################################
 register(
     id='RacingCar-v0',
     entry_point='mbrl.environments.our_envs.racing_car.racing_car:Racing',
@@ -577,9 +593,16 @@ register(
     },
     max_episode_steps=500,
 )
+######################################
 
+# Cheetah (resource)
+######################################
+register(
+    id='MagellanHalfCheetah-v2',
+    entry_point='mbrl.environments.our_envs.half_cheetah:MagellanHalfCheetahEnv',
+    max_episode_steps=100
+)
 
-# cheeath corridor resource
 register(
     id='CheetahCorridor-v0',
     entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:CheetahCorridor',
@@ -660,10 +683,10 @@ register(
     },
     max_episode_steps=500,
 )
+######################################
 
-
-# swimmer
-
+# Swimmer
+######################################
 register(
     id='SwimmerCorridor-v0',
     entry_point='mbrl.environments.our_envs.resource_swimmer.resource_swimmer_corridor:SwimmerCorridor',
@@ -672,11 +695,12 @@ register(
     },
     max_episode_steps=500,
 )
+######################################
 
 
 
-# env with done after exhausting resources
-
+# Env with Done after exhausting resources
+######################################
 register(
     id='DoneResourceMountainCarEnv-v0',
     entry_point='mbrl.environments.our_envs.mountain_car.resource_mountain_car:DoneResourceMountainCarEnv',
@@ -698,7 +722,6 @@ register(
     },
     max_episode_steps=500,
 )
-
 
 register(
     id='DoneResourceCheetahCorridor-v1',
@@ -759,6 +782,7 @@ register(
     },
     max_episode_steps=500,
 )
+######################################
 
 
 env_name_to_gym_registry_dict = {
