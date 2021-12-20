@@ -742,6 +742,186 @@ register(
     max_episode_steps=500,
 )
 
+# ICML TO IJCAI Add experiments
+register(
+    id='FuelMountainCar-v0',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 5.0
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='FuelMountainCar-v1',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 5.0,
+        'alpha': 5
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='FuelMountainCar-v2',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 5.0,
+        'alpha': 10
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='FuelMountainCar-v3',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 5.0,
+        'alpha': 15
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='FuelMountainCar-v31',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 4.0,
+        'alpha': 15
+    },
+    max_episode_steps=200,
+)
+register(
+    id='FuelMountainCar-v32',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel:FuelMountainCarEnv',
+    kwargs={
+        'seed': None,
+        'fuel_num': 6.0,
+        'alpha': 15
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='ContinuousMountainCar-v1',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car:ContinuousMountainCarEnv',
+    kwargs={
+        'seed': None
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='AntCorridorEnvActionCost-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorEnv',
+    kwargs={
+        'reward_block': [6,7]
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorEnvActionCost-v1',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorEnv',
+    kwargs={
+        'reward_block': [5,6]
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorActionCost-v0',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:CheetahCorridor',
+    kwargs={
+        'reward_block': [6,7],
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorFuel-v0',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuel',
+    kwargs={
+        'cargo_num': 20,
+        'beta': 1,
+        'reward_block': [6,7],
+        'reward': 100,
+        'alpha': 50 # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorFuel-v1',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuel',
+    kwargs={
+        'cargo_num': 15,
+        'beta': 1,
+        'reward_block': [6,7],
+        'reward': 100,
+        'alpha': 37.5  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorFuel-v2',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuel',
+    kwargs={
+        'cargo_num': 13,
+        'beta': 1,
+        'reward_block': [6,7],
+        'reward': 100,
+        'alpha': 35  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorFuel-v3',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuel',
+    kwargs={
+        'cargo_num': 14,
+        'beta': 1,
+        'reward_block': [6,7],
+        'reward': 100,
+        'alpha': 35  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorFuel-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuel',
+    kwargs={
+        'cargo_num': 200,
+        'beta': 1,
+        'reward_block': [5,6],
+        'reward': 100,
+        'alpha': 500  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorFuel-v1',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuel',
+    kwargs={
+        'cargo_num': 180,
+        'beta': 1,
+        'reward_block': [5,6],
+        'reward': 100,
+        'alpha': 450  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -820,5 +1000,21 @@ env_name_to_gym_registry_dict = {
     "no_reward_resource_mountaincar": "NoRewardResourceMountainCar-v0",
     "ant_corridor_resource_env_goal_4_v0_v2": "AntCorridorResourceEnvV2-v0",
     "resource_cheetah_corridor_v0_v2": "ResourceCheetahCorridorV2-v0",
-    "resource_mountaincar_v0_v2": "ResourceMountainCarV2-v0"
+    "resource_mountaincar_v0_v2": "ResourceMountainCarV2-v0",
+    "fuel_mountain_car_v0": 'FuelMountainCar-v0',
+    "fuel_mountain_car_v1": 'FuelMountainCar-v1',
+    "fuel_mountain_car_v2": 'FuelMountainCar-v2',
+    "fuel_mountain_car_v3": 'FuelMountainCar-v3',
+    "fuel_mountain_car_v31": 'FuelMountainCar-v31',
+    "fuel_mountain_car_v32": 'FuelMountainCar-v32',
+    "continuous_mountaincar_action_cost": "ContinuousMountainCar-v1",
+    "ant_corridor_action_cost_v0": "AntCorridorEnvActionCost-v0",
+    "ant_corridor_action_cost_v1": "AntCorridorEnvActionCost-v1",
+    "cheetah_corridor_action_cost_v0": "CheetahCorridorActionCost-v0",
+    "cheetah_corridor_fuel_v0": "CheetahCorridorFuel-v0",
+    "cheetah_corridor_fuel_15_v1": "CheetahCorridorFuel-v1",
+    "cheetah_corridor_fuel_13_v2": "CheetahCorridorFuel-v2",
+    "cheetah_corridor_fuel_14_v3": "CheetahCorridorFuel-v3",
+    "ant_corridor_fuel_200_v0": "AntCorridorFuel-v0",
+    "ant_corridor_fuel_180_v1": "AntCorridorFuel-v1"
 }

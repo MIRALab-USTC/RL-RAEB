@@ -1,14 +1,14 @@
 {
     "experiment":{
-        "tag": "surprise_vision",
+        "tag": "my_sac",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_TO_IJCAI_data/envs_fuel/surprise_vision",
-        "exp_prefix": "surprise_vision"
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_TO_IJCAI_data/fuel_mountaincar/sac",
+        "exp_prefix": "sac"
     },
     "algorithm": {
-        "name": "model_based_sac_surprise",
-        "class": "ModelBasedBatchRLAlgorithm",
+        "name": "sac",
+        "class": "batch_RL_algorithm",
         "kwargs": {
             "num_epochs": 1000,
             "batch_size": 256,
@@ -16,14 +16,10 @@
             "num_train_loops_per_epoch": 1000,
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
-            "num_train_models_per_epoch": 1000,
-            "max_path_length": 500,
-            "train_model_freq": 25,
-            "save_pool": true,
-            "model_normalize": false,
-            "save_model_freq": 1,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
+            "max_path_length": 200, 
+            "record_video_freq": 15,
+            "save_model_freq": 1,
             "silent": false
         }
     },
@@ -32,7 +28,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_maze_resource_block2_4",
+                "env_name": "fuel_mountain_car_v0",
                 "reward_scale": 1
             }
         },
@@ -40,7 +36,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_maze_resource_block2_4",
+                "env_name": "fuel_mountain_car_v0",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -49,7 +45,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_maze"
+                "env_name": "fuel_mountain_car_v0"
             }
         }
     ],
@@ -66,7 +62,7 @@
             "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
-                "hidden_layers":  [128,128],
+                "hidden_layers": [32],
                 "nonlinearity": "relu"
             }
         },
@@ -83,53 +79,30 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [256,256]
+            "hidden_layers": [32]
         } 
     },
-    "model": {
-        "name": "model_without_reward",
-        "class": "model_no_reward",
+    "pool": {    
+        "name": "pool",
+        "class": "simple_pool",
         "kwargs": {
             "env": "$expl_env",
-            "layers_num": 4, 
-            "hidden_size": [512,512,512,512,512],
-            "ensemble_size": 1, 
-            "non_linearity": "swish"   
+            "max_size": 1e6
         }
     },
     "trainer":{
         "name": "trainer",
-        "class": "Vision_Surprise_SAC_Trainer",
+        "class": "SAC_trainer",
         "kwargs": {
             "env": "$expl_env",
             "policy": "$policy",
             "qf": "$qf",
-            "model": "$model_without_reward",
-            "intrinsic_coeff": 0.05,
-            "int_coeff_decay": false,
-            "intrinsic_normal": false,
-            "alg_type": "surprise",
-            "measure_decay": 0.1, 
-            "max_step": 1e6,
-            "model_lr": 3e-4,
-            "training_noise_stdev": 0.1,
-            "grad_clip": 1,
             "reward_scale":1,
             "policy_lr": 3e-4,
-            "shape_env_weight": true,
             "qf_lr": 3e-4,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
-            "alpha_if_not_automatic": 0,
-            "discount": 0.99
-        }
-    },
-    "pool": {
-        "name": "pool",
-        "class": "normalize_simple_pool",
-        "kwargs": {
-            "env": "$expl_env",
-            "max_size": 3e6
+            "alpha_if_not_automatic": 0
         }
     },
     "collector": [

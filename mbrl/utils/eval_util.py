@@ -26,6 +26,13 @@ def get_generic_path_information(paths, stat_prefix='', report_final_initial=Fal
     for info_name in ['env_infos', 'agent_infos']:
         if info_name in paths[0]:
             keys = paths[0][info_name].keys()
+            if info_name == 'env_infos' and "action_cargo" in paths[0][info_name]:
+                sum_action_cargo = [np.sum(path[info_name]['action_cargo']) for path in paths]
+                statistics.update(create_stats_ordered_dict(
+                    stat_prefix + 'sum_action_cargo',
+                    sum_action_cargo,
+                    stat_prefix='{}/'.format(info_name),
+                )) 
             for k in keys:
                 if report_final_initial:
                     final_ks = paths[0][info_name][k]

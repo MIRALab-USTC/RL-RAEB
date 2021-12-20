@@ -86,6 +86,7 @@ class ContinuousMountainCarEnv(BaseEnv):
         position = self.state[0]
         velocity = self.state[1]
         force = min(max(action[0], self.min_action), self.max_action)
+        action_cost = 0.1 * np.square(force)
 
         velocity += force * self.power - 0.0025 * math.cos(3 * position)
         if (velocity > self.max_speed): velocity = self.max_speed
@@ -100,15 +101,16 @@ class ContinuousMountainCarEnv(BaseEnv):
             position >= self.goal_position and velocity >= self.goal_velocity
         )
 
-        # reward = 0
-        reward = -1
+        reward = 0
+        # reward = -1
         if done:
             reward = 100.0
         # reward -= math.pow(action[0], 2) * 0.1
         # reward = -1 * 0.1
+
         
         self.state = np.array([position, velocity])
-        return self.state, reward, done, {}
+        return self.state, reward, done, dict(action_cargo=action_cost)
 
     def reset(self):
         self.state = np.array([self.np_random.uniform(low=-0.6, high=-0.4), 0])

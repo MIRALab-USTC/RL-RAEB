@@ -3,14 +3,14 @@
         "tag": "surprise",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_TO_IJCAI_data/envs_action_cost/surprise",
         "exp_prefix": "surprise_based"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
         "class": "ModelBasedBatchRLAlgorithm",
         "kwargs": {
-            "num_epochs": 3000,
+            "num_epochs": 1000,
             "batch_size": 256,
             "num_eval_steps_per_epoch":8000,
             "num_train_loops_per_epoch": 1000,

@@ -46,11 +46,12 @@ class AntCorridorEnv(MagellanAntEnv):
         done = False
         reward = 0
         x = obs[2].item()
+        action_cost = 0.1 * np.square(action).sum()
         low = self.reward_block[0]
         if x >= low:
             done = True
             reward = 100
-        return obs, reward, done, {}
+        return obs, reward, done, dict(action_cargo=action_cost)
 
 
 

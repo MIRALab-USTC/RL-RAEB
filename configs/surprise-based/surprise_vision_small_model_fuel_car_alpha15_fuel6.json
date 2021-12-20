@@ -3,8 +3,9 @@
         "tag": "surprise_vision",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_TO_IJCAI_data/envs_fuel/surprise_vision",
-        "exp_prefix": "surprise_vision"
+        "repeat": 4,
+        "base_log_dir": "/home/rl_shared/zhihaiwang/research/ICML_TO_IJCAI_data/fuel_mountaincar/surprise_vision",
+        "exp_prefix": "mountain_car_surprise_vision"
     },
     "algorithm": {
         "name": "model_based_sac_surprise",
@@ -17,13 +18,12 @@
             "num_expl_steps_per_train_loop": 1,
             "num_trains_per_train_loop": 1,
             "num_train_models_per_epoch": 1000,
-            "max_path_length": 500,
-            "train_model_freq": 25,
-            "save_pool": true,
-            "model_normalize": false,
+            "max_path_length": 200,
+            "train_model_freq": 500,
+            "model_normalize": true,
             "save_model_freq": 1,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
+            "record_video_freq": 5,
             "silent": false
         }
     },
@@ -32,7 +32,7 @@
             "name": "expl_env",
             "class": "simple_env",
             "kwargs": {
-                "env_name": "ant_maze_resource_block2_4",
+                "env_name": "fuel_mountain_car_v32",
                 "reward_scale": 1
             }
         },
@@ -40,7 +40,7 @@
             "name": "eval_env",
             "class": "normalized_vector_env",
             "kwargs": {
-                "env_name": "ant_maze_resource_block2_4",
+                "env_name": "fuel_mountain_car_v32",
                 "n_env":8,
                 "reward_scale": 1
             }
@@ -49,7 +49,7 @@
             "name": "video_env",
             "class": "video_env",
             "kwargs": {
-                "env_name": "ant_maze"
+                "env_name": "fuel_mountain_car_v32"
             }
         }
     ],
@@ -66,7 +66,7 @@
             "class": "gaussian_policy",
             "kwargs": {
                 "env": "$expl_env",
-                "hidden_layers":  [128,128],
+                "hidden_layers":  [32],
                 "nonlinearity": "relu"
             }
         },
@@ -83,7 +83,7 @@
         "class": "ensemble_q_value",
         "kwargs": {
             "env": "$expl_env",
-            "hidden_layers": [256,256]
+            "hidden_layers": [32]
         } 
     },
     "model": {
@@ -91,8 +91,8 @@
         "class": "model_no_reward",
         "kwargs": {
             "env": "$expl_env",
-            "layers_num": 4, 
-            "hidden_size": [512,512,512,512,512],
+            "layers_num": 0, 
+            "hidden_size": [32],
             "ensemble_size": 1, 
             "non_linearity": "swish"   
         }

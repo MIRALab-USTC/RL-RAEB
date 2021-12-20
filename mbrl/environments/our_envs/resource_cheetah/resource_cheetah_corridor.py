@@ -36,11 +36,12 @@ class CheetahCorridor(HalfCheetahEnv):
         #reward = reward_ctrl + reward_run
         reward = 0
         done = False
+        action_cost = 0.1 * np.square(action).sum()
         x = xposafter
         if x > self.reward_block[0]:
             reward = 100
             done = True
-        return ob, reward, done, {}
+        return ob, reward, done, dict(action_cargo=action_cost)
 
     def _get_obs(self):
         return np.concatenate([

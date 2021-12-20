@@ -95,7 +95,7 @@ class EnsembleQValue(nn.Module, QValue):
                   ensemble_size=2, 
                   obs_processor=None,
                   with_target_value=True,
-                  value_name='ensemble_state_value',
+                  value_name='ensemble_state_action_value',
                   **mlp_kwargs
                 ):
         nn.Module.__init__(self)
