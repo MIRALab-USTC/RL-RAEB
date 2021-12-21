@@ -877,6 +877,15 @@ register(
 )
 
 register(
+    id='AntCorridorEnvActionCost-v2',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorEnv',
+    kwargs={
+        'reward_block': [4,5]
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='CheetahCorridorActionCost-v0',
     entry_point='mbrl.environments.our_envs.resource_cheetah.resource_cheetah_corridor:CheetahCorridor',
     kwargs={
@@ -933,6 +942,19 @@ register(
         'reward_block': [6,7],
         'reward': 100,
         'alpha': 35  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='CheetahCorridorFuel-v4',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuel',
+    kwargs={
+        'cargo_num': 8,
+        'beta': 1,
+        'reward_block': [6,7],
+        'reward': 100,
+        'alpha': 20  # 2.5 * fuel
     },
     max_episode_steps=500,
 )
@@ -1054,11 +1076,13 @@ env_name_to_gym_registry_dict = {
     "continuous_mountaincar_action_cost": "ContinuousMountainCar-v1",
     "ant_corridor_action_cost_v0": "AntCorridorEnvActionCost-v0",
     "ant_corridor_action_cost_v1": "AntCorridorEnvActionCost-v1",
+    "ant_corridor_action_cost_v2": "AntCorridorEnvActionCost-v2",
     "cheetah_corridor_action_cost_v0": "CheetahCorridorActionCost-v0",
     "cheetah_corridor_fuel_v0": "CheetahCorridorFuel-v0",
     "cheetah_corridor_fuel_15_v1": "CheetahCorridorFuel-v1",
     "cheetah_corridor_fuel_13_v2": "CheetahCorridorFuel-v2",
     "cheetah_corridor_fuel_14_v3": "CheetahCorridorFuel-v3",
+    "cheetah_corridor_fuel_8_v4": "CheetahCorridorFuel-v4",
     "ant_corridor_fuel_200_v0": "AntCorridorFuel-v0",
     "ant_corridor_fuel_180_v1": "AntCorridorFuel-v1"
 }
