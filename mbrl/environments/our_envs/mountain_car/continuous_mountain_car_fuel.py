@@ -13,6 +13,7 @@ from gym.envs.classic_control import rendering
 from mbrl.environments.our_envs.mountain_car.continuous_mountain_car import ContinuousMountainCarEnv
 
 class FuelMountainCarEnv(ContinuousMountainCarEnv):
+    # TODO: 环境有bug，电量耗完之后还能正常执行动作！！！
     @classmethod
     def name(cls):
         return "FuelMountainCarEnv"
@@ -106,3 +107,124 @@ class FuelMountainCarEnv(ContinuousMountainCarEnv):
         # f_s_a = self.f_batch(states, actions)
         w = self.beta * (self.alpha + I_s.float()) / (self.alpha + self.cargo_num)
         return w
+class FuelMountainCarR100(FuelMountainCarEnv):
+    @classmethod
+    def name(cls):
+        return "FuelMountainCarR100Env"
+
+    def step(self, action):
+        position = self.state[0]
+        velocity = self.state[1]
+        # the change of the cargo num
+        cargo_action = min(0.1 * np.square(action[0]), self.cargo)
+        self.cargo = min(max(self.cargo - cargo_action, 0), self.cargo_num)
+        assert self.cargo >= 0
+        force = min(max(action[0], self.min_action), self.max_action)
+
+        velocity += force * self.power - 0.0025 * math.cos(3 * position)
+        if (velocity > self.max_speed): velocity = self.max_speed
+        if (velocity < -self.max_speed): velocity = -self.max_speed
+        position += velocity
+        if (position > self.max_position): position = self.max_position
+        if (position < self.min_position): position = self.min_position
+        if (position == self.min_position and velocity < 0): velocity = 0
+
+
+        # if and only if the car reach the peak with positive velocity and the cargo is exhausting.
+        # done = bool(
+        #    position >= self.goal_position and velocity >= self.goal_velocity and self.cargo == 0
+        # )
+        done = False
+        reach_peak = bool(position >= self.goal_position and velocity >= self.goal_velocity)
+        reward = 0
+        if reach_peak:
+            reward = 100
+            done = True
+
+        self.state = np.array([position, velocity, self.cargo])
+
+        return self.state, reward, done, dict(action_cargo=cargo_action, state_cargo=self.cargo)
+
+class FuelMountainCarR100Done(FuelMountainCarEnv):
+    @classmethod
+    def name(cls):
+        return "FuelMountainCarR100Env"
+
+    def step(self, action):
+        position = self.state[0]
+        velocity = self.state[1]
+        # the change of the cargo num
+        cargo_action = min(0.1 * np.square(action[0]), self.cargo)
+        self.cargo = min(max(self.cargo - cargo_action, 0), self.cargo_num)
+        assert self.cargo >= 0
+        force = min(max(action[0], self.min_action), self.max_action)
+
+        velocity += force * self.power - 0.0025 * math.cos(3 * position)
+        if (velocity > self.max_speed): velocity = self.max_speed
+        if (velocity < -self.max_speed): velocity = -self.max_speed
+        position += velocity
+        if (position > self.max_position): position = self.max_position
+        if (position < self.min_position): position = self.min_position
+        if (position == self.min_position and velocity < 0): velocity = 0
+
+
+        # if and only if the car reach the peak with positive velocity and the cargo is exhausting.
+        # done = bool(
+        #    position >= self.goal_position and velocity >= self.goal_velocity and self.cargo == 0
+        # )
+        done = False
+        reward = 0
+        reach_peak = bool(position >= self.goal_position and velocity >= self.goal_velocity)
+        if reach_peak:
+            reward = 100
+            done = True
+
+        # no energy left
+        if self.cargo <= 0:
+            done = True
+        self.state = np.array([position, velocity, self.cargo])
+
+        return self.state, reward, done, dict(action_cargo=cargo_action, state_cargo=self.cargo)
+
+class FuelMountainCarDone(FuelMountainCarEnv):
+    @classmethod
+    def name(cls):
+        return "FuelMountainCarDoneEnv"
+
+    def step(self, action):
+        position = self.state[0]
+        velocity = self.state[1]
+        # the change of the cargo num
+        cargo_action = min(0.1 * np.square(action[0]), self.cargo)
+        self.cargo = min(max(self.cargo - cargo_action, 0), self.cargo_num)
+        assert self.cargo >= 0
+        force = min(max(action[0], self.min_action), self.max_action)
+
+        velocity += force * self.power - 0.0025 * math.cos(3 * position)
+        if (velocity > self.max_speed): velocity = self.max_speed
+        if (velocity < -self.max_speed): velocity = -self.max_speed
+        position += velocity
+        if (position > self.max_position): position = self.max_position
+        if (position < self.min_position): position = self.min_position
+        if (position == self.min_position and velocity < 0): velocity = 0
+
+
+        # if and only if the car reach the peak with positive velocity and the cargo is exhausting.
+        # done = bool(
+        #    position >= self.goal_position and velocity >= self.goal_velocity and self.cargo == 0
+        # )
+        done = False
+        reward = 0
+        reach_peak = bool(position >= self.goal_position and velocity >= self.goal_velocity)
+        if reach_peak:
+            reward = 100 + (100 * self.cargo / self.cargo_num)
+            done = True
+
+        # no energy left
+        if self.cargo <= 0:
+            done = True
+        self.state = np.array([position, velocity, self.cargo])
+
+        return self.state, reward, done, dict(action_cargo=cargo_action, state_cargo=self.cargo)
+
+    
