@@ -1036,6 +1036,20 @@ register(
     max_episode_steps=500,
 )
 
+
+register(
+    id='CheetahCorridorFuelDone-v0',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel:CheetahCorridorFuelDone',
+    kwargs={
+        'cargo_num': 36,
+        'beta': 1,
+        'reward_block': [9,10],
+        'reward': 100,
+        'alpha': 90.0  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
 register(
     id='AntCorridorFuel-v0',
     entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuel',
@@ -1058,6 +1072,19 @@ register(
         'reward_block': [5,6],
         'reward': 100,
         'alpha': 450  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorFuelDone-v1',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuelDone',
+    kwargs={
+        'cargo_num': 360,
+        'beta': 1,
+        'reward_block': [5,6],
+        'reward': 100,
+        'alpha': 900  # 2.5 * fuel
     },
     max_episode_steps=500,
 )
@@ -1181,5 +1208,7 @@ env_name_to_gym_registry_dict = {
     "cheetah_corridor_fuel_8_v4": "CheetahCorridorFuel-v4",
     "ant_corridor_fuel_200_v0": "AntCorridorFuel-v0",
     "ant_corridor_fuel_180_v1": "AntCorridorFuel-v1",
-    "ant_corridor_fuel_80_goal4_v2": "AntCorridorFuel-v2"
+    "ant_corridor_fuel_done_360_v1": "AntCorridorFuelDone-v1",
+    "ant_corridor_fuel_80_goal4_v2": "AntCorridorFuel-v2",
+    "cheetah_corridor_fuel_done_36_goal9_v0": "CheetahCorridorFuelDone-v0"
 }

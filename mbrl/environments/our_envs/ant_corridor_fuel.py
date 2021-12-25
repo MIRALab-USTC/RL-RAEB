@@ -86,6 +86,29 @@ class AntCorridorFuel(AntCorridorEnv):
         
         return obs, reward, done, dict(action_cargo=action_cargo)
 
+class AntCorridorFuelDone(AntCorridorFuel):
+    def step(self, action):
+        self.prev_x_torso = np.copy(self.get_body_com("torso")[0:1])
+        self.prev_y_torso = np.copy(self.get_body_com("torso")[1:2])
+        self.do_simulation(action, self.frame_skip)
+                
+        # update cargo
+        action_cargo = min(0.1 * np.square(action).sum(), self.cur_cargo)
+        self.cur_cargo = min(max(self.cur_cargo - action_cargo, 0), self.cargo_num)
+
+        obs = self._get_obs()
+
+        done = False
+        reward = 0
+        cur_x_pos_r = self.get_state_pos(obs)
+        if cur_x_pos_r:
+            done = True
+            reward = self.reward +  (self.reward * self.cur_cargo / self.cargo_num) 
+        
+        if self.cur_cargo <= 0:
+            done = True
+            
+        return obs, reward, done, dict(action_cargo=action_cargo)
 if __name__=='__main__':
     # test ant maze env
     pass
