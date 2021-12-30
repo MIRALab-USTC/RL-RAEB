@@ -67,7 +67,7 @@ class BatchRLAlgorithm(RLAlgorithm):
     
     def _end_epoch(self, epoch):
         from mbrl.collectors.utils import rollout
-        if epoch % self.record_video_freq == 0 and hasattr(self, 'video_env'):
+        if self.record_video_freq > 0 and epoch % self.record_video_freq == 0 and hasattr(self, 'video_env'):
             self.video_env.set_video_name("epoch{}".format(epoch))
             logger.log("rollout to save video...")
             rollout(self.video_env, self.eval_policy, max_path_length=self.max_path_length, use_tqdm=True)
