@@ -297,6 +297,45 @@ register(
 )
 
 register(
+    id='AntCorridorResourceEnvV2-v1',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 0.5
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorResourceEnvV2-v2',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 2.0
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorResourceEnvV2-v3',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 1.5
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='AntCorridorResourceEnvV2-v0',
     entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
     kwargs={
@@ -1154,6 +1193,57 @@ register(
 )
 
 register(
+    id='AntCorridorFuelDone-v4',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuelDone',
+    kwargs={
+        'cargo_num': 150,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 375  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorFuelDone-v5',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuelDone',
+    kwargs={
+        'cargo_num': 140,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 350  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorFuelDone-v50',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuelDone',
+    kwargs={
+        'cargo_num': 140,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 280  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+register(
+    id='AntCorridorFuelDone-v51',
+    entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuelDone',
+    kwargs={
+        'cargo_num': 140,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': 420  # 2.5 * fuel
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='AntCorridorFuel-v2',
     entry_point='mbrl.environments.our_envs.ant_corridor_fuel:AntCorridorFuel',
     kwargs={
@@ -1276,8 +1366,15 @@ env_name_to_gym_registry_dict = {
     "ant_corridor_fuel_80_goal4_v2": "AntCorridorFuel-v2",
     "ant_corridor_fuel_done_180_v2": "AntCorridorFuelDone-v2",
     "ant_corridor_fuel_done_160_v3": "AntCorridorFuelDone-v3",
+    "ant_corridor_fuel_done_150_v4": "AntCorridorFuelDone-v4",
+    "ant_corridor_fuel_done_140_v5": "AntCorridorFuelDone-v5",
     "cheetah_corridor_fuel_done_36_goal9_v0": "CheetahCorridorFuelDone-v0",
     "cheetah_corridor_fuel_done_27_goal9_v1": "CheetahCorridorFuelDone-v1",
     "cheetah_corridor_fuel_done_30_goal9_v2": "CheetahCorridorFuelDone-v2",
-    "cheetah_corridor_fuel_done_32_goal9_v3": "CheetahCorridorFuelDone-v3"
+    "cheetah_corridor_fuel_done_32_goal9_v3": "CheetahCorridorFuelDone-v3",
+    "ant_corridor_resource_env_goal_4_beta1_alpha05": "AntCorridorResourceEnvV2-v1",
+    "ant_corridor_resource_env_goal_4_beta1_alpha2": "AntCorridorResourceEnvV2-v2",
+    "ant_corridor_resource_env_goal_4_beta1_alpha15": "AntCorridorResourceEnvV2-v3",
+    "ant_corridor_fuel_done_140_beta1_alpha2fuel": "AntCorridorFuelDone-v50",
+    "ant_corridor_fuel_done_140_beta1_alpha3fuel": "AntCorridorFuelDone-v51"
 }

@@ -55,7 +55,6 @@ class SurpriseBasedSACTrainer(SACTrainer):
         self.shape_env_weight = shape_env_weight
         self.cnt = 0
         self.intrinsic_normal = intrinsic_normal
-
         self.alg_type = alg_type
         if self.alg_type == "information_gain":
             self.measure = JensenRenyiDivergenceUtilityMeasure(decay=measure_decay)
@@ -86,7 +85,7 @@ class SurpriseBasedSACTrainer(SACTrainer):
             actions = actions.repeat(self.model.ensemble_size, 1, 1)
             # set_trace()
             next_predicted_obs_mean, var = self.model(obs, actions)
-            print(f"var： {np.mean(ptu.get_numpy(var))}")
+            # print(f"var： {np.mean(ptu.get_numpy(var))}")
         
             next_predicted_obs_mean = torch.squeeze(next_predicted_obs_mean)
             var = torch.squeeze(var)

@@ -129,7 +129,7 @@ CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scrip
 
 
 
-# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML2021_Finaldata/compared_with_penalty/resource_ant_goal4_cost100/src > src1.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type --alg_type surprise  --base_log_dir /home/zhwang/research/ICML2021_Finaldata/compared_with_penalty/resource_ant_goal4_cost100/src > src1.txt 2>&1 &
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML2021_Finaldata/compared_with_penalty/resource_ant_goal4_cost100/src > src2.txt 2>&1 &
 # sleep 15s

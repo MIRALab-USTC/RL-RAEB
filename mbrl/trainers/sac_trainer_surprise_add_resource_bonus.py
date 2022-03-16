@@ -13,21 +13,22 @@ from mbrl.trainers.sac_trainer_surprise_based import SurpriseBasedSACTrainer
 
 from ipdb import set_trace
 
-class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
+# class ResourceBonusSurpriseSACTrainer(ResourceCostsSurpriseSACTrainer):
+
+class AddResourceBonusSurpriseSACTrainer(SurpriseBasedSACTrainer):
     def __init__(
         self,
         *surprise_arg,
-        resource_action_costs_coeff=10.0,
+        resource_bonus_coeff=10.0,
         **surprise_kwargs
     ):
         SurpriseBasedSACTrainer.__init__(self, *surprise_arg, **surprise_kwargs)
-        self.resource_action_costs_coeff = resource_action_costs_coeff
+        self.resource_bonus_coeff = resource_bonus_coeff / self.env.cargo_num
         
-    def get_costs(self, states, actions):
-        # - beta * costs(s,a)
-        costs = self.env.f_batch(states, actions)
-        return costs.float()
-
+    def _get_resource_bonus(self, states):
+        resource_bonus = self.env.I_batch(states)
+        return resource_bonus.float()
+        
     def train_from_torch_batch(self, batch):
         # train policy / value 
         rewards = batch['rewards']
@@ -42,16 +43,14 @@ class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
         
         rewards_int = self.reward_function_novelty(obs, actions, next_obs)
         eta, decay_rate = self.get_eta(rewards_int)
-        costs = self.get_costs(obs, actions)
-        rewards = rewards + eta * rewards_int - costs * self.resource_action_costs_coeff
+        resource_bonus = self._get_resource_bonus(obs)
+        rewards = rewards + eta * rewards_int + resource_bonus * self.resource_bonus_coeff
 
         diagnostics['eta'] = eta
 
         """
         Alpha
         """
-        print(f"discount: {self.discount}")
-        
         new_action, policy_info = self.policy.action(
             obs, reparameterize=True, return_log_prob=True,
         )
@@ -118,7 +117,7 @@ class ResourceCostsSurpriseSACTrainer(SurpriseBasedSACTrainer):
 
         diagnostics['Reward Intrinsic'] = np.mean(ptu.get_numpy(rewards_int))
         diagnostics['Rewards'] = np.mean(ptu.get_numpy(rewards))
-        diagnostics['Costs'] = np.mean(ptu.get_numpy(costs))
+        diagnostics['resource_bonus'] = np.mean(ptu.get_numpy(resource_bonus))
 
         diagnostics['Policy Loss'] = np.mean(ptu.get_numpy(policy_loss))
         diagnostics['Policy Q Loss'] = np.mean(ptu.get_numpy(policy_q_loss))

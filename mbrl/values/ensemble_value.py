@@ -46,7 +46,7 @@ class EnsembleStateValue(nn.Module, StateValue):
             if mode == 'min':
                 value = torch.min(ensemble_value, dim=-3)[0]
             elif mode == 'mean':
-                value = torch.mean(ensemble_value, dim=-3)[0]
+                value = torch.mean(ensemble_value, dim=-3)
             elif mode == 'max':
                 value = torch.max(ensemble_value, dim=-3)[0]
             elif mode == 'sample':
