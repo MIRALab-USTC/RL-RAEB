@@ -57,11 +57,12 @@ class AntCorridorEnv(MagellanAntEnv):
 
 
 class AntCorridorResourceEnv(AntCorridorEnv):
-    def __init__(self, cargo_num, beta, reward_block, reward):
+    def __init__(self, cargo_num, beta, reward_block, reward, alpha=1.0):
         self.cargo_num = cargo_num # the number of resources 
         self.cur_cargo = cargo_num
         self.beta = beta
         self.reward = reward
+        self.alpha=alpha
         AntCorridorEnv.__init__(self, reward_block)
 
     def _set_action_space(self):
@@ -141,7 +142,7 @@ class AntCorridorResourceEnv(AntCorridorEnv):
     def get_long_term_weight_batch(self, states, actions):
         I_s = self.I_batch(states)
         f_s_a = self.f_batch(states, actions)
-        w = self.beta * (1 + I_s.float() - f_s_a.float()) / (1 + self.cargo_num)
+        w = self.beta * (self.alpha + I_s.float() - f_s_a.float()) / (self.alpha + self.cargo_num)
         return w
 
 
@@ -176,7 +177,7 @@ class AntCorridorResourceEnvV2(AntCorridorResourceEnv):
     def get_long_term_weight_batch(self, states, actions):
         I_s = self.I_batch(states)
         # f_s_a = self.f_batch(states, actions)
-        w = self.beta * (1 + I_s.float()) / (1 + self.cargo_num)
+        w = self.beta * (self.alpha + I_s.float()) / (self.alpha + self.cargo_num)
         return w
 
 class DoneAntCorridorResourceEnv(AntCorridorResourceEnv):
