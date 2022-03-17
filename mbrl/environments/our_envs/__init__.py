@@ -1256,6 +1256,31 @@ register(
     max_episode_steps=500,
 )
 
+### fuel cargo mountain car
+register(
+    id='FuelCargoMountainCar-v1',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel_cargo:FuelCargoMountainCar',
+    kwargs={
+        'seed': None,
+        'fuel_num': 12.0,
+        'cargo_num': 10,
+        'alpha': [30, 1]
+    },
+    max_episode_steps=200,
+)
+
+register(
+    id='FuelCargoMountainCar-v2',
+    entry_point='mbrl.environments.our_envs.mountain_car.continuous_mountain_car_fuel_cargo:FuelCargoMountainCar',
+    kwargs={
+        'seed': None,
+        'beta': 10,
+        'fuel_num': 12.0,
+        'cargo_num': 10,
+        'alpha': [30, 1]
+    },
+    max_episode_steps=200,
+)
 
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
@@ -1376,5 +1401,7 @@ env_name_to_gym_registry_dict = {
     "ant_corridor_resource_env_goal_4_beta1_alpha2": "AntCorridorResourceEnvV2-v2",
     "ant_corridor_resource_env_goal_4_beta1_alpha15": "AntCorridorResourceEnvV2-v3",
     "ant_corridor_fuel_done_140_beta1_alpha2fuel": "AntCorridorFuelDone-v50",
-    "ant_corridor_fuel_done_140_beta1_alpha3fuel": "AntCorridorFuelDone-v51"
+    "ant_corridor_fuel_done_140_beta1_alpha3fuel": "AntCorridorFuelDone-v51",
+    "fuel_cargo_car_v1": "FuelCargoMountainCar-v1",
+    "fuel_cargo_car_v2": "FuelCargoMountainCar-v2"
 }

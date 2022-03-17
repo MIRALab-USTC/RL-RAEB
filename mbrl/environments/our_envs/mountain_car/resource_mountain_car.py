@@ -8,11 +8,11 @@ import gym
 from gym import spaces
 from gym.spaces import Discrete
 from gym.utils import seeding
-from gym.envs.classic_control import rendering
+
 
 # For test
-import sys
-sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
+# import sys
+# sys.path.insert(0, '/home/zhwang/research/mbrl_exploration_with_novelty')
 
 from mbrl.environments.our_envs.mountain_car.continuous_mountain_car import ContinuousMountainCarEnv
 
@@ -127,6 +127,7 @@ class ResourceMountainCarEnv(ContinuousMountainCarEnv):
         clearance = 100
 
         if self.viewer is None:
+            from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(screen_width, screen_height)
             xs = np.linspace(self.min_position, self.max_position, 100)
             ys = self._height(xs)

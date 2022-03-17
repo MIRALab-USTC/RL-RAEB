@@ -25,9 +25,35 @@
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision_small_model.json --env_name fuel_mountain_car_done_fuel12_v1  --repeat 2 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/car/only_resource_bonus  > only_resource_bonus2.txt 2>&1 &
 # sleep 15s
-CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src_small_model.json --env_name fuel_mountain_car_done_fuel12_v1 --repeat 2 --alg_type surprise  --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/car/src > src1.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb1_fuel_cargo.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/src_small_model.json --env_name fuel_mountain_car_done_fuel12_v1 --repeat 2 --alg_type surprise  --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/car/src > src2.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb2_fuel_cargo.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb3_fuel_cargo.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise1_fuel_cargo.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise3.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash_small.json --env_name resource_mountaincar_v0 > simhash1.txt 2>&1 &
+# sleep 15s
+
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash_small.json --env_name resource_mountaincar_v0 > simhash2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash_small.json --env_name resource_mountaincar_v0 > simhash3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash_small.json --env_name resource_mountaincar_v0 > simhash4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac_hash/simhash_small.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/delivery_ant/simhash --env_name ant_corridor_resource_env_goal_4_v0 > simhash_deli_ant1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac_hash/simhash_small.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/delivery_ant/simhash --env_name ant_corridor_resource_env_goal_4_v0 > simhash_deli_ant2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac_hash/simhash_small.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/delivery_ant/simhash --env_name ant_corridor_resource_env_goal_4_v0 > simhash_deli_ant3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac_hash/simhash_small.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/delivery_ant/simhash --env_name ant_corridor_resource_env_goal_4_v0 > simhash_deli_ant4.txt 2>&1 &
+
 
 
 # CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_fuel_done_160_v3 --repeat 1 --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/ant/surprise_vision_fuel_160  > surprise_vision_fuel_1601.txt 2>&1 &
