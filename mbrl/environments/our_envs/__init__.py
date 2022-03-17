@@ -297,6 +297,18 @@ register(
 )
 
 register(
+    id='AntCorridorResourceEnvBeta1-v5',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnv',
+    kwargs={
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='AntCorridorResourceEnvV2-v1',
     entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
     kwargs={
@@ -1299,6 +1311,22 @@ register(
 )
 ### fuel cargo ant
 
+### fuel cargo cheetah
+register(
+    id='CheetahCorridorFuelCargo-v1',
+    entry_point='mbrl.environments.our_envs.resource_cheetah.cheetah_corridor_fuel_cargo:CheetahCorridorFuelCargo',
+    kwargs={
+        'fuel_num': 32,
+        'cargo_num': 4,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100,
+        'alpha': [80, 1]
+    },
+    max_episode_steps=500,
+)
+### fuel cargo cheetah
+
 env_name_to_gym_registry_dict = {
     "mbrl_half_cheetah": "MBRLHalfCheetah-v0",
     "mbrl_cheetah": "MBRLHalfCheetah-v0",
@@ -1421,5 +1449,7 @@ env_name_to_gym_registry_dict = {
     "ant_corridor_fuel_done_140_beta1_alpha3fuel": "AntCorridorFuelDone-v51",
     "fuel_cargo_car_v1": "FuelCargoMountainCar-v1",
     "fuel_cargo_car_v2": "FuelCargoMountainCar-v2",
-    "ant_fuel_cargo_v1": "AntCorridorFuelCargo-v1"
+    "ant_fuel_cargo_v1": "AntCorridorFuelCargo-v1",
+    "cheetah_fuel_cargo_v1": "CheetahCorridorFuelCargo-v1",
+    "ant_goal4_cargo_resource_beta1": "AntCorridorResourceEnvBeta1-v5"
 }

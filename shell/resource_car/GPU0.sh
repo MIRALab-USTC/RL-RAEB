@@ -25,17 +25,35 @@
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision_small_model.json --env_name fuel_mountain_car_done_fuel12_v1  --repeat 2 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/car/only_resource_bonus  > only_resource_bonus2.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/vision --env_name ant_fuel_cargo_v1 > raeb1_fuel_cargo_ant.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo/vision --env_name cheetah_fuel_cargo_v1 --repeat 2 > raeb1_fuel_cargo_cheetah.txt 2>&1 &
 # sleep 15s
-CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/vision --env_name ant_fuel_cargo_v1 > raeb2_fuel_cargo_ant.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo/vision --env_name cheetah_fuel_cargo_v1 --repeat 2 > raeb2_fuel_cargo_cheetah.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo/surprise --env_name cheetah_fuel_cargo_v1 --repeat 2 > surprise1_fuel_cargo_cheetah.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo/surprise --env_name cheetah_fuel_cargo_v1 --repeat 2 > surprise2_fuel_cargo_cheetah.txt 2>&1 &
+
+CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int005 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 0.05 > ant_goal4_cargo_resource_beta11.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/surprise --env_name ant_fuel_cargo_v1 > surprise1_fuel_cargo_ant.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int005 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 0.05 > ant_goal4_cargo_resource_beta12.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/surprise --env_name ant_fuel_cargo_v1 > surprise2_fuel_cargo_ant.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int1 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 1.0 > ant_goal4_cargo_resource_beta13.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int1 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 1.0 > ant_goal4_cargo_resource_beta14.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int2 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 2.0 > ant_goal4_cargo_resource_beta15.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int2 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 2.0 > ant_goal4_cargo_resource_beta16.txt 2>&1 &
+
+
+
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise2.txt 2>&1 &
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise3.txt 2>&1 &
+
+
+
 
 # CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash_small.json --env_name resource_mountaincar_v0 > simhash1.txt 2>&1 &
 # sleep 15s
