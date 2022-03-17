@@ -25,13 +25,13 @@
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=7 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision_small_model.json --env_name fuel_mountain_car_done_fuel12_v1  --repeat 2 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/ICML_TO_IJCAI_data/data/envs_fuel_fix_r_done_bug/car/only_resource_bonus  > only_resource_bonus2.txt 2>&1 &
 # sleep 15s
-CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb1_fuel_cargo.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/vision --env_name ant_fuel_cargo_v1 > raeb1_fuel_cargo_ant.txt 2>&1 &
+# sleep 15s
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/vision --env_name ant_fuel_cargo_v1 > raeb2_fuel_cargo_ant.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb2_fuel_cargo.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/surprise --env_name ant_fuel_cargo_v1 > surprise1_fuel_cargo_ant.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_vision_small_model_fuel_car.json > raeb3_fuel_cargo.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise1_fuel_cargo.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/research/ICML_TO_IJCAI_data/data/ant_fuel_cargo/surprise --env_name ant_fuel_cargo_v1 > surprise2_fuel_cargo_ant.txt 2>&1 &
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise2.txt 2>&1 &
 # sleep 15s
