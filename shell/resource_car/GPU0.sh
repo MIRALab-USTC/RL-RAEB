@@ -33,7 +33,6 @@
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/surprise-based/surprise.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo/surprise --env_name cheetah_fuel_cargo_v1 --repeat 2 > surprise2_fuel_cargo_cheetah.txt 2>&1 &
 
-<<<<<<< HEAD
 # CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int005 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 0.05 > ant_goal4_cargo_resource_beta11.txt 2>&1 &
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int005 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 0.05 > ant_goal4_cargo_resource_beta12.txt 2>&1 &
@@ -52,8 +51,6 @@ CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surpri
 
 
 
-=======
->>>>>>> 14396a278545193180706786bc931b921e23aff8
 
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_small_model_fuel_car.json > surprise2.txt 2>&1 &
