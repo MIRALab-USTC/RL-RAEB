@@ -8,7 +8,6 @@ import gym
 from gym import spaces
 from gym.spaces import Discrete
 from gym.utils import seeding
-from gym.envs.classic_control import rendering
 
 from mbrl.environments.our_envs.mountain_car.continuous_mountain_car import ContinuousMountainCarEnv
 
