@@ -37,18 +37,58 @@
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_goal4_cargo/vision_int005 --env_name ant_goal4_cargo_resource_beta1 --repeat 2 --intrinsic_coeff 0.05 > ant_goal4_cargo_resource_beta12.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc1.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc1 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v01.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc1.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc1 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v01.txt 2>&1 &
 # sleep 15s
-CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc1.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc1 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v02.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc001.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc001 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v03.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc001.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc001 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v04.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc05.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc05 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v05.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc05.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc05 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 > ant_corridor_resource_env_goal_4_v06.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc1.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc1 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v02.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc001.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc001 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v03.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc001.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc001 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v04.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc05.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc05 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v05.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_resource_bonus_rbc05.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cargo_ant_surpriserb/rbc05 --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 > ant_corridor_resource_env_goal_4_v06.txt 2>&1 &
 
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/IJCAI22_rebuttal/more_comparsion_methods/electric_cheetah/lagrangian > src1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/IJCAI22_rebuttal/more_comparsion_methods/electric_cheetah/lagrangian > src2.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/simhash --repeat 1 > ant_fuel_cargo_v1hash1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/simhash --repeat 1 > ant_fuel_cargo_v1hash2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/simhash --repeat 1 > ant_fuel_cargo_v1hash3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/simhash --repeat 1 > ant_fuel_cargo_v1hash4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/simhash --repeat 1 > cheetah_fuel_cargo_v11hash.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_fuel_cargo_v1 --base_log_dir  /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/simhash --repeat 1 > cheetah_fuel_cargo_v12hash.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac/sac.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/sac --env_name ant_fuel_cargo_v1 --repeat 2 > ant_fuel_cargo_v11.txt 2>&1 &
+# # sleep 15s
+# CUDA_VISIBLE_DEVICES=0 nohup python scripts/run.py configs/sac/sac.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/ant_fuel_cargo_v1/sac --env_name ant_fuel_cargo_v1 --repeat 2 > ant_fuel_cargo_v12.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac/sac.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/sac --env_name cheetah_fuel_cargo_v1 --repeat 2 > cheetah_fuel_cargo_v11.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup python scripts/run.py configs/sac/sac.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/sac --env_name cheetah_fuel_cargo_v1 --repeat 2 > cheetah_fuel_cargo_v12.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac/sac_small_model.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/sac --env_name fuel_cargo_car_v1 --repeat 2 > fuel_cargo_car_v11.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/sac/sac_small_model.json --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/sac --env_name fuel_cargo_car_v1 --repeat 2 > fuel_cargo_car_v12.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise.json --env_name cheetah_fuel_cargo_v1 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/information_gain > cheetah_fuel_cargo_v1_information_gain1.txt 2>&1 &
+# sleep 15s
+
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise.json --env_name cheetah_fuel_cargo_v1 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/cheetah_fuel_cargo_v1/information_gain > cheetah_fuel_cargo_v1_information_gain2.txt 2>&1 &
+# sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name fuel_cargo_car_v1 --repeat 1 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/information_gain > fuel_cargo_car_v1_information_gain1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name fuel_cargo_car_v1 --repeat 1 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/information_gain > fuel_cargo_car_v1_information_gain2.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name fuel_cargo_car_v1 --repeat 1 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/information_gain > fuel_cargo_car_v1_information_gain3.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_small_model.json --env_name fuel_cargo_car_v1 --repeat 1 --alg_type information_gain --ensemble_size 32 --base_log_dir /home/zhwang/ICML_TO_IJCAI/data/fuel_cargo_car_v1/information_gain > fuel_cargo_car_v1_information_gain4.txt 2>&1 &
 
 
 
@@ -66,15 +106,15 @@ CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surpri
 # sleep 15s
 # CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_cargo_goal4/simhash --repeat 2 > ant_cargo_goal41.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_cargo_goal4/simhash --repeat 2 > ant_cargo_goal42.txt 2>&1 &
+# # CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_resource_env_goal_4_v0 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_cargo_goal4/simhash --repeat 2 > ant_cargo_goal42.txt 2>&1 &
 
-CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_fuel_done_140_v5 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_fuel/simhash --repeat 2 > ant_fuel1.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_fuel_done_140_v5 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_fuel/simhash --repeat 2 > ant_fuel2.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/cheetah_fuel/simhash --repeat 2 > cheetah_fuel1.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/cheetah_fuel/simhash --repeat 2 > cheetah_fuel2.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_fuel_done_140_v5 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_fuel/simhash --repeat 2 > ant_fuel1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name ant_corridor_fuel_done_140_v5 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/ant_fuel/simhash --repeat 2 > ant_fuel2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/cheetah_fuel/simhash --repeat 2 > cheetah_fuel1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac_hash/simhash.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --base_log_dir /home/zhwang/IJCAI2022_rebuttal/data/cheetah_fuel/simhash --repeat 2 > cheetah_fuel2.txt 2>&1 &
 
 
 

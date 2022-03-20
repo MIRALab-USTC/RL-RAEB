@@ -19,11 +19,11 @@
             "num_train_models_per_epoch": 1000,
             "max_path_length": 500,
             "train_model_freq": 25,
-            "save_pool": true,
+            "save_pool": false,
             "model_normalize": false,
-            "save_model_freq": 1,
+            "save_model_freq": 100,
             "min_num_steps_before_training": 5000,
-            "record_video_freq": 10,
+            "record_video_freq": 0,
             "silent": false
         }
     },
@@ -120,6 +120,7 @@
             "qf_lr": 3e-4,
             "soft_target_tau": 5e-3,
             "use_automatic_entropy_tuning": true,
+            "resource_action_costs_coeff": 0.25,
             "alpha_if_not_automatic": 0,
             "discount": 0.99
         }

@@ -60,7 +60,28 @@ class CheetahCorridorFuel(CheetahCorridor):
         # f_s_a = self.f_batch(states, actions)
         w = self.beta * (self.alpha + I_s.float()) / (self.alpha + self.cargo_num)
         return w
-    
+
+    def f_batch(self, states, actions):
+        # a\in [0,1] wrapped by env
+        # continuous cargo
+        actions_cargo = torch.sum(0.1 * torch.square(actions), dim=-1, keepdim=True)
+        if not torch.is_tensor(actions_cargo):
+            actions_cargo = torch.from_numpy(actions_cargo)
+        actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1)).float()
+
+        states_cargo = states[:,-1]
+        if not torch.is_tensor(states_cargo):
+            states_cargo = torch.from_numpy(states_cargo)
+        states_cargo = states_cargo.reshape((states_cargo.shape[0],1)).float()    
+        w = torch.zeros_like(actions_cargo, dtype=actions_cargo.dtype)
+
+        indexes_states = torch.where((states_cargo-actions_cargo).float()<=0)
+        w[indexes_states] = states_cargo[indexes_states]
+
+        indexes_actions = torch.where((states_cargo-actions_cargo)>0)
+        w[indexes_actions] = actions_cargo[indexes_actions]
+        return w    
+
     def step(self, action):
         xposbefore = self.sim.data.qpos[0]
         self.do_simulation(action, self.frame_skip)
