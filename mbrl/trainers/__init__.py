@@ -19,6 +19,7 @@ import mbrl.trainers.resource_action_costs_sac_trainer
 
 # rnd
 import mbrl.trainers.sac_trainer_rnd
+import mbrl.trainers.sac_trainer_rnd_noveld
 
 import mbrl.trainers.max_sac_trainer
 import mbrl.trainers.sac_planning_trainer

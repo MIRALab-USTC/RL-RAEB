@@ -60,8 +60,8 @@ class RNDSACTrainer(SACTrainer):
         y = self.random_model(x) 
 
         # model loss
-        model_loss = torch.sum((y-y_target)**2, dim=1)
-        model_loss = torch.sum(model_loss)
+        model_loss = torch.mean((y-y_target)**2, dim=1)
+        model_loss = torch.mean(model_loss)
 
         # optimize model
         self.model_optimizer.zero_grad()
