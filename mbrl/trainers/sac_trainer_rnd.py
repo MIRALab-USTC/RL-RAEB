@@ -15,13 +15,16 @@ from mbrl.trainers.sac_trainer import SACTrainer
 class RNDSACTrainer(SACTrainer):
     def __init__(
         self,
+        env,
+        policy,
+        qf,
         random_model,
         random_target_model,
         intrinsic_coeff,
         model_lr,
         **sac_kwargs
     ):
-        SACTrainer.__init__(self, **sac_kwargs)
+        SACTrainer.__init__(self, env, policy, qf, **sac_kwargs)
         self.random_model = random_model
         self.random_target_model = random_target_model
         self.intrinsic_coeff = intrinsic_coeff

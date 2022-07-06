@@ -17,27 +17,44 @@
 # # sleep 15s
 # # CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name done_resource_cheetah_corridor_v4 --repeat 3 --num_eval_steps_per_epoch 4000 --alg_type surprise  --base_log_dir /home/zhwang/research/ICML_data/abalation/with_done/done_resource_cheetah_corridor_v4/surprise > surprise4.txt 2>&1 &
 # # sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name ant_fuel_cargo_v1 --repeat 5 > rnd_noveld_electric_delivery_ant.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name cheetah_fuel_cargo_v1 --repeat 5 > rnd_noveld_electric_delivery_cheetah.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/rnd/rnd_small_noveld.json --env_name fuel_cargo_car_v1 --repeat 5 > rnd_noveld_electric_delivery_car.txt 2>&1 &
 
-CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision1.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision2.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision3.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision4.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision5.txt 2>&1 &
-sleep 15s
 
-CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision1.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/src.json --env_name ant_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_ant.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision2.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_cheetah.txt 2>&1 &
 sleep 15s
-CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision3.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision4.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision5.txt 2>&1 &
+CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src_small_model.json --env_name fuel_cargo_car_v1 --repeat 5 > lagrigian_electric_delivery_car.txt 2>&1 &
+
+
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name resource_mountaincar_v0 --repeat 3 > rnd_noveld_delivery_car2.txt 2>&1 &
+
+
+# CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=2 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision5.txt 2>&1 &
+# sleep 15s
+
+# CUDA_VISIBLE_DEVICES=3 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name resource_cheetah_corridor_v0_v2 --repeat 1 --alg_type surprise --int_coeff 0.5 --base_log_dir /home/rl_shared/zhihaiwang/research/ICML_data/evaluation/ant_corridor_resource_env_goal_4_v0_v2/surprise_vision > surprise_vision5.txt 2>&1 &
 
 
 

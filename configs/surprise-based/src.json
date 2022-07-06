@@ -3,7 +3,7 @@
         "tag": "surprise",
         "use_gpu": true,
         "seed": null,
-        "base_log_dir": "/home/zhwang/research/ICML_data/exploration_env_exps_fix_env/car/surprise",
+        "base_log_dir": "/home/zhwang/r3l_exploration/data/resource_cost_multi_resources",
         "exp_prefix": "surprise_based"
     },
     "algorithm": {

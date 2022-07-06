@@ -16,6 +16,9 @@ from mbrl.trainers.sac_trainer_rnd import RNDSACTrainer
 class RNDNovelDTrainer(RNDSACTrainer):
     def __init__(
         self,
+        env,
+        policy,
+        qf,
         alpha,
         random_model,
         random_target_model,
@@ -25,6 +28,9 @@ class RNDNovelDTrainer(RNDSACTrainer):
     ):
         RNDSACTrainer.__init__(
             self,
+            env,
+            policy,
+            qf,
             random_model,
             random_target_model,
             intrinsic_coeff,
@@ -50,7 +56,11 @@ class RNDNovelDTrainer(RNDSACTrainer):
         next_y = self.random_model(next_obs)
         next_state_reward_int = torch.sum((next_y-next_y_target)**2, dim=1, keepdim=True)
 
-        reward_int = max((next_state_reward_int-self.alpha*cur_state_reward_int), 0)
+        reward_int = next_state_reward_int - self.alpha*cur_state_reward_int
+        zeros = torch.zeros_like(reward_int, dtype=reward_int.dtype)
+        
+        indexes_lower_zero = torch.where(reward_int.float()<0)
+        reward_int[indexes_lower_zero] = zeros[indexes_lower_zero]
 
         # log
         diagnostics = OrderedDict()
