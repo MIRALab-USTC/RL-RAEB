@@ -24,11 +24,44 @@
 # CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/rnd/rnd_small_noveld.json --env_name fuel_cargo_car_v1 --repeat 5 > rnd_noveld_electric_delivery_car.txt 2>&1 &
 
 
-CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/src.json --env_name ant_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_ant.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_cheetah.txt 2>&1 &
-sleep 15s
-CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src_small_model.json --env_name fuel_cargo_car_v1 --repeat 5 > lagrigian_electric_delivery_car.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/src.json --env_name ant_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_ant.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_fuel_cargo_v1 --repeat 5 > lagrigian_electric_delivery_cheetah.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src_small_model.json --env_name fuel_cargo_car_v1 --repeat 5 > lagrigian_electric_delivery_car.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_fuel_done_140_v5 --repeat 5 > lagrigian_electric_ant.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/surprise-based/src.json --env_name cheetah_corridor_fuel_done_32_goal9_v3 --repeat 5 > lagrigian_electric_cheetah.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/src.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 5 > lagrigian_delivery_ant.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah5.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src.json --env_name resource_cheetah_corridor_v0 --repeat 1 > lagrigian_delivery_cheetah6.txt 2>&1 &
+
+# 晚上跑delivery cheetah 
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat1.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat2.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat5.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name fuel_cargo_car_v1 --repeat 1 > raeb_edcat6.txt 2>&1 &
+
+
 
 
 # sleep 15s
@@ -60,14 +93,57 @@ CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/src_sm
 
 # CUDA_VISIBLE_DEVICES=4 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --alg_type information_gain --ensemble_size 32  --base_log_dir /home/zhwang/research/ICML_data/valid_ig/ant_corridor_resource_env_goal_4_v0/information_gain > ant_corridor_env_42.txt 2>&1 &
 
-# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 2 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/research/ICML_data/abalation/goal4/only_resource_bonus > surprise_vision_surprise1.txt 2>&1 &
-# # sleep 15s
-# CUDA_VISIBLE_DEVICES=0 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/research/ICML_data/abalation/goal4/only_resource_bonus > surprise_vision_surprise2.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise1.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/research/ICML_data/abalation/goal4/only_resource_bonus > surprise_vision_surprise3.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise2.txt 2>&1 &
 # sleep 15s
-# CUDA_VISIBLE_DEVICES=1 nohup xvfb-run -a -s "-screen 0 1400x900x24" python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/research/ICML_data/abalation/goal4/only_resource_bonus > surprise_vision_surprise4.txt 2>&1 &
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise3.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise4.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise5.txt 2>&1 &
+# sleep 15s
+# CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0 --repeat 1 --num_eval_steps_per_epoch 8000 --alg_type only_resource_bonus  --base_log_dir /home/zhwang/r3l_exploration/data/ablation/only_resource_bonus > surprise_vision_surprise6.txt 2>&1 &
 
+
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/sac/sac_add_resource_bonus.json --env_name ant_corridor_fuel_done_140_v5 --repeat 3 --num_eval_steps_per_epoch 8000 > sac_rb1.txt 2>&1 &
+
+# CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/sac/sac_add_resource_bonus.json --env_name ant_corridor_fuel_done_140_v5 --repeat 3 --num_eval_steps_per_epoch 8000 > sac_rb2.txt 2>&1 &
+
+
+## delivery ant 2 cargo
+# raeb
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2_2cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_2_cargo > raeb_2_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=4 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2_8cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_8_cargo > raeb_8_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/surprise-based/surprise_vision.json --env_name ant_corridor_resource_env_goal_4_v0_v2_16cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_16_cargo > raeb_16_cargo1.txt 2>&1 &
+sleep 15s
+
+# sac
+CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/sac/sac.json --env_name ant_corridor_resource_env_goal_4_v0_v2_2cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_2_cargo > sac_2_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=5 nohup python scripts/run.py configs/sac/sac.json --env_name ant_corridor_resource_env_goal_4_v0_v2_8cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_8_cargo > sac_8_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=3 nohup python scripts/run.py configs/sac/sac.json --env_name ant_corridor_resource_env_goal_4_v0_v2_16cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_16_cargo > sac_16_cargo1.txt 2>&1 &
+sleep 15s
+
+
+# surprise
+CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0_v2_2cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_2_cargo > surprise_2_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=6 nohup python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0_v2_8cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_8_cargo > surprise_8_cargo1.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/surprise-based/surprise.json --env_name ant_corridor_resource_env_goal_4_v0_v2_16cargo --repeat 3 --num_eval_steps_per_epoch 8000 --alg_type surprise  --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_16_cargo > surprise_16_cargo1.txt 2>&1 &
+sleep 15s
+
+# noveld
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name ant_corridor_resource_env_goal_4_v0_v2_2cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_2_cargo > rnd_noveld_2cargo.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=7 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name ant_corridor_resource_env_goal_4_v0_v2_8cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_8_cargo > rnd_noveld_8cargo.txt 2>&1 &
+sleep 15s
+CUDA_VISIBLE_DEVICES=2 nohup python scripts/run.py configs/rnd/rnd_noveld.json --env_name ant_corridor_resource_env_goal_4_v0_v2_16cargo --repeat 3 --num_eval_steps_per_epoch 8000 --base_log_dir /home/zhwang/r3l_exploration/aaai23_rebuttal_data/delivery_ant_16_cargo > rnd_noveld_16cargo.txt 2>&1 &
+sleep 15s
 
 
 # sleep 15s

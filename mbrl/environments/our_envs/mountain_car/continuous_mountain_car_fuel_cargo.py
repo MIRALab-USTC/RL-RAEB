@@ -120,4 +120,10 @@ class FuelCargoMountainCar(ContinuousMountainCarEnv):
         return w
 
     def f_batch(self, states, actions):
-        pass
+        # a\in [0,1] wrapped by env
+        # continuous cargo
+        fuel_action = 0.1 * torch.sum(torch.square(actions[:,:-1]), axis=1)
+        fuel_action = fuel_action.reshape(fuel_action.shape[0], 1)
+        cargo_action = actions[:,-1:]
+
+        return fuel_action + cargo_action

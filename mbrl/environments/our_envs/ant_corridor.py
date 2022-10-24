@@ -152,26 +152,37 @@ class AntCorridorResourceEnv(AntCorridorEnv):
         if not torch.is_tensor(state_cargo):
             state_cargo = torch.from_numpy(state_cargo)
         return state_cargo
-    
+
     def f_batch(self, states, actions):
-        # a\in [0,1] wrapped by env
         actions_cargo = actions[:,-1]
-        if not torch.is_tensor(actions_cargo):
-            actions_cargo = torch.from_numpy(actions_cargo)
         actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1))
         actions_cargo = actions_cargo * 2 - 1
-        
-        w = torch.sign(actions_cargo) 
-        zero = torch.zeros_like(w)
-        w = torch.where(w <= 0, zero, w)
 
-        # state cargo is 0 
-        states_cargo = states[:,-1]
-        if not torch.is_tensor(states_cargo):
-            states_cargo = torch.from_numpy(states_cargo)
-        indexes_invalid = torch.where(states_cargo==0)
-        w[indexes_invalid] = 0
-        return w
+        actions_cargo = torch.sign(actions_cargo) 
+        zero = torch.zeros_like(actions_cargo)
+        actions_cargo = torch.where(actions_cargo <= 0, zero, actions_cargo)
+
+        return actions_cargo
+
+    # def f_batch(self, states, actions):
+    #     # a\in [0,1] wrapped by env
+    #     actions_cargo = actions[:,-1]
+    #     if not torch.is_tensor(actions_cargo):
+    #         actions_cargo = torch.from_numpy(actions_cargo)
+    #     actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1))
+    #     actions_cargo = actions_cargo * 2 - 1
+        
+    #     w = torch.sign(actions_cargo) 
+    #     zero = torch.zeros_like(w)
+    #     w = torch.where(w <= 0, zero, w)
+
+    #     # state cargo is 0 
+    #     states_cargo = states[:,-1]
+    #     if not torch.is_tensor(states_cargo):
+    #         states_cargo = torch.from_numpy(states_cargo)
+    #     indexes_invalid = torch.where(states_cargo==0)
+    #     w[indexes_invalid] = 0
+    #     return w
 
 class AntCorridorResourceEnvV2(AntCorridorResourceEnv):
     def get_long_term_weight_batch(self, states, actions):

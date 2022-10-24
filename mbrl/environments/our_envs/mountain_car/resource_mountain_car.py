@@ -216,28 +216,34 @@ class ResourceMountainCarEnv(ContinuousMountainCarEnv):
         if not torch.is_tensor(state_cargo):
             state_cargo = torch.from_numpy(state_cargo)
         return state_cargo
-    
+
     def f_batch(self, states, actions):
-        # a\in [0,1] wrapped by env
-        # continuous cargo
         actions_cargo = actions[:,-1]
-        if not torch.is_tensor(actions_cargo):
-            actions_cargo = torch.from_numpy(actions_cargo)
         actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1)).float()
 
-        states_cargo = states[:,-1]
-        if not torch.is_tensor(states_cargo):
-            states_cargo = torch.from_numpy(states_cargo)
-        states_cargo = states_cargo.reshape((states_cargo.shape[0],1)).float()
+        return actions_cargo
+
+    # def f_batch(self, states, actions):
+    #     # a\in [0,1] wrapped by env
+    #     # continuous cargo
+    #     actions_cargo = actions[:,-1]
+    #     if not torch.is_tensor(actions_cargo):
+    #         actions_cargo = torch.from_numpy(actions_cargo)
+    #     actions_cargo = actions_cargo.reshape((actions_cargo.shape[0],1)).float()
+
+    #     states_cargo = states[:,-1]
+    #     if not torch.is_tensor(states_cargo):
+    #         states_cargo = torch.from_numpy(states_cargo)
+    #     states_cargo = states_cargo.reshape((states_cargo.shape[0],1)).float()
     
-        w = torch.zeros_like(actions_cargo, dtype=actions_cargo.dtype)
+    #     w = torch.zeros_like(actions_cargo, dtype=actions_cargo.dtype)
 
-        indexes_states = torch.where((states_cargo-actions_cargo).float()<=0)
-        w[indexes_states] = states_cargo[indexes_states]
+    #     indexes_states = torch.where((states_cargo-actions_cargo).float()<=0)
+    #     w[indexes_states] = states_cargo[indexes_states]
 
-        indexes_actions = torch.where((states_cargo-actions_cargo)>0)
-        w[indexes_actions] = actions_cargo[indexes_actions]
-        return w
+    #     indexes_actions = torch.where((states_cargo-actions_cargo)>0)
+    #     w[indexes_actions] = actions_cargo[indexes_actions]
+    #     return w
 
 class DiscreteResourceMountainCarEnv(ResourceMountainCarEnv):
     @classmethod

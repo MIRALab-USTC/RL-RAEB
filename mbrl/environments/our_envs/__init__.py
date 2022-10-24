@@ -360,6 +360,42 @@ register(
 )
 
 register(
+    id='AntCorridorResourceEnvV2cargo2-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 2,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorResourceEnvV2cargo8-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 8,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
+    id='AntCorridorResourceEnvV2cargo16-v0',
+    entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnvV2',
+    kwargs={
+        'cargo_num': 16,
+        'beta': 1,
+        'reward_block': [4,5],
+        'reward': 100
+    },
+    max_episode_steps=500,
+)
+
+register(
     id='AntCorridorResourceEnv-v52',
     entry_point='mbrl.environments.our_envs.ant_corridor:AntCorridorResourceEnv',
     kwargs={
@@ -1405,6 +1441,9 @@ env_name_to_gym_registry_dict = {
     "done_resource_cheetah_corridor_v4": "DoneResourceCheetahCorridor-v4",
     "no_reward_resource_mountaincar": "NoRewardResourceMountainCar-v0",
     "ant_corridor_resource_env_goal_4_v0_v2": "AntCorridorResourceEnvV2-v0",
+    "ant_corridor_resource_env_goal_4_v0_v2_2cargo": "AntCorridorResourceEnvV2cargo2-v0",
+    "ant_corridor_resource_env_goal_4_v0_v2_8cargo": "AntCorridorResourceEnvV2cargo8-v0",
+    "ant_corridor_resource_env_goal_4_v0_v2_16cargo": "AntCorridorResourceEnvV2cargo16-v0",
     "resource_cheetah_corridor_v0_v2": "ResourceCheetahCorridorV2-v0",
     "resource_mountaincar_v0_v2": "ResourceMountainCarV2-v0",
     "fuel_mountain_car_v0": 'FuelMountainCar-v0',
