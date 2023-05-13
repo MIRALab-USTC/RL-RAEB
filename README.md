@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ## Reproduce the Results
 1. For example, run experiments on Ant 
 ```
-python scripts/run.py configs/ant.json
+python scripts/run.py configs/surprise_based/surprise_vision.json
 ```
 
 ## Citation
